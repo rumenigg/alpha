@@ -1,0 +1,108 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window id="winTipoColeta" title="Tipos de Coletas" border="normal" 
+			apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('tcvm') @init('br.com.rti.alpha.viewModel.TipoColetaVM')"
+			form="@id('fx') @load(tcvm.selectedTipoColeta) @save(tcvm.selectedTipoColeta, before='submit')" >
+		<caption>
+			<button id="tbtnTipoColetaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winTipoColeta.setSizable(false); winTipoColeta.doEmbedded(); self.setDisabled(true); tbtnTipoColetaDesatrelar.setDisabled(false);"/>
+			<button id="tbtnTipoColetaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winTipoColeta.setSizable(true); 
+						winTipoColeta.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnTipoColetaAtrelar.setDisabled(false);
+						winTipoColeta.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+		
+		<toolbar>
+			<toolbarbutton id="tbtnNovoTipoColeta" tooltiptext="Incluir um novo Tipo de Coleta" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Tipo de Coleta ou suas alterações" disabled="@load(tcvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir o Tipo de Coleta selecionada" disabled="@load(tcvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winTipoColeta.detach()"/>
+			<!-- <toolbarbutton id="tbtnTipoColetaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winTipoColeta.setSizable(false); winTipoColeta.doEmbedded(); self.setDisabled(true); tbtnTipoColetaDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnTipoColetaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winTipoColeta.setSizable(true); 
+						winTipoColeta.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnTipoColetaAtrelar.setDisabled(false);
+						winTipoColeta.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>-->
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<div width="100%">
+			<grid>
+				<columns>
+					<column hflex="1" />
+					<column hflex="2" />
+				</columns>
+				<rows>
+					<row>
+						<label value="Descricao"/>
+						<textbox placeholder="Informe o tipo de coleta" width="100%" 
+									value="@bind(fx.descricao)" constraint="no empty" disabled="@load(tcvm.desativado)" />
+					</row>
+					<row>
+						<label value="Obs.:"/>
+						<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(tcvm.desativado)"/>
+					</row>
+				</rows>
+			</grid>
+		</div>
+		
+		<separator spacing="5"/>
+		
+		<groupbox closable="false">
+			<caption label="Definir os Planos de Trabalho" />
+			
+			<hlayout height="100%" style="padding: 10px">
+				<listbox id="lbPlano" height="250px" width="280px" tooltiptext="Selecione os Planos para esse tipo de coleta" 
+						disabled="@load(tcvm.desativado)" multiple="true" checkmark="true">
+					<template name="model" var="f">
+						<listitem label="${f.plano}" disabled="@load(tcvm.desativado)" checkable="true"/>
+					</template>							
+				</listbox>
+				
+				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
+							disabled="@load(tcvm.desativado)" /> -->
+					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
+							disabled="@load(tcvm.desativado)" onClick="@command('adicionarPlano')"/>
+					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
+							disabled="@load(tcvm.desativado)" onClick="@command('removerPlano')"/>
+				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
+							disabled="@load(tcvm.desativado)" /> -->
+				</vbox>
+				
+				<listbox id="lbPlanoTipoColeta" height="250px" width="280px" disabled="@load(tcvm.desativado)" multiple="true" checkmark="true">
+					<template name="model" var="f">
+						<listitem label="${f.plano}" disabled="@load(tcvm.desativado)" checkable="true"/>
+					</template>
+				</listbox>			
+			</hlayout>		
+		</groupbox>
+	</window>
+</zk>

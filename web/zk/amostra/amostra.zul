@@ -1,0 +1,534 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div width="100%" height="100%" apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('avm') @init('br.com.rti.alpha.viewModel.AmostraVM')"
+			form="@id('fx') @load(avm.selectedAmostra) @save(avm.selectedAmostra, before='submit')">
+			
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
+		<borderlayout>
+			<west width="20%" splittable="true" collapsible="true" autoscroll="true" >
+				<listbox model="@load(avm.allAmostra)" selectedItem="@bind(avm.selectedAmostra)" 
+						onSelect="@command('showSelectedAmostra')" >
+					<listhead menupopup="auto">
+						<listheader label="Data" sort="auto(dataAmostra, id)" sortDirection="descending" />
+						<listheader label="Ativo" sort="auto(ativoAmostra.tag)" />
+					</listhead>					
+					<template name="model" var="a">
+						<listitem>
+							<listcell>
+								<datebox value="@load(a.dataAmostra)" buttonVisible="false" inplace="true" lenient="true" readonly="true" />
+							</listcell>
+							<listcell label="@load(a.ativoAmostra.tag)" value="@load(a.id)"/>
+						</listitem>
+					</template>
+				</listbox>
+			</west>
+			
+			<center>
+			<div height="100%" width="100%">
+				<menupopup id="popupFoto">
+					<menuitem label="Remover" onClick="@command('removerFotos')" />											
+				</menupopup>
+				
+				<toolbar>
+					<toolbarbutton id="tbtnNovoAmostra" tooltiptext="Incluir nova Amostra" 
+								image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" onClick="@command('novo')"/>
+					<toolbarbutton tooltiptext="Salvar a nova Amostra ou suas alterações" disabled="@load(tcvm.desativado)" 
+								image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png" onClick="@command('submit')"/>
+					<toolbarbutton tooltiptext="Excluir a amostra selecionada" disabled="@load(tcvm.desativado)" 
+								image="/img/btn/page/toolbarbtn/lixeira_1.png" onClick="@command('excluir')"/>
+					<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+								onClick="@command('navegar', acao='primeiro')"/>
+					<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+								onClick="@command('navegar', acao='anterior')"/>
+					<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+								onClick="@command('navegar', acao='proximo')"/>
+					<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+								onClick="@command('navegar', acao='ultimo')"/>
+					<toolbarbutton tooltiptext="Atualizar dados" image="/img/btn/page/atualizar-32.png" onClick="@command('atualizaAmostra')" />
+					<!-- <toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+								onClick="self.detach(); pageScope.clear()"/>
+				 <toolbarbutton id="tbtnTipoColetaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winTipoColeta.setSizable(false); winTipoColeta.doEmbedded(); self.setDisabled(true); tbtnTipoColetaDesatrelar.setDisabled(false);"/>
+					<toolbarbutton id="tbtnTipoColetaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+						<attribute name="onClick">
+						{
+							winTipoColeta.setSizable(true); 
+							winTipoColeta.doOverlapped(); 
+							self.setDisabled(true); 
+							tbtnTipoColetaAtrelar.setDisabled(false);
+							winTipoColeta.setPosition("center");
+						}
+						</attribute>
+					</toolbarbutton>-->
+				</toolbar>
+				
+				<separator spacing="5"/>
+				
+				<tabbox tabscroll="true" height="93%" width="100%">
+					<tabs>
+						<tab id="tabAmostra" label="Amostra" selected="true"/>
+						<tab label="Análise" />
+						<tab label="Partículas" />						
+					</tabs>	
+					<toolbar>
+						<label value="N. Amostra:" style="font-size:14px"/>
+						<label value="@load(fx.id)" style="font-size:14px; color:red"/>
+					</toolbar>				
+					<tabpanels>
+						<tabpanel>
+							<grid height="100%" width="100%">
+								<columns>
+									<column hflex="1"/>
+									<column hflex="2"/>
+									<column hflex="1"/>
+									<column hflex="2"/>
+								</columns>
+								<rows>
+									<row align="right">
+										<label value="Data do cadastro da amostra"/>
+										<datebox placeholder="Selecione a data de cadastro da amostra"
+												constraint="no empty" width="100%" value="@bind(fx.dataAmostra)"
+												disabled="@load(avm.desativado)"/>
+									</row>
+									<row align="right">
+										<label value="Ativo"/>
+										<combobox id="cbxAtivo" width="100%" placeholder="Selecione um ativo" model="@load(avm.allAtivo)" constraint="no empty" 
+												selectedItem="@bind(fx.ativoAmostra) @bind(avm.selectedAmostra.ativoAmostra)" onSelect="@command('atualizaCompartimento')" 
+												disabled="@load(avm.desativado)" >
+											<template name="model" var="a1">
+												<comboitem label="@load(a1.tag)" value="@load(a1.id)"/>
+											</template>												
+										</combobox>
+										<label value="Compartimento"/>
+										<combobox id="cbxCompartimento" width="100%" placeholder="Selecione um Compartimento" model="@load(avm.allCompartimento)" 
+												selectedItem="@bind(fx.compartimentoAmostra) @bind(avm.selectedAmostra.compartimentoAmostra)"	disabled="@load(avm.desativado)" constraint="no empty">
+											<template name="model" var="c1">
+												<comboitem label="@load(c1.tag)" value="c1.id"/>
+											</template>												
+										</combobox>
+									</row>
+									<row align="right">
+										<label value="Tipo de Coleta"/>
+										<combobox id="cbxTipoColeta" width="100%" placeholder="Selecione um tipo de coleta" model="@load(avm.allTipoColeta)"
+												selectedItem="@bind(fx.tipoColetaAmostra) @bind(avm.selectedAmostra.tipoColetaAmostra)" onSelect="@command('atualizaPlano')" 
+												disabled="@load(avm.desativado)" constraint="no empty">
+											<template name="model" var="tc1">
+												<comboitem label="@load(tc1.descricao)" value="@load(tc1.id)"/>
+											</template>
+										</combobox>
+										<label value="Plano"/>
+										<combobox id="cbxPlano" width="100%" placeholder="Selecione um plano de trabalho" model="@load(avm.allPlano)"
+												selectedItem="@bind(fx.planoTrabalhoAmostra) @bind(avm.selectedAmostra.planoTrabalhoAmostra)" disabled="@load(avm.desativado)" constraint="no empty">
+											<template name="model" var="p1">
+												<comboitem label="@load(p1.plano)" value="@load(p1.id)"/>
+											</template>
+										</combobox>
+									</row>
+									<row align="right">
+										<label value="Horímetro"/>
+										<textbox width="100%" placeholder="Forneça o valor do horímetro na leitura"
+												value="@bind(fx.horimetro)" disabled="@load(avm.desativado)"/>
+										<label value="Horas Trabalhadas"/>
+										<textbox width="100%" placeholder="Forneça a quantidade de horas trabalhadas"
+												value="@bind(fx.horaTrabalhada)" disabled="@load(avm.desativado)"/>
+									</row>
+									<row align="right">
+										<label value="Capacidade(L)"/>
+										<spinner step="5" constraint="min 0" width="100%"
+												placeholder="SInforme a capacidade do compartimento analisado"
+												value="@bind(fx.capacidade)" disabled="@load(avm.desativado)"/>
+										<label value="Óleo"/>
+										<combobox id="cbxOleo" width="100%" placeholder="Selecione um óleo" model="@load(avm.allOleo)"
+												selectedItem="@bind(fx.oleoAmostra) @bind(avm.selectedAmostra.oleoAmostra)" disabled="@load(avm.desativado)" constraint="no empty">
+											<template name="model" var="o1">
+												<comboitem label="@load(o1.referencia)" value="@load(o1.id)"/>
+											</template>
+										</combobox>
+									</row>
+									<row align="right">
+										<label value="Óleo drenado?"/>
+										<div align="left">
+											<radiogroup selectedItem="@bind(fx.oleoDrenado)">
+												<radio label="Sim" value="s"/>
+												<radio label="Não" value="n"/>
+											</radiogroup>
+										</div>
+										<label value="Filtro trocado?" />
+										<div align="left">
+											<radiogroup selectedItem="@bind(fx.filtroTrocado)">
+												<radio label="Sim" value="s"/>
+												<radio label="Não" value="n"/>
+											</radiogroup>
+										</div>
+									</row>
+									<row align="right">
+										<label value="Data da coleta"/>
+										<datebox width="100%" placeholder="Informe a data da coleta da amostra"
+												value="@bind(fx.dataColeta)" disabled="@load(avm.desativado)"/>
+										<label value="Data da entrega"/>
+										<datebox width="100%" placeholder="Informe a data de entrega da amostra"
+												value="@bind(fx.dataEntrega)" disabled="@load(avm.desativado)"/>
+									</row>
+									<row spans="4">																			
+										<!-- <detail open="true"> -->
+										<groupbox id="gbAmostraFoto" width="100%" mold="3d">								
+											<caption label="Foto(s)" tooltiptext="Clique para expandir">
+											<!-- <div width="100%" height="100%" align="left" >
+												<label value="Foto"/> -->
+												<button id="btnAmostraFoto" label="Localizar foto" mold="trendy" upload="true" disabled="@load(avm.desativado)">
+													<attribute name="onUpload">
+													<![CDATA[								    
+														org.zkoss.util.media.Media media = event.getMedia();
+														if (media instanceof org.zkoss.image.Image)
+														{	
+															org.zkoss.zul.Image image = new org.zkoss.zul.Image();										
+															image.setContent(((org.zkoss.image.Image)media));
+															//image.setHeight("100");
+															//image.setWidth("100");										
+															//foto.setContent((org.zkoss.image.Image)image.getContent());
+															//gbAmostraFoto.setWidth(image.getWidth());
+															amostraFoto.setHeight(image.getHeight());														
+															//image.setId("teste1");
+															//image.setSclass("icon");
+															//image.setContext("popupFoto");
+															Textbox tx = new Textbox();
+															tx.setInplace(true);
+															tx.setPlaceholder("Digite aqui as informações sobre a foto da amostra");
+															tx.setMultiline(true);
+															tx.setRows(5);
+															//tx.setId(media.getName());
+															tx.setParent(amostraFoto);															
+															
+														
+																	
+															Checkbox cb = new Checkbox();
+															//cb.setSclass("icon");
+															cb.setImageContent(image.getContent());
+															cb.setContext("popupFoto");
+															cb.setTooltiptext("Marque a foto para excluí-la");
+															cb.setName(media.getName());														
+														
+															//image.setParent(cb);//(org.zkoss.image.Image)media);
+															cb.setParent(amostraFoto);
+															//amostraFoto.setContent( (org.zkoss.image.Image) media);
+														}
+														else
+														{
+															Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha", 
+																Messagebox.OK, Messagebox.ERROR);
+															break;
+														}
+													]]>					
+													</attribute>
+												</button>											
+												<button label="Remover foto(s)" mold="trendy"
+												onClick="@command('removerFotos')" disabled="@load(avm.desativado)"/>
+												
+												<!-- <groupbox id="gbAmostraFoto" closable="false" width="100%" >								
+													<caption label="Foto(s)" />
+													<hlayout id="amostraFoto" height="100px" width="100%" style="overflow:auto" />
+												</groupbox>-->
+											</caption>
+											<zscript>
+												<![CDATA[											     
+										    		 public void removerFoto()
+										    		 {		
+														for ( int i = 0; i < amostraFoto.getChildren().size(); i++ )
+														{								
+															if ( amostraFoto.getChildren().get(i) instanceof Checkbox )
+															{
+																Checkbox c = (Checkbox) amostraFoto.getChildren().get(i);
+																if ( c.isChecked() )
+																{																	
+																	amostraFoto.getChildren().get(i).detach();
+																	amostraFoto.getChildren().get(i-1).detach();
+																	removerFoto();
+																}
+															}
+														}
+														if (amostraFoto.getChildren().isEmpty())
+										    				amostraFoto.setHeight("70px");
+													}
+												]]>
+												</zscript>
+											
+											<hlayout id="amostraFoto" height="70px" width="100%" style="overflow:auto" sclass="icon"/>
+										</groupbox>
+										<!-- /detail> -->
+									</row>
+									<row spans="4">
+										<groupbox mold="3d">
+											<caption label="Informações" width="100%" tooltiptext="Clique para expandir"/>
+											<ckeditor width="100%" height="80px"
+												customConfigurationsPath="/widgets/input/wysiwyg_editor/config.js" toolbar="MyToolbar" 
+												value="@bind(fx.informacoes)"/>										
+										</groupbox>
+									</row>
+								</rows>
+							</grid>
+						</tabpanel>
+						<tabpanel height="100%">
+							<grid height="100%">
+								<columns>
+									<column hflex="1"/>
+									<column hflex="2"/>
+									<column hflex="1"/>
+									<column hflex="2"/>
+								</columns>
+								<rows>
+									<row align="right">
+										<label value="Data da análise"/>
+										<datebox width="100%" placeholder="Informe a data da análise da amostra"
+												value="@bind(avm.selectedAnalise.dataAnalise)" disabled="@load(avm.desativado)"/>
+									</row>
+									<row spans="4">
+										<groupbox width="100%" mold="3d">
+											<caption label="Análise inicial"/>
+											<grid>
+												<rows>
+													<row align="right">
+														<label value="Óleo escuro"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.oleoescuro)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Impurezas"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.impureza)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Água"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.agua)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>																
+															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Limalhas"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.limalha)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Sílica"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.silica)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
+														</combobox>														
+													</row>
+												</rows>
+											</grid>
+										</groupbox>
+									</row>
+									<row spans="4">
+										<groupbox width="100%" mold="3d">
+											<caption label="Condições do óleo" />
+											<grid>
+												<columns>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+												</columns>
+												<rows>
+													<row align="right">
+														<label value="Fuligem"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.fuligem)" 
+																	disabled="@load(avm.desativado)"/>
+														<label value="Oxidação"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.oxidacao)"
+																	disabled="@load(avm.desativado)"/>
+													
+														<label value="Nitração"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.nitracao)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Sulfatação"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.sulfatacao)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="TBN"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.tbn)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Viscosidade"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.viscosidade)"
+																	disabled="@load(avm.desativado)"/>
+													
+														<label value="Combustível"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.combustivel)" disabled="@load(avm.desativado)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Água"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.agua)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="St"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.st)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Sul"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.sul)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="Fe"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.fe)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Cu"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.cu)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="Cr"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.cr)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Pb"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.pb)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="Sn"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.sn)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Mo"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.mo)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="Ni"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.ni)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Ag"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.ag)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="Al"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.al)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Si"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.si)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="Na"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.na)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="K"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.k)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="Ca"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.ca)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="P"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.p)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="Zn"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.zn)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Mg"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.mg)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="B"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.b)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Ba"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.ba)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+													<row align="right">
+														<label value="W"/>
+														<textbox width="100%" value="@bind(avm.selectedElementos.w)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="F"/>
+														<textbox width="100%" value="@bind(avm.selectedElementos.f)"
+																	disabled="@load(avm.desativado)"/>
+																												
+														<label value="Diesel"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.diesel)"
+																	disabled="@load(avm.desativado)"/>														
+														<label value="Zddp"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.zddp)"
+																	disabled="@load(avm.desativado)"/>
+													</row>													
+												</rows>
+											</grid>
+										</groupbox>
+									</row>
+								</rows>
+							</grid>
+						</tabpanel>
+						<tabpanel>
+							<grid width="100%">
+								<rows>
+									<row spans="4">
+										<groupbox width="100%" mold="3d">
+											<caption label="Contagem de Partículas"/>
+											<grid>
+												<columns>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+													<column hflex="1"/>
+													<column hflex="2"/>
+												</columns>
+												<rows>
+													<row align="right">
+														<label value="ISO 4u"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.iso4u)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="ISO 6u"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.iso6u)"
+																	disabled="@load(avm.desativado)"/>
+														
+														<label value="ISO 14u"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.iso14u)"
+																	disabled="@load(avm.desativado)"/>
+														<label value="Filtro"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedElementos.filtro)"
+																	disabled="@load(avm.desativado)">
+															<comboitem label="Normal" value="normal"/>
+															<comboitem label="Anormal" value="anormal"/>
+														</combobox>
+													</row>
+													<row align="right">
+														<label value="Norma 4406"/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.norma4u)"
+																	disabled="@load(avm.desativado)"/>
+														<label value=""/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.norma6u)"
+																	disabled="@load(avm.desativado)"/>
+														<label value=""/>
+														<doublespinner width="100%" value="@bind(avm.selectedElementos.norma14u)"
+																	disabled="@load(avm.desativado)"/>
+													</row>
+												</rows>
+											</grid>
+										</groupbox>
+									</row>
+									<row spans="4">
+										<groupbox width="100%" mold="3d">
+											<caption label="Informações da análise"/>
+											<ckeditor width="100%" height="150px"
+												customConfigurationsPath="/widgets/input/wysiwyg_editor/config.js" toolbar="MyToolbar" 
+												value="@bind(avm.selectedAnalise.informacaoAnalise)"/>	
+										</groupbox>
+									</row>
+								</rows>
+							</grid>							
+						</tabpanel>
+					</tabpanels>
+				</tabbox>
+			</div>
+			</center>
+		</borderlayout>	
+	</div>
+</zk>

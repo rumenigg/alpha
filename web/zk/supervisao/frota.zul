@@ -1,0 +1,153 @@
+<zk>
+	<window id="winFrota" title="Frotas" border="normal"
+			apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('fvm') @init('br.com.rti.alpha.viewModel.FrotaVM')"
+			form="@id('fx') @load(fvm.selectedFrota) @save(fvm.selectedFrota, before='submit')">
+		<caption>
+			<button id="tbtnFrotaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winFrota.setSizable(false); winFrota.doEmbedded(); self.setDisabled(true); tbtnFrotaDesatrelar.setDisabled(false);"/>
+			<button id="tbtnFrotaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winFrota.setSizable(true); 
+						winFrota.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnFrotaAtrelar.setDisabled(false);
+						winFrota.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+			
+		<toolbar>
+			<toolbarbutton id="tbtnNovoFrota" tooltiptext="Incluir uma nova Frota" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar a nova Frota ou suas alterações" disabled="@load(fvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir a Frota selecionada" disabled="@load(fvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winFrota.detach()"/>
+			<!-- <toolbarbutton id="tbtnFrotaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winFrota.setSizable(false); winFrota.doEmbedded(); self.setDisabled(true); tbtnFrotaDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnFrotaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winFrota.setSizable(true); 
+						winFrota.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnFrotaAtrelar.setDisabled(false);
+						winFrota.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>-->
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<columnlayout>
+			<columnchildren hflex="2">		
+				<grid >
+					<columns>
+						<column hflex="1"/>
+						<column hflex="2"/>
+					</columns>
+					<rows>
+						<row>
+							<label value="Identificação"/>
+							<textbox placeholder="Informe a identificação da frota" width="100%" value="@bind(fx.descricao)" constraint="no empty"
+									disabled="@load(fvm.desativado)"/>
+						</row>
+						<row>
+							<label value="Responsável" />
+							<combobox id="cbxPessoa" placeholder="Selecione o responsável pela frota" width="100%" autocomplete="true" autodrop="true" 
+										constraint="no empty" disabled="@load(fvm.desativado)" model="@load(fvm.allPessoa)" selectedItem="@bind(fvm.selectedPessoa)">
+										<template name="model" var="f">
+											<comboitem label="@load(f.nome)" value="@load(f.id)"/>
+										</template>
+							</combobox>
+						</row>
+						<row>
+							<label value="Obs.:"/>
+							<textbox width="100%" multiline="true" rows="3" disabled="@load(fvm.desativado)" value="@bind(fx.obs)" />
+						</row>
+					</rows>
+				</grid>		
+			
+				<separator spacing="5"/>
+		
+				<groupbox closable="false">
+					<caption label="Definir ativos da frota" />
+			
+					<hlayout height="100%" style="padding: 10px">
+						<listbox id="lbAtivo" height="250px" width="280px" tooltiptext="Selecione os ativos que fazem parte dessa frota" 
+								disabled="@load(fvm.desativado)" multiple="true" checkmark="true">
+							<template name="model" var="f">
+								<listitem label="${f.tag}" disabled="@load(fvm.desativado)" checkable="true"/>
+							</template>							
+						</listbox>
+				
+						<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+						<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
+									disabled="@load(fvm.desativado)" /> -->
+							<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
+									disabled="@load(fvm.desativado)" onClick="@command('adicionarAtivo')"/>
+							<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
+									disabled="@load(fvm.desativado)" onClick="@command('removerAtivo')"/>
+						<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
+									disabled="@load(fvm.desativado)" /> -->
+						</vbox>
+				
+						<listbox id="lbAtivoFrota" height="250px" width="280px" disabled="@load(fvm.desativado)" multiple="true" checkmark="true">
+							<template name="model" var="f">
+								<listitem label="${f.tag}" disabled="@load(fvm.desativado)" checkable="true"/>
+							</template>
+						</listbox>			
+					</hlayout>		
+				</groupbox>	
+			</columnchildren>
+			
+			<columnchildren hflex="1" style="margin: 0px 20px;">					
+				<button id="btnFotoFrota" label="Localizar foto" disabled="@load(fvm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[								    
+							org.zkoss.util.media.Media media = event.getMedia();
+							if (media instanceof org.zkoss.image.Image)
+							{	
+								org.zkoss.zul.Image image = new org.zkoss.zul.Image();										
+								image.setContent(((org.zkoss.image.Image)media));
+								//image.setHeight("100");
+								//image.setWidth("100");										
+								//foto.setContent((org.zkoss.image.Image)image.getContent());
+								gbFotoFrota.setWidth(image.getWidth());
+								fotoFrota.setWidth(image.getWidth());
+								//if (fotoFrota.getChildren().size() != 0)
+									//fotoFrota.removeChild(fotoFrota.getChildren().get(0));
+								//image.setParent(fotoFrota);
+								fotoFrota.setContent((org.zkoss.image.Image)media);
+								
+							}
+							else
+							{
+								Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha", 
+										Messagebox.OK, Messagebox.ERROR);
+								break;
+							}
+						]]>					
+					</attribute>
+				</button>
+				<groupbox id="gbFotoFrota" height="100%" closable="false" >								
+					<caption label="Foto"/>
+					<image id="fotoFrota" width="100%" height="100%" align="center" />
+				</groupbox>
+			</columnchildren>
+		</columnlayout>		
+	</window>
+</zk>

@@ -1,0 +1,76 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window id="winPlanoTrabalho" title="Planos de Trabalho" border="normal" 
+			apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('ptvm') @init('br.com.rti.alpha.viewModel.PlanoTrabalhoVM')"
+			form="@id('fx') @load(ptvm.selectedPlanoTrabalho) @save(ptvm.selectedPlanoTrabalho, before='submit')" >
+		<caption>
+			<button id="tbtnPlanoTrabalhoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winPlanoTrabalho.setSizable(false); winPlanoTrabalho.doEmbedded(); self.setDisabled(true); tbtnPlanoTrabalhoDesatrelar.setDisabled(false);"/>
+			<button id="tbtnPlanoTrabalhoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winPlanoTrabalho.setSizable(true); 
+						winPlanoTrabalho.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnPlanoTrabalhoAtrelar.setDisabled(false);
+						winPlanoTrabalho.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>	
+		
+		<toolbar>
+			<toolbarbutton id="tbtnNovoPlanoTrabalho" tooltiptext="Incluir um novo Plano de Trabalho" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Plano de Trabalho ou suas alterações" disabled="@load(ptvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir o Plano de Trabalho selecionada" disabled="@load(ptvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winPlanoTrabalho.detach()"/>
+			<!-- <toolbarbutton id="tbtnPlanoTrabalhoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winPlanoTrabalho.setSizable(false); winPlanoTrabalho.doEmbedded(); self.setDisabled(true); tbtnPlanoTrabalhoDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnPlanoTrabalhoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winPlanoTrabalho.setSizable(true); 
+						winPlanoTrabalho.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnPlanoTrabalhoAtrelar.setDisabled(false);
+						winPlanoTrabalho.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>-->
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<div width="100%">
+			<grid>
+				<columns>
+					<column hflex="1" />
+					<column hflex="2" />
+				</columns>
+				<rows>
+					<row>
+						<label value="Plano de trabalho"/>
+						<spinner placeholder="Indique o plano de trabalho" width="100%" step="5"
+									value="@bind(fx.plano)" constraint="min 0, no empty" disabled="@load(ptvm.desativado)" />
+					</row>
+					<row>
+						<label value="Obs.:"/>
+						<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(ptvm.desativado)"/>
+					</row>
+				</rows>
+			</grid>
+		</div>
+	</window>
+</zk>

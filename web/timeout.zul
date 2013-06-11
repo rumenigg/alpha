@@ -1,0 +1,13 @@
+<window width="80%" title="A sessão expirou" border="normal">
+	<vbox>
+		A página ou componente que você solicitou não está mais disponível.
+		Isto é causado normalmente pelo tempo de espera excedido, pela abertura de várias 
+		páginas simultaneamente, ou reinicialização do sistema/servidor.
+		Por favor, atualize a página ou pressione o botão de voltar. Caso a mensagem persista 
+		contacte o administrador ou o desenvolvedor.
+	</vbox>
+	<!-- The page or component you request is no longer available.
+This is normally caused by timeout, opening too many Web pages, or rebooting
+the server.
+	 -->
+</window>

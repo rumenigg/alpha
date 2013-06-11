@@ -1,0 +1,309 @@
+<!-- <?component name="pessoa" macroURI="/zk/pessoas.zul" ?> -->
+<?taglib uri="http://www.zkoss.org/dsp/web/core" prefix="c" ?>
+<zk>
+	<div width="100%" height="97%" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('cvm') @init('br.com.rti.alpha.viewModel.CadastrosVM')">
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		<style>
+			.myAccordion, .z-tab-accordion-lite-text {line-height:0px; text-decoration:none; padding-right:0px;}			
+		</style>	
+	<borderlayout>
+		<west width="20%" splittable="true" collapsible="true" autoscroll="true">		
+			<tabbox mold="accordion">
+			
+				<tabs>					
+					<tab id="tabPessoa" label="Pessoas" onClick="@command('showCenterWindow', aba=self.getLabel())" selected="false" sclass="myAccordion" >		
+						<caption label="Pessoas">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Pessoas" 
+									onClick="@command('atualizaPessoa') @global-command('atualizaPessoa')" style="border:none; background:none"/>
+						</caption>
+					</tab>											
+					<tab id="tabCompartimento" label="Compartimento" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Compartimentos">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Compartimentos"
+									onClick="@command('atualizaCompartimento') @global-command('atualizaAllCompartimento')" style="border:none; background:none"/>
+						</caption>
+					</tab>					
+					<tab id="tabAtivo" label="Ativo" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Ativos">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Ativos"
+									onClick="@command('atualizaAtivo') @global-command('atualizaAllAtivo')" style="border:none; background:none"/>
+						</caption>
+					</tab>					
+					<tab id="tabFrota" label="Frota" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Frotas">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Frotas"
+									onClick="@command('atualizaFrota') @global-command('atualizaAllFrota')" style="border:none; background:none"/>
+						</caption>
+					</tab>					
+					<tab id="tabSupervisao" label="Supervisão" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Supervisões">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Supervisões"
+									onClick="@command('atualizaSupervisao') @global-command('atualizaSupervisao')" style="border:none; background:none"/>
+						</caption>
+					</tab>					
+					<tab id="tabPlano" label="Planos" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Planos">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Planos"
+									onClick="@command('atualizaPlanoTrabalho') @global-command('atualizarPlanoTrabalho')" style="border:none; background:none"/>
+						</caption>
+					</tab>						
+					<tab id="tabOleo" label="Óleo" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Óleos">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Pessoas"
+									onClick="@command('atualizaOleo') @global-command('atualizaAllOleo')" style="border:none; background:none"/>
+						</caption>
+					</tab>						
+					<tab id="tabTipoColeta" label="Tipos de Coletas" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
+						<caption label="Tipos de Coletas">													
+							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Tipos de Coletas"
+									onClick="@command('atualizaTipoColeta') @global-command('atualizarTipoColeta')" style="border:none; background:none"/>
+						</caption>
+					</tab>						
+				</tabs>
+				<tabpanels>
+					<tabpanel fulfill="tabPessoa.onClick" onFulfill="@command('atualizaPessoa')" >						
+						<listbox rows="5" model="@load(cvm.allPessoa)" 
+								 selectedItem="@bind(cvm.selectedPessoa)" 
+								 onSelect="@command('showSelectedItem', tipoItem='pessoa')" >
+							<template name="model" var="p">
+								<listitem label="@load(p.nome)" value="@load(p.id)" />
+							</template>
+						</listbox>				
+					</tabpanel>
+					<tabpanel >
+						<listbox id="lbCompartimento" rows="5" selectedItem="@bind(cvm.selectedCompartimento)"
+								onSelect="@command('showSelectedItem', tipoItem='compartimento')"
+								fulfill="tabCompartimento.onClick" onFulfill="@command('atualizaCompartimento')"/>						
+							<!-- <template name="model" var="tc">
+								<listgroup label="@load(tc.descricao)" />
+							</template>
+							<template name="model" >
+								<listitem>
+									<listcell label="@load(cvm.allCompartimento.tag)" />
+								</listitem>
+							</template>
+						</listbox> -->
+					</tabpanel>
+					<tabpanel fulfill="tabAtivo.onClick" onFulfill="@command('atualizaAtivo')">
+						<listbox rows="5" model="@load(cvm.allAtivo)" selectedItem="@bind(cvm.selectedAtivo)"
+								onSelect="@command('showSelectedItem', tipoItem='ativo')">
+							<template name="model" var="a">
+								<listitem label="@load(a.tag)" value="@load(a.id)"/>
+							</template>	
+						</listbox>
+					</tabpanel>
+					<tabpanel fulfill="tabFrota.onClick" onFulfill="@command('atualizaFrota')">
+						<listbox rows="5" model="@load(cvm.allFrota)" selectedItem="@bind(cvm.selectedFrota)"
+								onSelect="@command('showSelectedItem', tipoItem='frota')">
+							<template name="model" var="f">
+								<listitem label="@load(f.descricao)" value="@load(f.id)"/>
+							</template>
+						</listbox>
+					</tabpanel>
+					<tabpanel fulfill="tabSupervisao.onClick" onFulfill="@command('atualizaSupervisao')">
+						<listbox rows="5" model="@load(cvm.allSupervisao)" selectedItem="@bind(cvm.selectedSupervisao)"
+								onSelect="@command('showSelectedItem', tipoItem='supervisao')">
+							<template name="model" var="s">
+								<listitem label="@load(s.descricao)" value="@load(s.id)"/>
+							</template>
+						</listbox>						
+					</tabpanel>
+					<tabpanel fulfill="tabPlano.onClick" onFulfill="@command('atualizaPlanoTrabalho')">
+						<listbox rows="5" model="@load(cvm.allPlanoTrabalho)" selectedItem="@bind(cvm.selectedPlanoTrabalho)"
+								onSelect="@command('showSelectedItem', tipoItem='planoTrabalho')">
+							<template name="model" var="pt">
+								<listitem label="@load(pt.plano)" value="@load(pt.id)"/>
+							</template>						
+						</listbox>
+					</tabpanel>
+					<tabpanel fulfill="tabOleo.onClick" onFulfill="@command('atualizaOleo')">
+						<listbox rows="5" model="@load(cvm.allOleo)" selectedItem="@bind(cvm.selectedOleo)"
+								 onSelect="@command('showSelectedItem', tipoItem='oleo')">
+							<template name="model" var="o">
+								<listitem label="@load(o.referencia)" value="@load(o.id)" />
+							</template>
+						</listbox>
+					</tabpanel>
+					<tabpanel fulfill="tabTipoColeta.onClick" onFulfill="@command('atualizaTipoColeta')">
+						<listbox rows="5" model="@load(cvm.allTipoColeta)" selectedItem="@bind(cvm.selectedTipoColeta)"
+								onSelect="@command('showSelectedItem', tipoItem='tipoColeta')">
+							<template name="model" var="tc">
+								<listitem label="@load(tc.descricao)" value="@load(tc.id)"/>
+							</template>
+						</listbox>
+					</tabpanel>
+				</tabpanels>
+			</tabbox>			
+		</west>	
+		<center autoscroll="true">
+			<div id="winCenter" />
+		</center>
+
+	</borderlayout>
+	</div>
+	<!-- <zscript>
+		<![CDATA[
+		         public void esconderJanelas(String componente)
+		         {
+		        	 if ( !winCenter.getFellows().isEmpty() )
+		        	 {
+		        		 for ( int i = 0; i < winCenter.getChildren().size(); i++)
+		        		 {
+		        			 Component listChild = winCenter.getChildren().get(i);
+		        			 if ( !listChild.equals(winCenter.getFellowIfAny(componente)) )
+		        			 {
+		        				 Window winChild = (Window) listChild;
+		        				 if ( !winChild.inOverlapped() )
+		        				 	winChild.setVisible(false);
+		        			 }		        				 
+		        		 }
+		        	 }
+		         }
+		         
+		         public void showCenterWindow(String label)
+		         {
+		        	if ( label.equalsIgnoreCase("pessoas") )
+		        	{
+			        	esconderJanelas("win"+label);
+		        		
+		        		if ( (winCenter.hasFellow("winPessoas")) )
+		        		{
+		        			winCenter.getFellowIfAny("winPessoas").setVisible(winCenter.getFellowIfAny("winPessoas").isVisible() ? false : true);
+		        		}
+		        		else 
+		        		{
+		        			 final Window winPessoas = (Window)Executions.createComponents(
+							    		"/zk/pessoas.zul", winCenter, null);;
+							    							    	
+									winPessoas.setId("winPessoas");
+							    	winPessoas.setClosable(true);
+							    	winPessoas.setMinimizable(true);
+		        		}
+		        	}
+		        	 
+		        	if (label.equalsIgnoreCase("compartimento"))
+		        	{
+			        	esconderJanelas("win"+label);
+		        			
+		        		if ( winCenter.hasFellow("winCompartimento") )
+		        		{
+		        			winCenter.getFellowIfAny("winCompartimento").setVisible(winCenter.getFellowIfAny("winCompartimento").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winCompartimento = (Window) Executions.createComponents("/zk/ativo/compartimento.zul", 
+		        					winCenter, null);
+		        			winCompartimento.setId("winCompartimento");
+		        			winCompartimento.setClosable(true);
+		        			winCompartimento.setMinimizable(true);
+		        		}
+		        	}		
+		        	
+		        	if (label.equalsIgnoreCase("ativo"))
+		        	{
+		        		esconderJanelas("win"+label);
+		        		
+		        		if ( winCenter.hasFellow("winAtivo") )
+		        		{
+		        			winCenter.getFellowIfAny("winAtivo").setVisible(winCenter.getFellowIfAny("winAtivo").isVisible() ? false : true);
+		        		}
+		        		else
+		        		{
+		        			final Window winAtivo = (Window) Executions.createComponents("/zk/ativo/ativo.zul",
+		        					winCenter, null);
+		        			winAtivo.setId("winAtivo");
+		        			winAtivo.setClosable(true);
+		        			winAtivo.setMinimizable(true);
+		        		}
+		        	}
+		        	
+		        	if (label.equalsIgnoreCase("frota"))
+		        	{
+		        		esconderJanelas("win"+label);
+	        			
+		        		if ( winCenter.hasFellow("winFrota") )
+		        		{
+		        			winCenter.getFellowIfAny("winFrota").setVisible(winCenter.getFellowIfAny("winFrota").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winFrota = (Window) Executions.createComponents("/zk/supervisao/frota.zul", 
+		        					winCenter, null);
+		        			winFrota.setId("winFrota");
+		        			winFrota.setClosable(true);
+		        			winFrota.setMinimizable(true);
+		        		}
+		        	}
+		        	if (label.equalsIgnoreCase("supervisão"))
+		        	{
+						esconderJanelas("winSupervisao");
+	        			
+		        		if ( winCenter.hasFellow("winSupervisao") )
+		        		{
+		        			winCenter.getFellowIfAny("winSupervisao").setVisible(winCenter.getFellowIfAny("winSupervisao").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winSupervisao = (Window) Executions.createComponents("/zk/supervisao/supervisao.zul", 
+		        					winCenter, null);
+		        			winSupervisao.setId("winSupervisao");
+		        			winSupervisao.setClosable(true);
+		        			winSupervisao.setMinimizable(true);
+		        		}
+		        	}
+		        	if (label.equalsIgnoreCase("planos"))
+		        	{
+						esconderJanelas("winPlanoTrabalho");
+	        			
+		        		if ( winCenter.hasFellow("winPlanoTrabalho") )
+		        		{
+		        			winCenter.getFellowIfAny("winPlanoTrabalho").setVisible(winCenter.getFellowIfAny("winPlanoTrabalho").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winPlanoTrabalho = (Window) Executions.createComponents("/zk/amostra/planoTrabalho.zul", 
+		        					winCenter, null);
+		        			winPlanoTrabalho.setId("winPlanoTrabalho");
+		        			winPlanoTrabalho.setClosable(true);
+		        			winPlanoTrabalho.setMinimizable(true);
+		        		}
+		        	}
+		        	if (label.equalsIgnoreCase("óleo"))
+		        	{
+		        		esconderJanelas("winOleo");
+		        			
+		        		if ( winCenter.hasFellow("winOleo") )
+		        		{
+		        			winCenter.getFellowIfAny("winOleo").setVisible(winCenter.getFellowIfAny("winOleo").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winOleo = (Window) Executions.createComponents("/zk/ativo/oleo.zul", 
+		        					winCenter, null);
+		        			winOleo.setId("winOleo");
+		        			winOleo.setClosable(true);
+		        			winOleo.setMinimizable(true);
+		        		}
+		        	}
+		        	if (label.equalsIgnoreCase("Tipos de Coletas")) 
+		        	 {
+        		 		esconderJanelas("winTipoColeta");
+	        			
+		        		if ( winCenter.hasFellow("winTipoColeta") )
+		        		{
+		        			winCenter.getFellowIfAny("winTipoColeta").setVisible(winCenter.getFellowIfAny("winTipoColeta").isVisible() ? false : true);			
+		        		}
+		        		else
+		        		{
+		        			final Window winTipoColeta = (Window) Executions.createComponents("/zk/amostra/tipoColeta.zul", 
+		        					winCenter, null);
+		        			winTipoColeta.setId("winTipoColeta");
+		        			winTipoColeta.setClosable(true);
+		        			winTipoColeta.setMinimizable(true);
+		        		}
+		        	 }		        		 
+		         }	         
+		]]>
+	</zscript>	-->
+</zk>

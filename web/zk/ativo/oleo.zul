@@ -1,0 +1,119 @@
+<zk>
+	<window id="winOleo" title="Óleo" border="normal"
+			apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('ovm') @init('br.com.rti.alpha.viewModel.OleoVM')"
+			form="@id('fx') @load(ovm.selectedOleo) @save(ovm.selectedOleo, before='submit')">
+		<caption>
+			<button id="tbtnOleoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winOleo.setSizable(false); winOleo.doEmbedded(); self.setDisabled(true); tbtnOleoDesatrelar.setDisabled(false);"/>
+			<button id="tbtnOleoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winOleo.setSizable(true); 
+						winOleo.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnOleoAtrelar.setDisabled(false);
+						winOleo.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+			
+		<toolbar>
+			<toolbarbutton id="tbtnNovoOleo" tooltiptext="Incluir um novo Oleo" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Oleo ou suas alterações" disabled="@load(ovm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir o Oleo selecionado" disabled="@load(ovm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winOleo.detach()"/>
+			<!-- <toolbarbutton id="tbtnOleoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winOleo.setSizable(false); winOleo.doEmbedded(); self.setDisabled(true); tbtnOleoDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnOleoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winOleo.setSizable(true); 
+						winOleo.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnOleoAtrelar.setDisabled(false);
+						winOleo.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>-->
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<columnlayout>
+			<columnchildren hflex="2">
+				<grid>
+					<columns>
+						<column hflex="1" />
+						<column hflex="2" />
+					</columns>
+					<rows>
+						<row>
+							<label value="Referência"/>
+							<textbox placeholder="Informe a referência do óleo" constraint="no empty"
+									value="@bind(fx.referencia)" width="100%" disabled="@load(ovm.desativado)"/>
+						</row>
+						<row>
+							<label value="Fabricante"/>
+							<textbox placeholder="Informe o fabricante do óleo"
+									value="@bind(fx.fabricante)" width="100%" disabled="@load(ovm.desativado)"/>
+						</row>
+						<row>
+							<label value="Tendência de viscosidade"/>
+							<spinner placeholder="Informe o limite da tendência de viscosidade" step="5" constraint="min 0"
+									value="@bind(fx.tendenciaViscosidade)" width="100%" disabled="@load(ovm.desativado)"/>
+						</row>
+						<row>
+							<label value="Obs.:"/>
+							<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(ovm.desativado)"/>
+						</row>
+					</rows>
+				</grid>			
+			</columnchildren>
+			<!-- Coluna da foto -->
+			<columnchildren hflex="1" height="100%" style="margin: 0px 20px;">
+				<button id="btnOleoFoto" label="Localizar foto" disabled="@load(ovm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[
+								org.zkoss.util.media.Media media = event.getMedia();
+								if (media instanceof org.zkoss.image.Image)
+								{	
+									org.zkoss.zul.Image image = new org.zkoss.zul.Image();
+									image.setContent(((org.zkoss.image.Image)media));
+									//image.setHeight("100");
+									//image.setWidth("100");
+									//foto.setContent((org.zkoss.image.Image)image.getContent());
+									ogbFoto.setWidth(image.getWidth());
+									fotoOleo.setWidth(image.getWidth());
+									fotoOleo.setContent((org.zkoss.image.Image)media);
+								}
+								else
+								{
+									Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha",
+											Messagebox.OK, Messagebox.ERROR);
+									break;
+								}
+						]]>
+					</attribute>
+				</button>
+				<groupbox id="ogbFoto" closable="false" width="100%" >
+					<caption label="Foto" />
+					<image id="fotoOleo" height="130px" align="center"/>
+				</groupbox>				
+			</columnchildren>
+		</columnlayout>
+		
+	</window>
+</zk>

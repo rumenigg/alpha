@@ -1,0 +1,157 @@
+<zk>
+	<window id="winAtivo" title="Ativos" border="normal" 
+			apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('avm') @init('br.com.rti.alpha.viewModel.AtivoVM')"
+			form="@id('fx') @load(avm.selectedAtivo) @save(avm.selectedAtivo, before='submit')">
+		<caption>
+			<button id="tbtnAtivoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winAtivo.setSizable(false); winAtivo.doEmbedded(); self.setDisabled(true); tbtnAtivoDesatrelar.setDisabled(false);"/>
+			<button id="tbtnAtivoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winAtivo.setSizable(true); 
+						winAtivo.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnAtivoAtrelar.setDisabled(false);
+						winAtivo.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+		
+		<toolbar>
+			<toolbarbutton id="tbtnNovoAtivo" tooltiptext="Incluir um novo Ativo" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Ativo ou suas alterações" disabled="@load(avm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir o Ativo selecionado" disabled="@load(avm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winAtivo.detach()"/>
+			<!--  <toolbarbutton id="tbtnAtivoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winAtivo.setSizable(false); winAtivo.doEmbedded(); self.setDisabled(true); tbtnAtivoDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnAtivoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winAtivo.setSizable(true); 
+						winAtivo.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnAtivoAtrelar.setDisabled(false);
+						winAtivo.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>-->
+		</toolbar>
+		
+		<separator spacing="5"/>				
+
+		<columnlayout>
+			<columnchildren hflex="2">
+				<grid>
+					<columns>
+						<column hflex="1"/>
+						<column hflex="2"/>
+					</columns>
+					<rows>
+						<row>
+							<label value="TAG"/>
+							<textbox width="100%" placeholder="Digite a TAG do ativo" disabled="@load(avm.desativado)" 
+									value="@bind(fx.tag)" constraint="no empty"/>
+						</row>
+						<row>
+							<label value="Fabricante"/>
+							<textbox width="100%" placeholder="Informe o fabricante do ativo" disabled="@load(avm.desativado)" 
+									value="@bind(fx.fabricante)"/>
+						</row>								
+						<row>
+							<label value="Modelo"/>
+							<textbox width="100%" placeholder="Informe o modelo do ativo" disabled="@load(avm.desativado)" 
+									value="@bind(fx.modelo)"/>
+						</row>
+						<row>
+							<label value="Série"/>
+							<textbox width="100%" placeholder="Informe a série do ativo" disabled="@load(avm.desativado)" 
+									value="@bind(fx.serie)"/>
+						</row>
+						<row>
+							<label value="Data de Aquisição"/>
+							<datebox width="100%" placeholder="Forneça a data de aquisição doativo" disabled="@load(avm.desativado)" 
+									value="@bind(fx.dataAquisicao)"/>
+						</row>
+						<row>
+							<label value="Obs.:"/>
+							<textbox multiline="true" width="100%" rows="3" disabled="@load(avm.desativado)" 
+									value="@bind(fx.obs)"/>
+						</row>
+					</rows>
+				</grid>
+			</columnchildren>
+			<!-- Coluna da foto -->
+			<columnchildren hflex="1" height="100%" style="margin: 0px 20px;">
+				<button id="btnAtivoFoto" label="Localizar foto" disabled="@load(avm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[
+							org.zkoss.util.media.Media media = event.getMedia();
+							if (media instanceof org.zkoss.image.Image)
+							{	
+								org.zkoss.zul.Image image = new org.zkoss.zul.Image();
+								image.setContent(((org.zkoss.image.Image)media));
+								//image.setHeight("100");
+								//image.setWidth("100");
+								//foto.setContent((org.zkoss.image.Image)image.getContent());
+								agbFoto.setWidth(image.getWidth());
+								fotoAtivo.setWidth(image.getWidth());
+								fotoAtivo.setContent((org.zkoss.image.Image)media);
+							}
+							else
+							{
+								Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha",
+												Messagebox.OK, Messagebox.ERROR);
+								break;
+							}
+						]]>
+					</attribute>
+				</button>
+				<groupbox id="agbFoto" closable="false" width="100%" >
+					<caption label="Foto" />
+					<image id="fotoAtivo" height="200px" width="100%" style="overflow:auto" align="center"/>
+				</groupbox>				
+			</columnchildren>
+		</columnlayout>
+				
+		<groupbox closable="false" >
+			<caption label="Compartimentos"/>						
+			<hlayout height="100%" style="padding: 10px">							 
+				<listbox id="lbCompartimentoList" height="250px" width="280px" tooltiptext="Selecione os compartimentos que fazem parte desse Ativo"
+						disabled="@load(avm.desativado)" rows="5" />
+						
+				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
+							disabled="@load(avm.desativado)" /> -->
+					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
+							disabled="@load(avm.desativado)" onClick="@command('adicionarCompartimento')"/>
+					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
+							disabled="@load(avm.desativado)" onClick="@command('removerCompartimento')"/>
+				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
+							disabled="@load(avm.desativado)" /> -->
+				</vbox>
+													
+				<listbox id="lbAtivoCompartimentoList" height="250px" width="280px" disabled="@load(avm.desativado)" 
+						multiple="true">
+					<template name="model" var="a">
+						<listitem label="${a.tag}"/>
+					</template>		
+				</listbox>
+			</hlayout>
+		</groupbox>			
+				
+	</window>
+</zk>

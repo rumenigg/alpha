@@ -1,0 +1,24 @@
+<?page title="Projeto Alpha - Hydro" contentType="text/html;charset=UTF-8"?>
+
+<?link rel="shortcut icon" type="image/x-icon" href="/img/icon/hydro_favicon_32x32.ico"?>
+<?link rel="icon" type="image/x-icon" href="/img/ico/hydro_favicon_32x32.ico"?>
+
+<?component name="header" macroURI="/zk/header.zul" ?>
+<?component name="login" macroURI="/zk/login.zul" ?>
+
+<zk>
+	<div width="100%" height="90%">
+		<hbox width="100%" align="center" pack="center">
+			<image style="padding:20px" src="/img/hydro_64.png" visible="true">
+				<custom-attributes org.zkoss.zul.image.preload="true"/>
+			</image>
+			<div align="center" width="100%">
+				<label style="font-size:24px; color:#008BB6;font-weight:bold;">
+					Análise Proativa - Monitoramento de Resultados
+				</label>
+			</div>			
+		</hbox>
+		
+		<login width="100%" />										
+	</div>			
+</zk>

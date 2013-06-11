@@ -1,0 +1,65 @@
+<?page id="login" ?>
+
+<?component name="main" macroURI="/zk/principal.zul" ?>
+
+<zk>
+	<div width="100%" height="90%">
+		<main id="principalArea" visible="false" >
+			<attribute name="onExit">
+				<![CDATA[
+			         {
+		         		self.setVisible(false);
+		         		winlogin.setVisible(true);		         		
+			         }
+				]]>
+			</attribute>
+		</main>	
+		
+		<window id="winlogin" title="Login" border="none" width="300px" apply="br.com.rti.alpha.controle.Loging"
+				mode="overlapped" position="center">					
+			<grid>
+				<rows>
+					<row>		 	
+						<label value="Matrícula:"/>
+						<textbox id="matricula" width="100px" onFocus="msg.setVisible(false)"/>
+					</row>
+					<row>
+						<label value="Senha:"/>
+						<textbox id="senha" width="100px" type="password" onFocus="msg.setVisible(false)"/>					
+					</row>
+					<row spans="2" align="center">
+						<vlayout>
+							<button id="btnLogin" label="Entrar" width="80px" />						
+							<label id="msg" style="color:red;"/>
+						</vlayout>
+					</row>
+				</rows>
+			</grid>
+					
+					<!-- 
+					<zscript>
+					<![CDATA[
+	   					void login()
+	   					{
+		   					if (matricula.getValue().equalsIgnoreCase("ha0001") && senha.getValue().equalsIgnoreCase("alpha"))
+		  					{
+		   						//page.setAttribute("sucesso", true);
+		   						//String att2 = String.valueOf(desktop.getAttribute("sucesso"));				
+								//Messagebox.show(String.valueOf(page.getAttribute("sucesso")));
+								hboxlogin.setVisible(false);
+			  					//winlogin.setVisible(false);
+			  					princ.setVisible(true);	  								
+		   					}
+		   					else
+		   					{	
+		   						msg.setVisible(true);
+			   					msg.setValue("Matrícula ou senha incorreta, tente novamente!");
+			   					Clients.evalJavaScript("loginFaild()");
+		   					}		   					
+	   					}
+					]]>
+					</zscript> -->
+		</window>
+		<script type="text/javascript" src="/widgets/effects/login_effect/customized_effect.js" />
+	</div>
+</zk>

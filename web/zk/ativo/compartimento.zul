@@ -1,0 +1,148 @@
+<zk>
+	<window id="winCompartimento" title="Compartimentos" border="normal"
+			apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('cvm') @init('br.com.rti.alpha.viewModel.CompartimentoVM')"
+			form="@id('fx') @load(cvm.selectedCompartimento) @save(cvm.selectedCompartimento, before='submit')">
+		<caption>
+			<button id="tbtnCompartimentoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winCompartimento.setSizable(false); winCompartimento.doEmbedded(); self.setDisabled(true); tbtnCompartimentoDesatrelar.setDisabled(false);"/>
+			<button id="tbtnCompartimentoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winCompartimento.setSizable(true); 
+						winCompartimento.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnCompartimentoAtrelar.setDisabled(false);
+						winCompartimento.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+			
+		<toolbar>
+			<toolbarbutton id="tbtnNovoCompartimento" tooltiptext="Incluir um novo Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Compartimento ou suas alterações" disabled="@load(cvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir o Compartimento selecionado" disabled="@load(cvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winCompartimento.detach()"/>
+			<!-- <toolbarbutton id="tbtnCompartimentoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winCompartimento.setSizable(false); winCompartimento.doEmbedded(); self.setDisabled(true); tbtnCompartimentoDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnCompartimentoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winCompartimento.setSizable(true); 
+						winCompartimento.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnCompartimentoAtrelar.setDisabled(false);
+						winCompartimento.setPosition("center");
+					}
+				</attribute>
+			</toolbarbutton>	-->						
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<!-- Coluna dos campos -->
+		<columnlayout>
+			<columnchildren hflex="2">
+				<grid>
+					<columns>
+						<column width="30%"/>
+						<column width="60%"/>
+						<column width="10%"/>
+					</columns>
+					<rows>
+						<row>
+							<label value="Tipo de Compartimento" />
+							<combobox id="cbxTP" placeholder="Selecione um tipo de compartimento" autocomplete="true" constraint="no empty"
+										width="100%" autodrop="true" disabled="@load(cvm.desativado)"  
+										model="@load(cvm.allTipoCompartimento)" selectedItem="@bind(cvm.selectedTipoCompartimento)">
+								<template name="model" var="tp">
+									<comboitem label="@load(tp.descricao)" value="@load(tp.id)"/>
+								</template>								
+							</combobox>
+							<button tooltiptext="Adicionar um novo tipo de compartimento" disabled="@load(cvm.desativado)" 
+									image="/img/btn/page/gerenciar.png"	style="border:none; background:none;">
+								<attribute name="onClick">
+									<![CDATA[
+									   {
+											final Window winTipoCompartimento = (Window)Executions.createComponents("/zk/ativo/tipoCompartimento.zul", winCompartimento, null);
+											winTipoCompartimento.doModal();
+											winTipoCompartimento.setClosable(true);
+									   }
+									]]>
+								</attribute>
+							</button>
+						</row>
+						<row>
+							<label value="TAG"/>
+							<textbox placeholder="Informe a TAG do compartimento" width="100%" constraint="no empty"
+									value="@bind(fx.tag)" disabled="@load(cvm.desativado)" />
+						</row>
+						<row>
+							<label value="Fabricante"/>
+							<textbox placeholder="Informe o fabricante do compartimento" width="100%" 
+									value="@bind(fx.fabricante)" disabled="@load(cvm.desativado)" />							
+						</row>
+						<row>
+							<label value="Capacidade"/>
+							<doublespinner placeholder="Indique a capacidade (L) do compartimento" width="100%" step="5"
+									value="@bind(fx.capacidade)" constraint="min 0" disabled="@load(cvm.desativado)" />
+						</row>
+						<row>
+							<label value="Óleo"/>
+							<combobox id="cbxO" placeholder="Selecione um fluido para esse compartimento" width="100%"
+										model="@load(cvm.allOleo)" selectedItem="@bind(cvm.selectedOleo)" disabled="@load(cvm.desativado)" >
+								<template name="model" var="o">
+									<comboitem label="@load(o.referencia)" value="@load(o.id)"/>
+								</template>
+							
+							</combobox> 
+						</row>
+					</rows>
+				</grid>
+			</columnchildren>
+			<!-- Coluna da foto -->
+			<columnchildren hflex="1" height="100%" style="margin: 0px 20px;" >
+				<button id="btnCompartFoto" label="Localizar foto" disabled="@load(cvm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[
+								org.zkoss.util.media.Media media = event.getMedia();
+								if (media instanceof org.zkoss.image.Image)
+								{	
+									org.zkoss.zul.Image image = new org.zkoss.zul.Image();
+									image.setContent(((org.zkoss.image.Image)media));
+									//image.setHeight("100");
+									//image.setWidth("100");
+									//foto.setContent((org.zkoss.image.Image)image.getContent());
+									cgbFoto.setWidth(image.getWidth());
+									fotoCompartimento.setWidth(image.getWidth());
+									fotoCompartimento.setContent((org.zkoss.image.Image)media);
+								}
+								else
+								{
+									Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha",
+											Messagebox.OK, Messagebox.ERROR);
+									break;
+								}
+						]]>
+					</attribute>
+				</button>
+				<groupbox id="cgbFoto" closable="false" width="100%" >
+					<caption label="Foto" />
+					<image id="fotoCompartimento" height="120px" width="100%" style="overflow:auto" align="center"/>
+				</groupbox>				
+			</columnchildren>			
+		</columnlayout>
+	</window>
+</zk>

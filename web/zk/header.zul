@@ -1,0 +1,11 @@
+<zk>
+	<div>
+			<image style="position:relative; top:20; padding:20px 0px;" src="/img/hydro_64.png" visible="true">
+				<custom-attributes org.zkoss.zul.image.preload="true"/>
+			</image><!-- 
+			<label style="position:relative; top:70px; padding:0 250px; font-size:24px; color:#008BB6;font-weight:bold;">
+					Análise Proativa - Monitoramento de Resultados
+			</label>	-->
+		
+	</div>
+</zk>

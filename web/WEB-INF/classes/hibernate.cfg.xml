@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <!-- <session-factory name="hibernate/SessionFactory">
+	<property name="hibernate.connection.datasource">java:/comp/env/jdbc/alpha</property>
+	<property name="hibernate.current_session_context_class">thread</property>
+	<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+	<property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+	<property name="hibernate.jdbc.batch_size">0</property> -->
+ <session-factory>
+  <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+  <!-- <property name="hibernate.connection.url">jdbc:mysql://127.2.114.1/hydro_alpha</property>
+  <property name="hibernate.connection.username">rtiadmin</property>
+  <property name="hibernate.connection.password">ru3951323</property> -->
+  <property name="hibernate.connection.url">jdbc:mysql://localhost/hydro_alpha</property>
+  <property name="hibernate.connection.username">root</property>
+  <property name="hibernate.connection.password">root</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+  <property name="hibernate.show_sql">true</property>
+  <property name="hibernate.format_sql">true</property>
+  
+  <property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+  <!-- Enable Hibernate's automatic session context management> -->
+  <property name="current_session_context_class">thread</property>
+  <!-- Disable the second-level cache  -->
+  <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+  <!-- JDBC connection pool (use the built-in) > -->
+  <property name="connection.pool_size">10</property>
+  <!-- Echo all executed SQL to stdout > -->
+  <property name="show_sql">true</property>
+  <!-- Drop and re-create the database schema on startup> -->
+  <property name="hbm2ddl.auto">update</property>
+  <!-- Conection Pool > -->
+  <property name="hibernate.c3p0.acquire_increment">5</property>
+  <property name="hibernate.c3p0.idle_test_period">14400</property>
+  <property name="hibernate.c3p0.max_size">25</property>
+  <property name="hibernate.c3p0.min_size">5</property>
+  <property name="hibernate.c3p0.max_statements">0</property>
+  <property name="hibernate.c3p0.timeout">25200</property>
+  <!-- Mapping Classes Pacote Pessoa -->
+  <mapping class="br.com.rti.alpha.modelo.pessoa.Pessoa"/>
+  <mapping class="br.com.rti.alpha.modelo.pessoa.Funcao"/>
+  <mapping class="br.com.rti.alpha.modelo.ativo.Ativo"/>
+  <mapping class="br.com.rti.alpha.modelo.ativo.TipoCompartimento"/>
+  <mapping class="br.com.rti.alpha.modelo.ativo.Compartimento"/>
+  <mapping class="br.com.rti.alpha.modelo.ativo.Oleo"/>
+  <mapping class="br.com.rti.alpha.modelo.supervisao.Frota"/>
+  <mapping class="br.com.rti.alpha.modelo.supervisao.Supervisao"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.TipoColeta"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.PlanoTrabalho"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.Amostra"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.FotoAmostra"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.Analise"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.Elementos"/>
+ </session-factory>
+</hibernate-configuration>

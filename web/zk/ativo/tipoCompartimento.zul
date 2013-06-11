@@ -1,0 +1,34 @@
+<zk>
+	<window id="winTipoCompartimento" title="Tipos de Compartimento" border="normal" width="400px" apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('tcvm') @init('br.com.rti.alpha.viewModel.TipoCompartimentoVM')" onClose="self.detach(); pageScope.clear()">
+		<toolbar>
+			<toolbarbutton id="tbtnNovoTipoCompartimento" tooltiptext="Incluir um novo Tipo de Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+							onClick="@command('novo')"/>
+			<toolbarbutton tooltiptext="Salvar o novo Tipo de Compartimento ou suas alterações" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+							onClick="@command('submit')" disabled="@load(tcvm.desativado)"/>
+			<toolbarbutton tooltiptext="Excluir os dados do Tipo de Compartimento selecionado" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluir')" disabled="@load(tcvm.desativado)"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+							onClick="winTipoCompartimento.detach()"/>
+		</toolbar>
+		
+		<separator spacing="5"/>
+		<grid>
+			<rows>
+				<row>
+					<label value="Tipo de compartimento" />
+					<textbox id="txtTipoCompartimento" width="100%" value="@bind(tcvm.selectedTipoCompartimento.descricao)"
+							disabled="@load(tcvm.desativado)"/>
+				</row>
+			</rows>
+		</grid>
+	</window>
+</zk>

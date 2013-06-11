@@ -1,0 +1,168 @@
+<zk>
+	<window id="winPessoas" title="Pessoas" border="normal" apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('pvm') @init('br.com.rti.alpha.viewModel.PessoaVM')" onClose="self.detach(); pageScope.clear()" 
+			validationMessages="@id('vmsgs')"
+			form="@id('fx') @load(pvm.selectedPessoa) @save(pvm.selectedPessoa, before='submit') 
+				@validator('br.com.rti.alpha.controle.PessoaValidator', confirmarSenha=pvm.confirmarSenha)">
+
+		<caption>
+			<toolbarbutton id="tbtnPessoaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+					onClick="winPessoas.setSizable(false); winPessoas.doEmbedded(); self.setDisabled(true); tbtnPessoaDesatrelar.setDisabled(false);"/>
+			<button id="tbtnPessoaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png" >
+				<attribute name="onClick">
+					{
+						winPessoas.setSizable(true);
+						winPessoas.doOverlapped();
+						self.setDisabled(true);
+						tbtnPessoaAtrelar.setDisabled(false);
+						winPessoas.setPosition("center");
+					}					
+				</attribute>
+			</button>
+		</caption>
+		 	
+		<toolbar>
+			<toolbarbutton id="tbtnNovoPessoa" tooltiptext="Incluir uma nova Pessoa" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png"
+							onClick="@command('novoRegistro')"/>
+			<toolbarbutton tooltiptext="Salvar a nova Pessoa ou suas alterações" disabled="@load(pvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+						   	onClick="@command('submit')"/>
+			<toolbarbutton tooltiptext="Excluir os dados da Pessoa selecionada" disabled="@load(pvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+							onClick="@command('excluirRegistro')"/>
+			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+							onClick="@command('navegar', acao='primeiro')"/>
+			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+							onClick="@command('navegar', acao='anterior')"/>			
+			<toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+							onClick="@command('navegar', acao='proximo')"/>
+			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+							onClick="@command('navegar', acao='ultimo')"/>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" onClick="winPessoas.detach(); pageScope.clear()"/>
+			<!-- <toolbarbutton id="tbtnPessoaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+							onClick="winPessoas.setSizable(false); winPessoas.doEmbedded(); self.setDisabled(true); tbtnPessoaDesatrelar.setDisabled(false);"/>
+			<toolbarbutton id="tbtnPessoaDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+				<attribute name="onClick">
+					{
+						winPessoas.setSizable(true);
+						winPessoas.doOverlapped();
+						self.setDisabled(true);
+						tbtnPessoaAtrelar.setDisabled(false);
+						winPessoas.setPosition("center");
+					}					
+				</attribute>
+			</toolbarbutton> -->
+							 
+		</toolbar>
+		
+		<separator spacing="5"/>		
+		<columnlayout>
+			<columnchildren hflex="2">
+				<grid id="camposCol" >
+					<columns>
+						<column width="30%"/>
+						<column width="65%"/>
+						<column width="10%"/>								
+					</columns>
+					<rows>
+						<row>
+							<label value="Matrícula" />
+							<textbox id="txtMatricula" width="100%" placeholder="Digite a matrícula" constraint="no empty"
+									 value="@bind(fx.matricula)" disabled="@load(pvm.desativado)"/>					
+						</row>
+						<row>
+							<label value="Nome"/>
+							<textbox id="txtNome" width="100%" placeholder="Digite o nome" constraint="no empty"
+									 value="@bind(fx.nome)" disabled="@load(pvm.desativado)"/>
+						</row>
+						<row>									
+							<label value="Função"/>																		
+							<combobox id="cbxFuncao" width="100%" autocomplete="true" placeholder="Selecione uma função"  autodrop="true"
+										model="@load(pvm.allFuncao)" selectedItem="@bind(pvm.selectedFuncao)" disabled="@load(pvm.desativado)">
+								<template name="model" var="f1">
+									<comboitem label="@load(f1.funcao)" value="@load(f1.id)"/>
+									<!-- <comboitem self="@{each='item'}" label="@{item.funcao}" value="@{item.id}" /> -->
+								</template>																						
+							</combobox>
+							<button tooltiptext="Gerenciar as Funções" disabled="@load(pvm.desativado)" image="/img/btn/page/gerenciar.png"
+									style="border:none; background:none;">
+								<attribute name="onClick">
+									<![CDATA[
+										{
+											final Window winFuncao = (Window)Executions.createComponents(
+									    			"/zk/funcao.zul", winPessoas, null);;
+											
+									    	winFuncao.doModal();
+									    	winFuncao.setClosable(true);
+									    }
+									]]>
+								</attribute>
+							</button>																		
+						</row>
+						<row>
+							<label value="Supervisão" />
+							<combobox id="cbxSupervisao" width="100%" placeholder="Selecione uma supervisão" disabled="@load(pvm.desativado)"
+									autocomplete="true" autodrop="true" model="@load(pvm.allSupervisao)" selectedItem="@bind(pvm.selectedSupervisao)">
+								<template name="model" var="s">
+									<comboitem label="@load(s.descricao)" value="@load(s.id)" />
+								</template>
+							</combobox>					
+						</row>
+						<row>
+							<label value="e-Mail" />
+							<textbox id="txtEMail" width="100%" placeholder="Digite seu e-mail para futuros contatos" 
+									 value="@bind(fx.email)" disabled="@load(pvm.desativado)"
+									 constraint="no empty, /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*([,;]\s*\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*)*/: Por favor, insira um endereço de e-mail correto" />
+						</row>
+						<row>
+							<label value="Senha" />
+							<textbox id="txtSenha" type="password" width="100%" placeholder="Forneça uma senha para usar o sistema" 
+									 constraint="no empty" value="@bind(fx.senha)" disabled="@load(pvm.desativado)"/>																										
+						</row>
+						<row>
+							<label value="Confirmar Senha" />
+							<textbox id="txtCSenha" type="password" width="100%" placeholder="Insira a senha novamente" 
+									 constraint="no empty" value="@bind(pvm.confirmarSenha)" disabled="@load(pvm.desativado)"> 
+																	
+							</textbox>									
+						</row>
+						<row spans="2" align="center" visible="@load(empty vmsgs ? false : true)">
+							<label id="msg" value="@load(vmsgs['senha'])" style="color: red"/>
+						</row>
+					</rows>							
+				</grid>		
+			</columnchildren>	
+					
+			<columnchildren hflex="1" height="100%" style="margin: 0px 20px;">					
+				<button id="btnFoto" label="Localizar foto" disabled="@load(pvm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[								    
+							org.zkoss.util.media.Media media = event.getMedia();
+							if (media instanceof org.zkoss.image.Image)
+							{	
+								org.zkoss.zul.Image image = new org.zkoss.zul.Image();										
+								image.setContent(((org.zkoss.image.Image)media));
+								//image.setHeight("100");
+								//image.setWidth("100");										
+								//foto.setContent((org.zkoss.image.Image)image.getContent());
+								gbFoto.setWidth(image.getWidth());
+								foto.setWidth(image.getWidth());								
+								foto.setContent((org.zkoss.image.Image)media);								
+							}
+							else
+							{
+								Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha", 
+										Messagebox.OK, Messagebox.ERROR);
+								break;
+							}
+						]]>					
+					</attribute>
+				</button>
+				<groupbox id="gbFoto" closable="false" width="100%" >								
+					<caption label="Foto" />
+					<image id="foto" height="185px" width="100%" style="overflow:auto" align="center" />
+				</groupbox>													
+				<!-- </panelchildren>
+			</panel> -->
+			</columnchildren>
+		</columnlayout>
+	</window>		
+</zk>

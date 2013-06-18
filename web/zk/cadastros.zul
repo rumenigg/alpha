@@ -14,49 +14,55 @@
 				<tabs>					
 					<tab id="tabPessoa" label="Pessoas" onClick="@command('showCenterWindow', aba=self.getLabel())" selected="false" sclass="myAccordion" >		
 						<caption label="Pessoas">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Pessoas" 
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Pessoas" 
 									onClick="@command('atualizaPessoa') @global-command('atualizaPessoa')" style="border:none; background:none"/>
 						</caption>
+					</tab>	
+					<tab id="tabTipoCompartimento" label="Tipos de Compartimentos" onClick="@command('showCenterWindow',aba=self.getLabel())" selected="false" sclass="myAccordion">
+						<caption label="Tipos de Compartimentos">
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Tipos de Compartimentos"
+									onClick="@command('atualizaCompartimento') @global-command('atualizaAllTipoCompartimento')" style="border:none; background:none"/>
+						</caption> 
 					</tab>											
 					<tab id="tabCompartimento" label="Compartimento" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Compartimentos">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Compartimentos"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Compartimentos"
 									onClick="@command('atualizaCompartimento') @global-command('atualizaAllCompartimento')" style="border:none; background:none"/>
 						</caption>
 					</tab>					
 					<tab id="tabAtivo" label="Ativo" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Ativos">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Ativos"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Ativos"
 									onClick="@command('atualizaAtivo') @global-command('atualizaAllAtivo')" style="border:none; background:none"/>
 						</caption>
 					</tab>					
 					<tab id="tabFrota" label="Frota" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Frotas">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Frotas"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Frotas"
 									onClick="@command('atualizaFrota') @global-command('atualizaAllFrota')" style="border:none; background:none"/>
 						</caption>
 					</tab>					
 					<tab id="tabSupervisao" label="Supervisão" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Supervisões">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Supervisões"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista das Supervisões"
 									onClick="@command('atualizaSupervisao') @global-command('atualizaSupervisao')" style="border:none; background:none"/>
 						</caption>
 					</tab>					
 					<tab id="tabPlano" label="Planos" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Planos">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Planos"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Planos"
 									onClick="@command('atualizaPlanoTrabalho') @global-command('atualizarPlanoTrabalho')" style="border:none; background:none"/>
 						</caption>
 					</tab>						
 					<tab id="tabOleo" label="Óleo" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Óleos">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Pessoas"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Pessoas"
 									onClick="@command('atualizaOleo') @global-command('atualizaAllOleo')" style="border:none; background:none"/>
 						</caption>
 					</tab>						
 					<tab id="tabTipoColeta" label="Tipos de Coletas" onClick="@command('showCenterWindow', aba=self.getLabel())" sclass="myAccordion">
 						<caption label="Tipos de Coletas">													
-							<button height="26px" src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Tipos de Coletas"
+							<button src="/img/btn/page/atualizar-16.png" tooltiptext="Atualizar a lista dos Tipos de Coletas"
 									onClick="@command('atualizaTipoColeta') @global-command('atualizarTipoColeta')" style="border:none; background:none"/>
 						</caption>
 					</tab>						
@@ -70,6 +76,14 @@
 								<listitem label="@load(p.nome)" value="@load(p.id)" />
 							</template>
 						</listbox>				
+					</tabpanel>
+					<tabpanel fulfill="tabTipoCompartimento.onClick" onFulfill="@command('atualizaTipoCompartimento')">
+						<listbox rows="5" model="@load(cvm.allTipoCompartimento)" selectedItem="@bind(cvm.selectedTipoCompartimento)"
+								onSelect="@command('showSelectedItem', tipoItem='tipoCompartimento')">
+							<template name="model" var="tcom">
+								<listitem label="@load(tcom.descricao)" value="@load(tcom.id)"/>
+							</template>
+						</listbox>
 					</tabpanel>
 					<tabpanel >
 						<listbox id="lbCompartimento" rows="5" selectedItem="@bind(cvm.selectedCompartimento)"

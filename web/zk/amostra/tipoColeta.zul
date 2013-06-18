@@ -57,15 +57,15 @@
 			<grid>
 				<columns>
 					<column hflex="1" />
-					<column hflex="2" />
+					<column hflex="4" />
 				</columns>
 				<rows>
-					<row>
+					<row align="right">
 						<label value="Descricao"/>
 						<textbox placeholder="Informe o tipo de coleta" width="100%" 
 									value="@bind(fx.descricao)" constraint="no empty" disabled="@load(tcvm.desativado)" />
 					</row>
-					<row>
+					<row align="right">
 						<label value="Obs.:"/>
 						<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(tcvm.desativado)"/>
 					</row>

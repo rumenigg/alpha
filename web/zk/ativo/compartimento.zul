@@ -62,7 +62,7 @@
 						<column width="10%"/>
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="Tipo de Compartimento" />
 							<combobox id="cbxTP" placeholder="Selecione um tipo de compartimento" autocomplete="true" constraint="no empty"
 										width="100%" autodrop="true" disabled="@load(cvm.desativado)"  
@@ -84,22 +84,22 @@
 								</attribute>
 							</button>
 						</row>
-						<row>
+						<row align="right">
 							<label value="TAG"/>
 							<textbox placeholder="Informe a TAG do compartimento" width="100%" constraint="no empty"
 									value="@bind(fx.tag)" disabled="@load(cvm.desativado)" />
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox placeholder="Informe o fabricante do compartimento" width="100%" 
 									value="@bind(fx.fabricante)" disabled="@load(cvm.desativado)" />							
 						</row>
-						<row>
+						<row align="right">
 							<label value="Capacidade"/>
 							<doublespinner placeholder="Indique a capacidade (L) do compartimento" width="100%" step="5"
 									value="@bind(fx.capacidade)" constraint="min 0" disabled="@load(cvm.desativado)" />
 						</row>
-						<row>
+						<row align="right">
 							<label value="Óleo"/>
 							<combobox id="cbxO" placeholder="Selecione um fluido para esse compartimento" width="100%"
 										model="@load(cvm.allOleo)" selectedItem="@bind(cvm.selectedOleo)" disabled="@load(cvm.desativado)" >

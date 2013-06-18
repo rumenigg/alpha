@@ -57,15 +57,15 @@
 			<grid>
 				<columns>
 					<column hflex="1" />
-					<column hflex="2" />
+					<column hflex="4" />
 				</columns>
 				<rows>
-					<row>
+					<row align="right">
 						<label value="Plano de trabalho"/>
 						<spinner placeholder="Indique o plano de trabalho" width="100%" step="5"
 									value="@bind(fx.plano)" constraint="min 0, no empty" disabled="@load(ptvm.desativado)" />
 					</row>
-					<row>
+					<row align="right">
 						<label value="Obs.:"/>
 						<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(ptvm.desativado)"/>
 					</row>

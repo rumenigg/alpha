@@ -1,18 +1,19 @@
 package br.com.rti.alpha.viewModel;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
@@ -26,6 +27,7 @@ import org.zkoss.zul.Toolbarbutton;
 
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
+import br.com.rti.alpha.modelo.amostra.Elementos;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.ativo.TipoCompartimento;
 
@@ -35,9 +37,12 @@ public class TipoCompartimentoVM
 	private Toolbarbutton tbtnNovoTipoCompartimento;
 	
 	private List<TipoCompartimento> allTipoCompartimento;
-	private TipoCompartimento selectedTipoCompartimento;
+	private TipoCompartimento selectedTipoCompartimento;	
 	
 	private List<Compartimento> allCompartimento;
+	
+	private List<Elementos> allElementos;
+	private Elementos selectedElementos;
 	
 	private boolean desativado = true;
 	
@@ -63,13 +68,24 @@ public class TipoCompartimentoVM
 	public void setDesativado(boolean desativado)
 	{
 		this.desativado = desativado;
+	}	
+	public List<Elementos> getAllElementos() {
+		return allElementos;
 	}
-	
+	public void setAllElementos(List<Elementos> allElementos) {
+		this.allElementos = allElementos;
+	}
+	public Elementos getSelectedElementos() {
+		return selectedElementos;
+	}
+	public void setSelectedElementos(Elementos selectedElementos) {
+		this.selectedElementos = selectedElementos;
+	}
 	@Init
 	public void init()
 	{
 		this.selectedTipoCompartimento = new TipoCompartimento();
-		this.atualiza();
+		this.atualizaAllTipoCompartimento();
 	}
 	
 	@AfterCompose
@@ -81,8 +97,9 @@ public class TipoCompartimentoVM
 		Clients.showNotification("Clique aqui para adicionar um novo Tipo de Compartimento", "info", this.tbtnNovoTipoCompartimento, "end_center", 3000);
 	}
 	
+	@GlobalCommand
 	@NotifyChange("allTipoCompartimento")
-	public void atualiza()
+	public void atualizaAllTipoCompartimento()
 	{
 		this.allTipoCompartimento = null;
 		
@@ -101,6 +118,17 @@ public class TipoCompartimentoVM
 		//daof.close();
 	}
 	
+	public void atualizaElementos()
+	{
+		this.allElementos = null;
+		DaoFactory daof = new DaoFactory();
+		daof.beginTransaction();
+		
+		this.allElementos = daof.getElementosDAO().listaTudo();
+		
+		daof = null;
+	}
+	
 	@Command
 	@NotifyChange({"selectedTipoCompartimento","desativado"})
 	public void novo()
@@ -108,6 +136,9 @@ public class TipoCompartimentoVM
 		this.desativado = false;
 		this.selectedTipoCompartimento = null;
 		this.selectedTipoCompartimento = new TipoCompartimento();
+		
+		this.selectedElementos = null;
+		this.selectedElementos = new Elementos();
 	}
 	
 	@Command
@@ -119,7 +150,11 @@ public class TipoCompartimentoVM
 			DaoFactory daof = new DaoFactory();
 			daof.beginTransaction();
 			
+			daof.getElementosDAO().adiciona(this.selectedElementos);
+			this.selectedTipoCompartimento.setElementos(this.selectedElementos);			
+						
 			daof.getTipoCompartimentoDAO().adiciona(this.selectedTipoCompartimento);
+			
 			daof.commit();
 			
 			Messagebox.show("O tipo de compartimento " + this.selectedTipoCompartimento.getDescricao().toUpperCase() + 
@@ -129,7 +164,8 @@ public class TipoCompartimentoVM
 			this.atualizaBindComponent("atualizaCompartimentoLists", "atualizaCompartimentoLists", this.selectedTipoCompartimento);
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedTipoCompartimento);
-			this.atualiza();
+			this.atualizaAllTipoCompartimento();
+			this.atualizaElementos();
 		}
 		catch(Exception e)
 		{
@@ -179,7 +215,7 @@ public class TipoCompartimentoVM
 											atualizaBindComponent("atualizaCompartimentoLists", "atualizaCompartimentoLists", selectedTipoCompartimento);
 											//Atualiza a lista na aba Compartimento na janela de Cadastros;
 											atualizaBindComponent("atualizaListas", "atualizaListas", selectedTipoCompartimento);
-											atualiza();
+											atualizaAllTipoCompartimento();
 										}
 										catch (Exception e)
 										{
@@ -259,5 +295,19 @@ public class TipoCompartimentoVM
 		Map args = new HashMap();
 		args.put(bindingParam, obj);
 		BindUtils.postGlobalCommand(null, null, metodo, args);
+	}
+	
+	@GlobalCommand
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
+	public void showSelectedTipoCompartimentoItem(@BindingParam("showSelectedTipoCompartimentoItem") int i ) throws IOException
+	{
+		this.desativado = false;
+		
+		this.selectedTipoCompartimento = null;
+		//this.selectedPessoa = selectedPessoa;
+		
+		this.selectedTipoCompartimento = this.allTipoCompartimento.get( this.navegador = i );
+		
+		this.selectedElementos = this.selectedTipoCompartimento.getElementos();		
 	}
 }

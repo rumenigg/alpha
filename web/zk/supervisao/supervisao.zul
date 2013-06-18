@@ -56,10 +56,10 @@
 			<grid width="100%" >
 				<columns>
 					<column hflex="1"/>
-					<column hflex="2"/>
+					<column hflex="4"/>
 				</columns>
 				<rows>
-					<row>
+					<row align="right">
 						<label value="Responsável" />
 						<combobox id="cbxResponsavel" width="100%" placeholder="Selecione o responsável pela supervisão" model="@load(svm.allPessoa)"								 
 								selectedItem="@bind(svm.selectedPessoa)" onSelect="@command('verificarResponsavel')" constraint="no empty" 
@@ -69,16 +69,16 @@
 							</template>		
 						</combobox>
 					</row>
-					<row>
+					<row align="right">
 						<label value="Descrição" />
 						<textbox width="100%" placeholder="Informe a descrição da Supervisão" constraint="no empty" value="@bind(fx.descricao)"
 								disabled="@load(svm.desativado)"/>
 					</row>
-					<row>
+					<row align="right">
 						<label value="Local" />
 						<textbox width="100%" placeholder="Forneça o local da supervisão" value="@bind(fx.local)" disabled="@load(svm.desativado)"/>
 					</row>
-					<row>
+					<row align="right">
 						<label value="Obs.:" />
 						<textbox width="100%" multiline="true" rows="3" value="@bind(fx.obs)" disabled="@load(svm.desativado)" />
 					</row>

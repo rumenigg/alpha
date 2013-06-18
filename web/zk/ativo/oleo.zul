@@ -60,22 +60,22 @@
 						<column hflex="2" />
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="Referência"/>
 							<textbox placeholder="Informe a referência do óleo" constraint="no empty"
 									value="@bind(fx.referencia)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox placeholder="Informe o fabricante do óleo"
 									value="@bind(fx.fabricante)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Tendência de viscosidade"/>
 							<spinner placeholder="Informe o limite da tendência de viscosidade" step="5" constraint="min 0"
 									value="@bind(fx.tendenciaViscosidade)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Obs.:"/>
 							<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(ovm.desativado)"/>
 						</row>

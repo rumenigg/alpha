@@ -60,12 +60,12 @@
 						<column hflex="2"/>
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="Identificação"/>
 							<textbox placeholder="Informe a identificação da frota" width="100%" value="@bind(fx.descricao)" constraint="no empty"
 									disabled="@load(fvm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Responsável" />
 							<combobox id="cbxPessoa" placeholder="Selecione o responsável pela frota" width="100%" autocomplete="true" autodrop="true" 
 										constraint="no empty" disabled="@load(fvm.desativado)" model="@load(fvm.allPessoa)" selectedItem="@bind(fvm.selectedPessoa)">
@@ -74,7 +74,7 @@
 										</template>
 							</combobox>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Obs.:"/>
 							<textbox width="100%" multiline="true" rows="3" disabled="@load(fvm.desativado)" value="@bind(fx.obs)" />
 						</row>

@@ -61,32 +61,32 @@
 						<column hflex="2"/>
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="TAG"/>
 							<textbox width="100%" placeholder="Digite a TAG do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.tag)" constraint="no empty"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox width="100%" placeholder="Informe o fabricante do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.fabricante)"/>
 						</row>								
-						<row>
+						<row align="right">
 							<label value="Modelo"/>
 							<textbox width="100%" placeholder="Informe o modelo do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.modelo)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Série"/>
 							<textbox width="100%" placeholder="Informe a série do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.serie)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Data de Aquisição"/>
 							<datebox width="100%" placeholder="Forneça a data de aquisição doativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.dataAquisicao)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Obs.:"/>
 							<textbox multiline="true" width="100%" rows="3" disabled="@load(avm.desativado)" 
 									value="@bind(fx.obs)"/>

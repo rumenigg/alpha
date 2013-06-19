@@ -79,6 +79,7 @@
 											final Window winTipoCompartimento = (Window)Executions.createComponents("/zk/ativo/tipoCompartimento.zul", winCompartimento, null);
 											winTipoCompartimento.doModal();
 											winTipoCompartimento.setClosable(true);
+											winTipoCompartimento.setWidth("750px");
 									   }
 									]]>
 								</attribute>

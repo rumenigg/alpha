@@ -19,6 +19,8 @@
 			</button>
 		</caption>
 		
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoSupervisao" tooltiptext="Incluir uma nova Supervisão" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
@@ -99,13 +101,13 @@
 					</template>							
 				</listbox>
 				
-				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<vbox width="40px" style="margin: 40px 5px">
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
 							disabled="@load(svm.desativado)" /> -->
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
-							disabled="@load(svm.desativado)" onClick="@command('adicionarFrota')"/>
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
-							disabled="@load(svm.desativado)" onClick="@command('removerFrota')"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/adicionar-um_azul.png"
+							onClick="@command('adicionarFrota')" sclass="icon"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/remover-um_azul.png"
+							onClick="@command('removerFrota')" sclass="icon"/>
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
 							disabled="@load(svm.desativado)" /> -->
 				</vbox>

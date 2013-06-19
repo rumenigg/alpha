@@ -225,34 +225,7 @@
 												</button>											
 												<button label="Remover foto(s)" mold="trendy"
 												onClick="@command('removerFotos')" disabled="@load(avm.desativado)"/>
-												
-												<!-- <groupbox id="gbAmostraFoto" closable="false" width="100%" >								
-													<caption label="Foto(s)" />
-													<hlayout id="amostraFoto" height="100px" width="100%" style="overflow:auto" />
-												</groupbox>-->
 											</caption>
-											<zscript>
-												<![CDATA[											     
-										    		 public void removerFoto()
-										    		 {		
-														for ( int i = 0; i < amostraFoto.getChildren().size(); i++ )
-														{								
-															if ( amostraFoto.getChildren().get(i) instanceof Checkbox )
-															{
-																Checkbox c = (Checkbox) amostraFoto.getChildren().get(i);
-																if ( c.isChecked() )
-																{																	
-																	amostraFoto.getChildren().get(i).detach();
-																	amostraFoto.getChildren().get(i-1).detach();
-																	removerFoto();
-																}
-															}
-														}
-														if (amostraFoto.getChildren().isEmpty())
-										    				amostraFoto.setHeight("70px");
-													}
-												]]>
-												</zscript>
 											
 											<hlayout id="amostraFoto" height="70px" width="100%" style="overflow:auto" sclass="icon"/>
 										</groupbox>

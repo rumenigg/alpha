@@ -20,6 +20,8 @@
 			</button>
 		</caption>
 		
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoTipoColeta" tooltiptext="Incluir um novo Tipo de Coleta" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
@@ -86,13 +88,13 @@
 					</template>							
 				</listbox>
 				
-				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<vbox width="40px" style="margin: 40px 5px">
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
 							disabled="@load(tcvm.desativado)" /> -->
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
-							disabled="@load(tcvm.desativado)" onClick="@command('adicionarPlano')"/>
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
-							disabled="@load(tcvm.desativado)" onClick="@command('removerPlano')"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/adicionar-um_azul.png"
+							onClick="@command('adicionarPlano')" sclass="icon"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/remover-um_azul.png"
+							onClick="@command('removerPlano')" sclass="icon"/>
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
 							disabled="@load(tcvm.desativado)" /> -->
 				</vbox>

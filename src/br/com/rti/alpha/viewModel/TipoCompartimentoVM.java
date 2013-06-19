@@ -75,11 +75,19 @@ public class TipoCompartimentoVM
 	public void setAllElementos(List<Elementos> allElementos) {
 		this.allElementos = allElementos;
 	}
-	public Elementos getSelectedElementos() {
+	public Elementos getSelectedElementos() {		
 		return selectedElementos;
 	}
 	public void setSelectedElementos(Elementos selectedElementos) {
 		this.selectedElementos = selectedElementos;
+	}
+	@Command
+	public void carregarElementos()
+	{
+		if ( this.selectedElementos == null )
+		{
+			this.selectedElementos = new Elementos();
+		}
 	}
 	@Init
 	public void init()
@@ -130,7 +138,7 @@ public class TipoCompartimentoVM
 	}
 	
 	@Command
-	@NotifyChange({"selectedTipoCompartimento","desativado"})
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
 	public void novo()
 	{
 		this.desativado = false;
@@ -138,7 +146,7 @@ public class TipoCompartimentoVM
 		this.selectedTipoCompartimento = new TipoCompartimento();
 		
 		this.selectedElementos = null;
-		this.selectedElementos = new Elementos();
+		//this.selectedElementos = new Elementos();
 	}
 	
 	@Command
@@ -150,8 +158,11 @@ public class TipoCompartimentoVM
 			DaoFactory daof = new DaoFactory();
 			daof.beginTransaction();
 			
-			daof.getElementosDAO().adiciona(this.selectedElementos);
-			this.selectedTipoCompartimento.setElementos(this.selectedElementos);			
+			if ( this.selectedElementos != null )
+			{
+				daof.getElementosDAO().adiciona(this.selectedElementos);
+				this.selectedTipoCompartimento.setElementos(this.selectedElementos);
+			}
 						
 			daof.getTipoCompartimentoDAO().adiciona(this.selectedTipoCompartimento);
 			
@@ -253,7 +264,7 @@ public class TipoCompartimentoVM
 	}
 	
 	@Command
-	@NotifyChange({"selectedTipoCompartimento","desativado"})
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
 	public void navegar(@BindingParam("acao") String acao)
 	{	
 		this.desativado = false;
@@ -262,14 +273,14 @@ public class TipoCompartimentoVM
 		if ( !this.allTipoCompartimento.isEmpty() ){
 		if ( acao.equals("primeiro") )
 		{
-			this.selectedTipoCompartimento = this.allTipoCompartimento.get(this.navegador = 0);
+			this.showSelectedTipoCompartimentoItem(this.navegador = 0);
 		}
 		
 		if ( acao.equals("anterior") )
 		{
 			if ( this.navegador > 0 )
 			{
-				this.selectedTipoCompartimento = this.allTipoCompartimento.get(--this.navegador);
+				this.showSelectedTipoCompartimentoItem(--this.navegador);
 			}
 			else this.navegar("primeiro");
 		}
@@ -278,14 +289,14 @@ public class TipoCompartimentoVM
 		{
 			if ( this.navegador < this.allTipoCompartimento.size()-1 )
 			{
-				this.selectedTipoCompartimento = this.allTipoCompartimento.get(++this.navegador);
+				this.showSelectedTipoCompartimentoItem(++this.navegador);
 			}
 			else this.navegar("ultimo");
 		}
 		
 		if ( acao.equals("ultimo") )
 		{
-			this.selectedTipoCompartimento = this.allTipoCompartimento.get(this.navegador = this.allTipoCompartimento.size()-1);
+			this.showSelectedTipoCompartimentoItem(this.navegador = this.allTipoCompartimento.size()-1);
 		}}
 	}
 	
@@ -299,7 +310,7 @@ public class TipoCompartimentoVM
 	
 	@GlobalCommand
 	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
-	public void showSelectedTipoCompartimentoItem(@BindingParam("showSelectedTipoCompartimentoItem") int i ) throws IOException
+	public void showSelectedTipoCompartimentoItem(@BindingParam("showSelectedTipoCompartimentoItem") int i )
 	{
 		this.desativado = false;
 		

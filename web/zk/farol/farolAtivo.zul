@@ -1,7 +1,11 @@
 <?page title="" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window title="Portal Hydro - Farol" apply="org.zkoss.bind.BindComposer" width="75%" closable="true" sizable="true" maximizable="true"
+	<window id="winFarolAtivos" title="Portal Hydro - Farol" apply="org.zkoss.bind.BindComposer" width="75%" closable="true" sizable="true" maximizable="true"
 		viewModel="@id('favm') @init('br.com.rti.alpha.viewModel.FarolAtivoVM')" mode="modal" position="center">
+		
+		<toolbar>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" onClick="winFarolAtivos.detach(); pageScope.clear()"/>
+		</toolbar>
 		
 		<separator spacing="10px"/>
 		

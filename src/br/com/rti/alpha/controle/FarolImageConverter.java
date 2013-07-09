@@ -16,7 +16,7 @@ import br.com.rti.alpha.modelo.supervisao.Supervisao;
 
 public class FarolImageConverter implements Converter
 {
-	
+	private boolean compartimento = false;
 
 	@Override
 	public Object coerceToBean(Object arg0, Component arg1, BindContext arg2) {
@@ -34,17 +34,31 @@ public class FarolImageConverter implements Converter
 		
 		String resultado = verificarFarol(objeto, id);
 		
-		if ( resultado.equals("semamostra") || resultado.equals("semanalise") )
-			src = "/img/farol/farol-desligado.png";		
-		else 
-			if ( resultado.equalsIgnoreCase("normal") )
-				src = "/img/farol/farol-aceso_verde-l.png";
+		if ( !compartimento )
+		{
+			if ( resultado.equals("semamostra") || resultado.equals("semanalise") )
+				src = "/img/farol/farol-desligado.png";		
+			else 
+				if ( resultado.equalsIgnoreCase("normal") )
+					src = "/img/farol/farol-aceso_verde-l.png";
+				else
+					if ( resultado.equalsIgnoreCase("anormal") )
+						src = "/img/farol/farol-aceso_amarelo-l.png";
+					else		
+						if ( resultado.equalsIgnoreCase("critico") )
+							src = "/img/farol/farol-aceso_vermelho-l.png";
+		}
+		else
+		{
+			if ( resultado.equals("semamostra") || resultado.equals("semanalise") || resultado.equalsIgnoreCase("normal") )
+				src = "/img/farol/farol_verde.png";
 			else
 				if ( resultado.equalsIgnoreCase("anormal") )
-					src = "/img/farol/farol-aceso_amarelo-l.png";
+					src = "/img/farol/farol_amarelo.png";
 				else		
 					if ( resultado.equalsIgnoreCase("critico") )
-						src = "/img/farol/farol-aceso_vermelho-l.png";
+						src = "/img/farol/farol_vermelho.png";
+		}
 	
 		//System.out.println("\n--> Resultado: " + resultado);
 		//System.out.println("\n--> Image Src: " + src);
@@ -222,6 +236,7 @@ public class FarolImageConverter implements Converter
 						}							
 					else
 					{
+						this.compartimento = true;
 						if ( amostra.getVistoriado() != null)
 						{
 							if (amostra.getVistoriado().equals("s") )

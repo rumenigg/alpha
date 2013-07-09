@@ -1,7 +1,11 @@
 <?page title="" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window title="Portal Hydro - Farol" apply="org.zkoss.bind.BindComposer" width="75%" closable="true" sizable="true" maximizable="true"
+	<window id="winFarolFrotas" title="Portal Hydro - Farol" apply="org.zkoss.bind.BindComposer" width="75%" closable="true" sizable="true" maximizable="true"
 		viewModel="@id('ffvm') @init('br.com.rti.alpha.viewModel.FarolFrotaVM')" mode="modal" position="center">
+		
+		<toolbar>
+			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" onClick="winFarolFrotas.detach(); pageScope.clear()"/>
+		</toolbar>
 		
 		<separator spacing="10px"/>
 		
@@ -14,7 +18,7 @@
 				<label value="Responsável:" style="font-weight: bold;"/>
 				<label value="@load(ffvm.selectedSupervisao.pessoaResponsavelSupervisao.nome)"/>
 			</hlayout>
-		</vlayout>
+		</vlayout>	
 		
 		<separator spacing="10px"/>
 		

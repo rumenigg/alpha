@@ -169,7 +169,7 @@ public class TipoCompartimentoVM
 			daof.commit();
 			
 			Messagebox.show("O tipo de compartimento " + this.selectedTipoCompartimento.getDescricao().toUpperCase() + 
-					"\nfoi adicionado ou atualizado com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+					"\nfoi adicionado ou atualizado com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 			//Atualiza o combobox Tipo de Compartimento na janela Compartimento
 			this.atualizaBindComponent("atualizaCompartimentoLists", "atualizaCompartimentoLists", this.selectedTipoCompartimento);
@@ -181,7 +181,7 @@ public class TipoCompartimentoVM
 		catch(Exception e)
 		{
 			Messagebox.show("Problemas de conexão com o banco de dados.\nContate o administrador ou o desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 			e.printStackTrace();
 		}
@@ -197,14 +197,14 @@ public class TipoCompartimentoVM
 			Messagebox.show("Você não pode excluir o Tipo de Compartimento " + 
 					selectedTipoCompartimento.getDescricao().toUpperCase() + 
 					"\ndevido possuir compartimentos atribuidos à ele.\nPara excluí-lo você deve primeiro excluir os Compartimentos existentes.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);	
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);	
 		}
 		else 
 			 {
 				try
 				{
 					Messagebox.show("Você realmente deseja excluir o Tipo de Compartimento " + this.selectedTipoCompartimento.getDescricao().toUpperCase() + "?",
-							"Hydro - Projeto Alpha", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
+							"Portal Hydro", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 							new EventListener<Event>()
 							{
 								public void onEvent(Event event) throws SQLException
@@ -219,7 +219,7 @@ public class TipoCompartimentoVM
 											daof.getTipoCompartimentoDAO().remove(selectedTipoCompartimento);
 											daof.commit();
 											
-											Messagebox.show("Tipo de compartimento excluído com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, 
+											Messagebox.show("Tipo de compartimento excluído com sucesso.", "Portal Hydro", Messagebox.OK, 
 													Messagebox.INFORMATION);
 											
 											//Atualiza o combobox Tipo de Compartimento na janela Compartimento
@@ -231,7 +231,7 @@ public class TipoCompartimentoVM
 										catch (Exception e)
 										{
 											Messagebox.show("Problemas de conexão com o banco de dados.\nContate o administrador ou o desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 											
 											e.printStackTrace();
 										}
@@ -243,7 +243,7 @@ public class TipoCompartimentoVM
 				}
 				catch (NullPointerException n)
 				{
-						Messagebox.show("Selecione um Tipo de Compartimento para a exclusão!", "Hydro - Projeto Alpha", 
+						Messagebox.show("Selecione um Tipo de Compartimento para a exclusão!", "Portal Hydro", 
 								Messagebox.OK, Messagebox.EXCLAMATION);				
 				}
 			}				

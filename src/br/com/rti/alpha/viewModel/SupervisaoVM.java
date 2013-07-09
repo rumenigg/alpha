@@ -1,5 +1,10 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
+import org.zkoss.bind.BindContext;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -17,20 +26,25 @@ import org.zkoss.bind.annotation.ContextType;
 import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.select.Selectors;
+import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.GroupsModelArray;
+import org.zkoss.zul.Image;
 import org.zkoss.zul.ListModelList;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Toolbarbutton;
 
+import br.com.rti.alpha.controle.AImageConverter;
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
 import br.com.rti.alpha.modelo.ativo.Ativo;
@@ -39,7 +53,7 @@ import br.com.rti.alpha.modelo.pessoa.Pessoa;
 import br.com.rti.alpha.modelo.supervisao.Frota;
 import br.com.rti.alpha.modelo.supervisao.Supervisao;
 
-public class SupervisaoVM 
+public class SupervisaoVM
 {
 	@Wire
 	private Toolbarbutton tbtnNovoSupervisao;
@@ -49,6 +63,10 @@ public class SupervisaoVM
 	private Listbox lbFrota;
 	@Wire
 	private Listbox lbFrotaSupervisao;
+	@Wire
+	private Image fotoSupervisao;
+	
+	private Media media;
 	
 	//GroupsModelArray<Frota, Frota, Frota, Frota> groupModel;
 	
@@ -69,6 +87,9 @@ public class SupervisaoVM
 	private List<Frota> allFrota;
 	private List<Frota> removedFrotaList = new ArrayList<Frota>();
 	private List<Frota> allFrotaSupervisao = new ArrayList<Frota>();
+	
+	private Converter converter = new AImageConverter();
+	
 		
 	public boolean isDesativado() {
 		return desativado;
@@ -111,6 +132,12 @@ public class SupervisaoVM
 	}
 	public void setAllFrota(List<Frota> allFrota) {
 		this.allFrota = allFrota;
+	}	
+	public Converter getConverter() {
+		return converter;
+	}
+	public void setConverter(Converter converter) {
+		this.converter = converter;
 	}
 	
 	@NotifyChange("allPessoa")
@@ -177,6 +204,7 @@ public class SupervisaoVM
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view)
 	{
 		Selectors.wireComponents(view, this, false);
+		Selectors.wireEventListeners(view, this);
 		
 		this.frotaDataModel = new ListModelList<Frota>();		
 		this.frotaDataModel.addAll(this.allFrota);
@@ -230,7 +258,12 @@ public class SupervisaoVM
 				{
 					DaoFactory daof = new DaoFactory();
 					daof.beginTransaction();
-									
+					
+					if ( this.media != null && this.selectedSupervisao.getFoto() != null )
+						this.delFoto(this.selectedSupervisao.getFoto());
+					
+					this.salvarFoto();
+					
 					this.selectedSupervisao.setPessoaResponsavelSupervisao(this.selectedPessoa);
 					daof.getSupervisaoDAO().adiciona(this.selectedSupervisao);
 			
@@ -254,7 +287,7 @@ public class SupervisaoVM
 					//daof.commit();
 			
 					Messagebox.show("A Supervisão " + this.selectedSupervisao.getDescricao().toUpperCase() + " foi adicionada ou atualizada com sucesso",
-							"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+							"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 				
 					//Atualiza a lista na aba Compartimento na janela de Cadastros;
@@ -293,7 +326,7 @@ public class SupervisaoVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -308,7 +341,7 @@ public class SupervisaoVM
 			{
 				Messagebox.show("Atenção, a Supervisão " + this.selectedSupervisao.getDescricao().toUpperCase() + " possui frota(s) associada(s). "+
 						"Caso prossiga com a exclusão a(s) frota(a) deixará(ão) de fazer parte de qualquer supervisão. " +
-						"Você realmente deseja prosseguir com a exclusão?", "Hydro - Projeto Alpha",
+						"Você realmente deseja prosseguir com a exclusão?", "Portal Hydro",
 						Messagebox.YES | Messagebox.NO, Messagebox.EXCLAMATION, 
 						new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -326,8 +359,10 @@ public class SupervisaoVM
 										
 										daof.getSupervisaoDAO().remove(selectedSupervisao);
 										//daof.commit();
+										if ( selectedSupervisao.getFoto() != null )
+											delFoto(selectedSupervisao.getFoto());
 										
-										Messagebox.show("Supervisão excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+										Messagebox.show("Supervisão excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 																				
 										desativado = true;
 										atualizaFrota();
@@ -348,7 +383,7 @@ public class SupervisaoVM
 									catch (Exception e)
 									{
 										Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-													"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+													"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 										e.printStackTrace();									
 									}
 								}								
@@ -357,7 +392,7 @@ public class SupervisaoVM
 			}
 			else 
 			{			
-				Messagebox.show("Você realmente deseja excluir a Supervisão " + this.selectedSupervisao.getDescricao().toUpperCase() + "?", "Hydro - Projeto Alpha",
+				Messagebox.show("Você realmente deseja excluir a Supervisão " + this.selectedSupervisao.getDescricao().toUpperCase() + "?", "Portal Hydro",
 					Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 					new EventListener<Event>() {
 						public void onEvent(Event event) throws SQLException
@@ -372,7 +407,7 @@ public class SupervisaoVM
 									daof.getSupervisaoDAO().remove(selectedSupervisao);
 									//daof.commit();
 									
-									Messagebox.show("Supervisão excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+									Messagebox.show("Supervisão excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 									
 									desativado = true;
 									atualizaSupervisao();
@@ -389,7 +424,7 @@ public class SupervisaoVM
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}
 							}							
@@ -399,14 +434,14 @@ public class SupervisaoVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione uma Supervisão para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione uma Supervisão para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}	
 	}
 	
 	@Command
 	@NotifyChange({"selectedSupervisao","desativado"})
-	public void navegar(@BindingParam("acao") String acao)
+	public void navegar(@BindingParam("acao") String acao) throws IOException
 	{
 		this.selectedSupervisao = null;
 		
@@ -451,8 +486,8 @@ public class SupervisaoVM
 	 * Método utilizado para mostrar o item selecionado na aba correspondente, Supervisão
 	 */
 	@GlobalCommand
-	@NotifyChange({"selectedSupervisao","desativado"})
-	public void showSelectedSupervisaoItem(@BindingParam("showSelectedSupervisaoItem") int i)
+	@NotifyChange({"selectedSupervisao","fotoSupervisao","desativado"})
+	public void showSelectedSupervisaoItem(@BindingParam("showSelectedSupervisaoItem") int i) throws IOException
 	{		
 		this.desativado = false;
 		//this.addLBCompartimento();
@@ -476,6 +511,14 @@ public class SupervisaoVM
 		this.frotaSupervisaoDataModel.clear();
 		
 		this.adicionarFrota(sf);
+		
+		if ( (this.selectedSupervisao.getFoto() != null) && !this.selectedSupervisao.getFoto().isEmpty() )
+		{
+			org.zkoss.image.AImage img = new org.zkoss.image.AImage(this.selectedSupervisao.getFoto());
+			this.fotoSupervisao.setContent(img);//(this.selectedSupervisao.getFoto()); //.setContent(img);
+		}
+		else
+			this.fotoSupervisao.setSrc(null);		
 	}
 	
 	@NotifyChange("selectedPessoa")
@@ -502,7 +545,7 @@ public class SupervisaoVM
 		else if ( this.frotaSupervisaoDataModel.getInnerList().contains(f) )
 			{			
 				Messagebox.show("A Frota " + f.getDescricao().toUpperCase() + " já faz parte dessa Supervisao", 
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			}		
 			else
 				this.frotaSupervisaoDataModel.add(f);
@@ -524,7 +567,7 @@ public class SupervisaoVM
 				{
 					Messagebox.show("ATENÇÃO, a frota selecionada pertence a outra SUPERVISÃO. "+
 							"Caso continue com a adição, a frota selecionada passará a fazer parte da supervisao atual. "+ 
-							"Você deseja continuar com a adição da frota?", "Hydro - Projeto Alpha",
+							"Você deseja continuar com a adição da frota?", "Portal Hydro",
 							Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 							new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -613,5 +656,72 @@ public class SupervisaoVM
 		Map args = new HashMap();
 		args.put(bindingParam, obj);
 		BindUtils.postGlobalCommand(null, null, metodo, args);
+	}
+	
+	/*
+	 * Métodos utilizado para manipular a foto relacionada a Supervisão 
+	*/ 
+	@Listen("onUpload=#btnFotoSupervisao")
+	public void addFoto(UploadEvent evt)
+	{
+		this.media = evt.getMedia();
+	}
+	
+	@GlobalCommand
+	public void carregarFoto(@BindingParam("carregarFoto") Media media)
+	{
+		this.media = media;
+	}
+	
+	public void salvarFoto() throws IOException
+	{
+		if ( this.media != null )
+		{			
+			String path = "rti/alpha";//System.getProperty("user.home"); 
+			 
+			path += "/hydro/img/imagens/supervisao/" + this.selectedSupervisao.getDescricao() + "_" + this.media.getName();
+			
+			BufferedImage imagem = ImageIO.read( this.media.getStreamData() );
+			File arquivo = new File(path);
+			arquivo.mkdirs();
+			// fazer algo com a imagem...
+			
+			int type = BufferedImage.TYPE_INT_RGB;
+	        boolean isPng = path.toUpperCase().endsWith("PNG");
+	 
+	        if (isPng) {
+	            type = BufferedImage.BITMASK;
+	        }
+	        
+	        if (isPng) {
+	            ImageIO.write(imagem, "PNG", arquivo);
+	        }else{
+	            ImageIO.write(imagem, "JPG", arquivo);
+	        }
+			
+			this.selectedSupervisao.setFoto(arquivo.getCanonicalPath());//toURI().toURL().getPath());//oString());//toURI().toString());//getPath());//toURI().toURL().getPath());//getCanonicalPath());//"/img/imagens/pessoas/" + this.selectedPessoa.getNome()+"_" + this.media.getName());
+			
+			BufferedImage thumb = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumb.createGraphics();
+	        g.setComposite(AlphaComposite.Src);
+	        g.drawImage(imagem, 0, 0, 100, 100, null);
+	        
+			String extensao = path.substring(path.length()-4, path.length());
+			String nome = path.substring(0, path.length()-4);
+			File arquivoThumb = new File(nome+"_thumb"+extensao);
+
+			 if (isPng) {
+		            ImageIO.write(thumb, "PNG", arquivoThumb);
+		        }else{
+		            ImageIO.write(thumb, "JPG", arquivoThumb);
+		        }		
+		}
+	}
+	
+	public void delFoto(String foto) throws IOException
+	{		
+		File arquivo = new File(foto);//path + "img\\imagens\\" + nomeArquivo);
+		
+		arquivo.delete();
 	}
 }

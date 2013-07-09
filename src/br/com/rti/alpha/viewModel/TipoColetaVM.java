@@ -179,7 +179,7 @@ public class TipoColetaVM
 			}*/		
 			
 			Messagebox.show("O Tipo de Coleta " + this.selectedTipoColeta.getDescricao().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 				
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedTipoColeta);
@@ -209,7 +209,7 @@ public class TipoColetaVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -221,7 +221,7 @@ public class TipoColetaVM
 		try
 		{
 			Messagebox.show("Você realmente deseja excluir o Tipo de Coleta " + this.selectedTipoColeta.getDescricao().toUpperCase() + "?", 
-					"Hydro - Projeto Alpha", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
+					"Portal Hydro", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 				new EventListener<Event>() {
 					public void onEvent(Event event) throws SQLException
 					{
@@ -242,7 +242,7 @@ public class TipoColetaVM
 							catch (Exception e)
 							{
 								Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-									"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+									"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								e.printStackTrace();									
 							}
 							
@@ -256,7 +256,7 @@ public class TipoColetaVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}
@@ -312,7 +312,7 @@ public class TipoColetaVM
 		else if ( this.planoTipoColetaDataModel.contains(pt) )
 			{			
 				Messagebox.show("O(s) Plano(s) já faz(em) parte desse Tipo de Coleta, selecione outro(s)!", 
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			}		
 			else
 				this.planoTipoColetaDataModel.add(pt);

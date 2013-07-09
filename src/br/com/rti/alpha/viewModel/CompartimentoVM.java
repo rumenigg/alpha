@@ -1,5 +1,7 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -261,7 +263,7 @@ public class CompartimentoVM
 		{
 			if ( this.cbxTP.getSelectedItem().getValue().equals("") )
 			{
-				Messagebox.show("Você deve selecionar um Tipo de Compartimento para prosseguir!", "Hydro - Projeto Alpha", 
+				Messagebox.show("Você deve selecionar um Tipo de Compartimento para prosseguir!", "Portal Hydro", 
 						Messagebox.OK, Messagebox.EXCLAMATION);
 			}
 			else
@@ -284,7 +286,7 @@ public class CompartimentoVM
 				daof.getCompartimentoDAO().adiciona(this.selectedCompartimento);
 												
 				Messagebox.show("O Compatimento " + this.selectedCompartimento.getTag().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 				
 				//this.selectedCompartimento = null;
 				//this.selectedTipoCompartimento = null;
@@ -315,7 +317,7 @@ public class CompartimentoVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -351,12 +353,12 @@ public class CompartimentoVM
 								catch (ConstraintViolationException cve)
 								{
 									Messagebox.show("Você não pode excluir esse compartimento pois ele está associado a um ativo. Substitua ou remova, no ativo, por outro para poder excluir.",
-											"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+											"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								}
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}
 							
@@ -371,7 +373,7 @@ public class CompartimentoVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Compartimento para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Compartimento para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}
@@ -517,9 +519,34 @@ public class CompartimentoVM
 			File arquivo = new File(path);
 			arquivo.mkdirs();
 			// fazer algo com a imagem...
-			ImageIO.write(imagem, "PNG", arquivo);
+			int type = BufferedImage.TYPE_INT_RGB;
+	        boolean isPng = path.toUpperCase().endsWith("PNG");
+			if (isPng) {
+	            type = BufferedImage.BITMASK;
+	        }
+	        
+	        if (isPng) {
+	            ImageIO.write(imagem, "PNG", arquivo);
+	        }else{
+	            ImageIO.write(imagem, "JPG", arquivo);
+	        }
 
 			this.selectedCompartimento.setFoto(arquivo.getCanonicalPath());//path);
+			
+			BufferedImage thumb = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumb.createGraphics();
+	        g.setComposite(AlphaComposite.Src);
+	        g.drawImage(imagem, 0, 0, 100, 100, null);
+	        
+			String extensao = path.substring(path.length()-4, path.length());
+			String nome = path.substring(0, path.length()-4);
+			File arquivoThumb = new File(nome+"_thumb"+extensao);
+
+			 if (isPng) {
+		            ImageIO.write(thumb, "PNG", arquivoThumb);
+		        }else{
+		            ImageIO.write(thumb, "JPG", arquivoThumb);
+		        }		
 		}
 	}
 	

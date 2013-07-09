@@ -109,7 +109,7 @@ public class PlanoTrabalhoVM
 			daof.getPlanoTrabalhoDAO().adiciona(this.selectedPlanoTrabalho);
 				
 			Messagebox.show("O Plano de Trabalho " + this.selectedPlanoTrabalho.getPlano() + " foi \nadicionado ou atualizado com sucesso",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 				
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedPlanoTrabalho);
@@ -137,7 +137,7 @@ public class PlanoTrabalhoVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -148,7 +148,7 @@ public class PlanoTrabalhoVM
 	{
 		try
 		{
-			Messagebox.show("Você realmente deseja excluir o Plano de Trabalho " + this.selectedPlanoTrabalho.getPlano() + "?", "Hydro - Projeto Alpha",
+			Messagebox.show("Você realmente deseja excluir o Plano de Trabalho " + this.selectedPlanoTrabalho.getPlano() + "?", "Portal Hydro",
 				Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 				new EventListener<Event>() {
 					public void onEvent(Event event) throws SQLException
@@ -161,7 +161,7 @@ public class PlanoTrabalhoVM
 								daof.beginTransaction();
 								daof.getPlanoTrabalhoDAO().remove(selectedPlanoTrabalho);
 
-								Messagebox.show("Plano de Trabalho excluido com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+								Messagebox.show("Plano de Trabalho excluido com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 								
 								//Atualiza a lista na aba Compartimento na janela de Cadastros;
 								atualizaBindComponent("atualizaListas", "atualizaListas", selectedPlanoTrabalho);
@@ -170,7 +170,7 @@ public class PlanoTrabalhoVM
 							catch (Exception e)
 							{
 								Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-									"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+									"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								e.printStackTrace();									
 							}
 							
@@ -184,7 +184,7 @@ public class PlanoTrabalhoVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Plano de Trabalho para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Plano de Trabalho para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}

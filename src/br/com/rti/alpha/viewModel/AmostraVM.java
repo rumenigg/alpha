@@ -10,11 +10,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.hibernate.TransactionException;
 import org.hibernate.annotations.common.AssertionFailure;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -36,6 +35,7 @@ import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Toolbarbutton;
 
+import br.com.rti.alpha.controle.AmostraConverter;
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
 import br.com.rti.alpha.modelo.amostra.Amostra;
@@ -97,6 +97,8 @@ public class AmostraVM
 	
 	private Elementos selectedElementos;
 	private List<Elementos> allElementos;
+	
+	private Converter amostraConverter = new AmostraConverter();
 	
 	public boolean isDesativado() {
 		return desativado;
@@ -217,7 +219,14 @@ public class AmostraVM
 	}
 	public void setAllElementos(List<Elementos> allElementos) {
 		this.allElementos = allElementos;
+	}		
+	public Converter getAmostraConverter() {
+		return amostraConverter;
 	}
+	public void setAmostraConverter(Converter amostraConverter) {
+		this.amostraConverter = amostraConverter;
+	}
+	
 	
 	
 	@Command
@@ -363,6 +372,15 @@ public class AmostraVM
 			
 			this.selectedAmostra.setAnalise(this.selectedAnalise);
 			
+			if ( this.selectedAnalise != null && this.selectedElementos != null)
+				if ( this.selectedAmostra.getSituacao() != null )
+				{
+					if ( !this.selectedAmostra.getSituacao().equals("critico") )
+						this.selectedAmostra.setSituacao(this.verificarAnalise());
+				}
+				else
+					this.selectedAmostra.setSituacao(this.verificarAnalise());
+			
 			daof.getAmostraDAO().adiciona(this.selectedAmostra);
 			
 			this.selectedAnalise.setAmostraAnalise(this.selectedAmostra);	
@@ -379,7 +397,7 @@ public class AmostraVM
 			daof = null;
 			
 			Messagebox.show("A amostra foi adicionado ou atualizado com sucesso.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 						
 			this.atualizaAmostra();	
 			BindUtils.postNotifyChange(null, null, this, "allAmostra");
@@ -393,7 +411,8 @@ public class AmostraVM
 		catch (ConstraintViolationException e)
 		{
 			Messagebox.show("Por favor, verifique as informações fornecidas. Os campos (Ativo, Compartimento, Tipos de Coleta, Plano e Óleo), são obrigatórios.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
+			e.printStackTrace();
 		}
 		catch (AssertionFailure e)
 		{
@@ -402,8 +421,8 @@ public class AmostraVM
 		catch (NullPointerException npe)
 		{
 			Messagebox.show("Por favor, verifique as informações fornecidas. Os campos (Ativo, Compartimento, Tipos de Coleta, Plano e Óleo), são obrigatórios.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
-			//npe.printStackTrace();
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
+			npe.printStackTrace();
 		}
 		catch (Exception e)
 		{
@@ -418,7 +437,7 @@ public class AmostraVM
 		try
 		{
 			Messagebox.show("Você realmente deseja excluir a amostra selecionada?", 
-					"Hydro - Projeto Alpha", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
+					"Portal Hydro", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 				new EventListener<Event>() {
 					public void onEvent(Event event) throws SQLException, IOException
 					{
@@ -430,12 +449,12 @@ public class AmostraVM
 								daof.beginTransaction();
 								daof.getAmostraDAO().remove(selectedAmostra);
 
-								Messagebox.show("Amostra excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);																
+								Messagebox.show("Amostra excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);																
 							}
 							catch (Exception e)
 							{
 								Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-									"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+									"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								e.printStackTrace();									
 							}
 							
@@ -450,7 +469,7 @@ public class AmostraVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}
@@ -641,7 +660,7 @@ public class AmostraVM
 				tx.setId( String.valueOf(fa.getId()) );
 				tx.setParent(this.amostraFoto);
 			
-				Checkbox cb = new Checkbox();
+				Checkbox cb = new Checkbox();				
 				cb.setImageContent(img);
 				cb.setContext("popupFoto");
 				cb.setTooltiptext("Marque a foto para excluí-la");
@@ -774,5 +793,62 @@ public class AmostraVM
 		}
 		if (amostraFoto.getChildren().isEmpty())
 			amostraFoto.setHeight("70px");
+	}
+	
+	public String verificarAnalise()
+	{
+		String situacao = "normal";
+		
+		if ( this.selectedAnalise.getCombustivel() !=null )
+			if ( this.selectedAnalise.getCombustivel().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getOleoescuro() !=null )
+			if ( this.selectedAnalise.getOleoescuro().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getImpureza() != null )
+			if ( this.selectedAnalise.getImpureza().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getLimalha() != null )
+			if ( this.selectedAnalise.getLimalha().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getSilica() != null )
+			if ( this.selectedAnalise.getSilica().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getAgua() != null )
+			if ( this.selectedAnalise.getAgua().equals("s") )
+				situacao = "anormal";
+		
+		Elementos tendencia = this.selectedAmostra.getCompartimentoAmostra().getTipoCompartimento().getElementos();
+		
+		if ( this.selectedElementos.getFuligem() > tendencia.getFuligem() || this.selectedElementos.getFuligem() > tendencia.getFuligem() ||
+			 this.selectedElementos.getOxidacao() > tendencia.getOxidacao() || this.selectedElementos.getNitracao() > tendencia.getNitracao() ||
+			 this.selectedElementos.getSulfatacao() > tendencia.getSulfatacao() || this.selectedElementos.getTbn() > tendencia.getTbn() ||
+			 this.selectedElementos.getViscosidade() > tendencia.getViscosidade() || this.selectedElementos.getAgua() > tendencia.getAgua() ||
+			 this.selectedElementos.getSt() > tendencia.getSt() || this.selectedElementos.getSul() > tendencia.getSul() ||
+			 this.selectedElementos.getFe() > tendencia.getFe() || this.selectedElementos.getCu() > tendencia.getCu() ||
+			 this.selectedElementos.getCr() > tendencia.getCr() || this.selectedElementos.getPb() > tendencia.getPb() ||
+			 this.selectedElementos.getSn() > tendencia.getSn() || this.selectedElementos.getMo() > tendencia.getMo() ||
+			 this.selectedElementos.getNi() > tendencia.getNi() || this.selectedElementos.getNi() > tendencia.getNi() || 
+			 this.selectedElementos.getAg() > tendencia.getAg() || this.selectedElementos.getAl() > tendencia.getAl() ||
+			 this.selectedElementos.getSi() > tendencia.getSi() || this.selectedElementos.getNa() > tendencia.getNa() ||
+			 this.selectedElementos.getK() > tendencia.getK() || this.selectedElementos.getCa() > tendencia.getCa() ||
+			 this.selectedElementos.getP() > tendencia.getP() || this.selectedElementos.getZn() > tendencia.getZn() ||
+			 this.selectedElementos.getMg() > tendencia.getMg() || this.selectedElementos.getB() > tendencia.getB() ||
+			 this.selectedElementos.getBa() > tendencia.getBa() || this.selectedElementos.getDiesel() > tendencia.getDiesel() ||
+			 this.selectedElementos.getZddp() > tendencia.getZddp() || this.selectedElementos.getIso4u() > tendencia.getIso4u() ||
+			 this.selectedElementos.getIso6u() > tendencia.getIso6u() || this.selectedElementos.getIso14u() > tendencia.getIso14u() ||
+			 this.selectedElementos.getNorma4u() > tendencia.getNorma4u() || this.selectedElementos.getNorma6u() > tendencia.getNorma6u() ||
+			 this.selectedElementos.getNorma14u() > tendencia.getNorma14u() || this.selectedElementos.getFiltro().equals("anormal") ||
+			 !this.selectedElementos.getW().equals(tendencia.getW()) || !this.selectedElementos.getF().equals(tendencia.getF()) )
+		{
+			situacao = "anormal";
+		}
+					
+		return situacao;
 	}
 }

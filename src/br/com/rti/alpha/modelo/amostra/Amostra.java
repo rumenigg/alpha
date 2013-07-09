@@ -35,6 +35,9 @@ public class Amostra
     private java.util.Date dataColeta;
     private java.util.Date dataEntrega;
     private String informacoes;
+    private String situacao;
+    private String vistoriado;
+    private java.util.Date dataVistoria;
     
     @ManyToOne
     @JoinColumn(name="ativo_id")
@@ -127,6 +130,12 @@ public class Amostra
 	}
 	public void setInformacoes(String informacoes) {
 		this.informacoes = informacoes;
+	}	
+	public String getSituacao() {
+		return situacao;
+	}
+	public void setSituacao(String situacao) {
+		this.situacao = situacao;
 	}
 	public Ativo getAtivoAmostra() {
 		return ativoAmostra;
@@ -172,6 +181,18 @@ public class Amostra
 	}
 	public void setAnalise(Analise analise) {
 		this.analise = analise;
+	}
+	public String getVistoriado() {
+		return vistoriado;
+	}
+	public void setVistoriado(String vistoriado) {
+		this.vistoriado = vistoriado;
+	}
+	public java.util.Date getDataVistoria() {
+		return dataVistoria;
+	}
+	public void setDataVistoria(java.util.Date dataVistoria) {
+		this.dataVistoria = dataVistoria;
 	}
     
     

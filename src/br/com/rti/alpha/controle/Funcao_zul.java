@@ -90,7 +90,7 @@ public class Funcao_zul extends SelectorComposer
 	{
 		if (txtFuncao.getValue().equals(""))
 		{
-			Messagebox.show("Por favor, insira uma função.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
+			Messagebox.show("Por favor, insira uma função.", "Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
 			txtFuncao.setFocus(true);
 		}
 		else 
@@ -105,7 +105,7 @@ public class Funcao_zul extends SelectorComposer
 				daof.getFuncaoDAO().adiciona(f);
 				daof.commit();
 					
-				Messagebox.show("Função " + this.f.getFuncao().toUpperCase() + " adicionada ou atualizada com sucesso.", "Hydro - Projeto Alpha", 
+				Messagebox.show("Função " + this.f.getFuncao().toUpperCase() + " adicionada ou atualizada com sucesso.", "Portal Hydro", 
 								Messagebox.OK, Messagebox.INFORMATION);
 					
 				atualizaBindComponent("atualiza", f);	
@@ -119,7 +119,7 @@ public class Funcao_zul extends SelectorComposer
 			}
 			catch (Exception e)
 			{
-				Messagebox.show("Problema de conexão com o banco de dados.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+				Messagebox.show("Problema de conexão com o banco de dados.", "Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 				e.printStackTrace();
 			}
 			this.txtFuncao.setValue("");
@@ -134,7 +134,7 @@ public class Funcao_zul extends SelectorComposer
 	{
 		try
 		{
-			Messagebox.show("Você realmente deseja exluir a função " + this.f.getFuncao().toUpperCase() + "?", "Hydro - Projeto Alpha",
+			Messagebox.show("Você realmente deseja exluir a função " + this.f.getFuncao().toUpperCase() + "?", "Portal Hydro",
 				   Messagebox.YES | Messagebox.NO, Messagebox.QUESTION,
 				   new EventListener<Event>() {
 				      public void onEvent(Event event) throws SQLException {
@@ -145,7 +145,7 @@ public class Funcao_zul extends SelectorComposer
 				        	  daof.getFuncaoDAO().remove(f);
 				        	  daof.commit();
 				        	  //daof.close();
-				        	  Messagebox.show("Função " + f.getFuncao().toUpperCase() + " excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);			      			
+				        	  Messagebox.show("Função " + f.getFuncao().toUpperCase() + " excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);			      			
 							
 				        	  atualizaBindComponent("atualiza", f);
 				        	 			        	 		        	  
@@ -157,7 +157,7 @@ public class Funcao_zul extends SelectorComposer
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione uma Função para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione uma Função para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}

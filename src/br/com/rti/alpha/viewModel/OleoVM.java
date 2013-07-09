@@ -162,7 +162,7 @@ public class OleoVM
 			daof.commit();
 				
 			Messagebox.show("O Óleo " + this.selectedOleo.getReferencia().toUpperCase() + "\nfoi adicionado ou atualizado com sucesso",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 				
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedOleo);
@@ -176,7 +176,7 @@ public class OleoVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}		
 	}
@@ -187,7 +187,7 @@ public class OleoVM
 	{
 		try
 		{
-			Messagebox.show("Você realmente deseja excluir o Óleo " + this.selectedOleo.getReferencia().toUpperCase() + "?", "Hydro - Projeto Alpha",
+			Messagebox.show("Você realmente deseja excluir o Óleo " + this.selectedOleo.getReferencia().toUpperCase() + "?", "Portal Hydro",
 					Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 					new EventListener<Event>() {
 						public void onEvent(Event event) throws SQLException, IOException
@@ -204,7 +204,7 @@ public class OleoVM
 										delFoto(selectedOleo.getFoto());
 									
 									daof.commit();
-									Messagebox.show("Óleo excluido com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+									Messagebox.show("Óleo excluido com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 								
 									//Atualiza a lista na aba Compartimento na janela de Cadastros;
 									atualizaBindComponent("atualizaListas", "atualizaListas", selectedOleo);
@@ -214,12 +214,12 @@ public class OleoVM
 								catch (ConstraintViolationException cve)
 								{
 									Messagebox.show("Você não pode excluir esse óleo pois ele está associado a um compartimento. Substitua o óleo, no compartimento, por outro para poder excluir.",
-											"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+											"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								}
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}
 							
@@ -233,7 +233,7 @@ public class OleoVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Óleo para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Óleo para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}

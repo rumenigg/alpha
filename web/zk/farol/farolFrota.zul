@@ -1,0 +1,45 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Portal Hydro - Farol" apply="org.zkoss.bind.BindComposer" width="75%" closable="true" sizable="true" maximizable="true"
+		viewModel="@id('ffvm') @init('br.com.rti.alpha.viewModel.FarolFrotaVM')" mode="modal" position="center">
+		
+		<separator spacing="10px"/>
+		
+		<vlayout spacing="5px">
+			<hlayout spacing="5px">
+				<label value="Supervisao:" style="font-weight: bold;" /> 
+				<label value="@load(ffvm.selectedSupervisao.descricao)" />	
+			</hlayout>		
+			<hlayout spacing="5px">
+				<label value="Responsável:" style="font-weight: bold;"/>
+				<label value="@load(ffvm.selectedSupervisao.pessoaResponsavelSupervisao.nome)"/>
+			</hlayout>
+		</vlayout>
+		
+		<separator spacing="10px"/>
+		
+		<groupbox closable="false" mold="3d" contentStyle="border: 1px solid" >
+			<caption label="Frota(s)"/>
+			<style src="/widgets/getting_started/menu_toolbar/styleFarol.css" />	
+	
+			<columnlayout >
+				<columnchildren style="float: left; padding: 20px;">
+					
+					<div children="@bind(ffvm.allFrota) @template('model')" width="100%" > 	
+						<template name="model" var="f">																							
+							<button label="@load(f.descricao)" width="130px" height="150px" orient="vertical" dir="reverse"
+								imageContent="@load(f.foto) @converter(ffvm.converter, tipo='thumb')" 
+								style="float: left; color: red; font-weight: bold; margin: 0px 0px 30px 35px;" sclass="icon"
+								onClick="@command('showAtivos', frota=f.id, objeto=f)"/>
+						
+							<image src="@load(f.id) @converter(ffvm.farolConverter, objeto='frota')" 
+									style="position: relative; padding: 15px 0px; float: left;" /> 
+									<!-- tooltiptext="@load(ffvm.selectedSupervisao.id) @converter(ffvm.toolTipTextConverter, objeto='frota')"/>  -->						
+						</template>
+					</div>
+					
+				</columnchildren>
+			</columnlayout>	
+		</groupbox>
+	</window>
+</zk>

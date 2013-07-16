@@ -419,16 +419,15 @@ public class AmostraVM
 			{
 				daof.getAmostraDAO().adiciona(this.selectedAmostra);
 				daof.commit();			
-				daof = null;
+				//daof = null;
 			
 				Messagebox.show("A amostra foi vistoriada com sucesso.",
 						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 				
-				this.atualizaAmostraCompartimento(this.selectedAmostra.getCompartimentoAmostra().getId());
-				this.showAmostra(0);
-				
+				this.showAmostrasCompartimento(this.selectedAmostra.getCompartimentoAmostra().getId(), true);				
 				BindUtils.postNotifyChange(null, null, this, "allAmostra");
-				BindUtils.postNotifyChange(null, null, this, "selectedAmostra");
+				//BindUtils.postNotifyChange(null, null, this, "allAmostra");
+				//BindUtils.postNotifyChange(null, null, this, "selectedAmostra");
 				
 				//Métodos usados para atualizar as janelas de faróis anteriores, Supervisão, Frota, Ativo e Compartimento
 				Map<String, Object> args = new HashMap<String, Object>();
@@ -634,22 +633,9 @@ public class AmostraVM
 		this.readOnly = readOnly;
 		
 		this.atualizaAmostraCompartimento(id);
+		BindUtils.postNotifyChange(null, null, this, "allAmostra");
 		
-		this.showAmostra(0);
-		/*if ( obj instanceof Amostra )
-		{
-			this.selectedAmostra = (Amostra) obj;
-			for ( Amostra a : this.allAmostra )			
-				if ( a.getId() == this.selectedAmostra.getId() )
-					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );			
-		}
-		else
-		{
-			int id = (Integer) obj;		
-			for ( Amostra a : this.allAmostra )
-				if ( a.getId() == id )
-					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );
-		}*/
+		this.showAmostra(0);		
 	}
 	
 	@NotifyChange({"selectedAmostra","selectedAnalise","farol"})

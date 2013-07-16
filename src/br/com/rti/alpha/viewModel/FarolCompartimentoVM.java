@@ -2,12 +2,21 @@ package br.com.rti.alpha.viewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
+import org.zkoss.bind.annotation.BindingParam;
+import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ExecutionArgParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Window;
 
 import br.com.rti.alpha.controle.AImageConverter;
 import br.com.rti.alpha.controle.FarolImageConverter;
@@ -57,6 +66,7 @@ public class FarolCompartimentoVM
 		this.toolTipTextConverter = toolTipTextConverter;
 	}
 
+	@GlobalCommand
 	@NotifyChange({"allCompartimento", "selectedAtivo"})
 	public void atualizaAllCompartimento()
 	{
@@ -78,4 +88,37 @@ public class FarolCompartimentoVM
 		
 		this.atualizaAllCompartimento();
 	}
+	
+	@Command
+	public void showAmostra(@BindingParam("compartimento") int id, @BindingParam("objeto") Compartimento c)
+	{
+		if ( c.getAmostra().isEmpty() )
+			Messagebox.show("O Compartimento selecionado não possui amostras associadas.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
+		else
+		{
+			
+			//final HashMap<String, Object> map = new HashMap<String, Object>();
+			//map.put("ativo", id);
+			//Executions.createComponents("/zk/amostra/farolCompartimento.zul", null, map);
+			
+			final Window winAmostra = (Window) Executions.createComponents("/zk/farol/farolAmostra.zul", null, null);		
+						
+			//winAmostra.setVisible(true);
+			//winAmostra.setWidth("100%");
+			//winAmostra.setHeight("100%");
+ 			winAmostra.setId("winAmostra");
+ 			winAmostra.setClosable(true);
+ 			winAmostra.setMaximizable(true);
+ 			winAmostra.setMode("modal");
+ 						
+ 			final HashMap<String, Object> args = new HashMap<String, Object>();
+ 			args.put("selectedCompartimento", id);
+ 			args.put("readOnly", true);
+ 			BindUtils.postGlobalCommand(null, null, "showAmostrasCompartimento", args);
+ 			
+ 			Map<String, Object> args2 = new HashMap<String, Object>();
+ 			args2.put("selectedCompartimento", c);
+ 			BindUtils.postGlobalCommand(null, null, "showSelectedAmostrasCompartimento", args2);
+		}
+	}	
 }

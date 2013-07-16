@@ -4,6 +4,8 @@
 		viewModel="@id('favm') @init('br.com.rti.alpha.viewModel.FarolAtivoVM')" mode="modal" position="center">
 		
 		<toolbar>
+			<toolbarbutton tooltiptext="Atualizar" image="/img/btn/page/atualizar-32.png" onClick="@global-command('atualizaAllAtivo')" />
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" onClick="winFarolAtivos.detach(); pageScope.clear()"/>
 		</toolbar>
 		

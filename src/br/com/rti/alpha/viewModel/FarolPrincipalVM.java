@@ -3,7 +3,6 @@ package br.com.rti.alpha.viewModel;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -11,13 +10,11 @@ import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.select.Selectors;
-import org.zkoss.zk.ui.select.annotation.Wire;
-import org.zkoss.zul.Div;
-import org.zkoss.zul.Image;
 import org.zkoss.zul.Messagebox;
 
 import br.com.rti.alpha.controle.AImageConverter;
@@ -25,10 +22,6 @@ import br.com.rti.alpha.controle.FarolImageConverter;
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.controle.ToolTipTextConverter;
 import br.com.rti.alpha.dao.DaoFactory;
-import br.com.rti.alpha.modelo.amostra.Amostra;
-import br.com.rti.alpha.modelo.ativo.Ativo;
-import br.com.rti.alpha.modelo.ativo.Compartimento;
-import br.com.rti.alpha.modelo.supervisao.Frota;
 import br.com.rti.alpha.modelo.supervisao.Supervisao;
 
 public class FarolPrincipalVM 
@@ -86,6 +79,8 @@ public class FarolPrincipalVM
 	/*
 	 * Método carrega todos as informações referentes a Supervisão do Banco de Dados.
 	 */	
+	@GlobalCommand
+	@NotifyChange("allSupervisao")
 	public void atualizaAllSupervisao()
 	{
 		DaoFactory daof = new DaoFactory();

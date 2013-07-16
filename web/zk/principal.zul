@@ -63,7 +63,7 @@
 							navicone.setTooltiptext("Você está na áre de Coletas");
 							navicone.setSrc("/img/btn/page/coletas_32.png");							
 									
-							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/amostra.zul", principalCad, null);
+							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/gerenciarAmostra.zul", principalCad, null);
 							cadGeral.setId("cadGeral");
 							cadGeral.setVisible(true);	
 						}

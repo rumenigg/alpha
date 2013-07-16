@@ -10,6 +10,7 @@ import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ExecutionArgParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Messagebox;
@@ -63,6 +64,7 @@ public class FarolAtivoVM
 		this.toolTipTextConverter = toolTipTextConverter;
 	}
 	
+	@GlobalCommand
 	@NotifyChange({"allAtivo", "selectedFrota"})
 	public void atualizaAllAtivo()
 	{

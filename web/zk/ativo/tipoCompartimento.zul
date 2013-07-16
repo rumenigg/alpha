@@ -4,10 +4,12 @@
 		<toolbar>
 			<toolbarbutton id="tbtnNovoTipoCompartimento" tooltiptext="Incluir um novo Tipo de Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Tipo de Compartimento ou suas alterações" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')" disabled="@load(tcvm.desativado)"/>
 			<toolbarbutton tooltiptext="Excluir os dados do Tipo de Compartimento selecionado" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')" disabled="@load(tcvm.desativado)"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -16,6 +18,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winTipoCompartimento.detach()"/>
 		</toolbar>

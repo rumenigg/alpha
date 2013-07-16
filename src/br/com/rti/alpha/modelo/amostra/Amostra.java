@@ -2,8 +2,8 @@
 package br.com.rti.alpha.modelo.amostra;
 
 import java.util.List;
-import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,8 +16,6 @@ import javax.persistence.OneToOne;
 import br.com.rti.alpha.modelo.ativo.Ativo;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.ativo.Oleo;
-import br.com.rti.alpha.modelo.pessoa.Pessoa;
-import br.com.rti.alpha.modelo.supervisao.Supervisao;
 
 @Entity
 public class Amostra 
@@ -62,7 +60,7 @@ public class Amostra
     @JoinColumn(name="PlanoTrabalho_id")
     public PlanoTrabalho planoTrabalhoAmostra;
     
-    @OneToOne(mappedBy="amostraAnalise", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy="amostraAnalise", fetch = FetchType.LAZY, orphanRemoval=true, cascade=CascadeType.REMOVE)
     public Analise analise;
     
 	public int getId() {

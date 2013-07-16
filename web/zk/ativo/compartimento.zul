@@ -22,10 +22,12 @@
 		<toolbar>
 			<toolbarbutton id="tbtnNovoCompartimento" tooltiptext="Incluir um novo Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Compartimento ou suas alterações" disabled="@load(cvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')"/>
 			<toolbarbutton tooltiptext="Excluir o Compartimento selecionado" disabled="@load(cvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -34,6 +36,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winCompartimento.detach()"/>
 			<!-- <toolbarbutton id="tbtnCompartimentoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
@@ -62,7 +65,7 @@
 						<column width="10%"/>
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="Tipo de Compartimento" />
 							<combobox id="cbxTP" placeholder="Selecione um tipo de compartimento" autocomplete="true" constraint="no empty"
 										width="100%" autodrop="true" disabled="@load(cvm.desativado)"  
@@ -79,27 +82,28 @@
 											final Window winTipoCompartimento = (Window)Executions.createComponents("/zk/ativo/tipoCompartimento.zul", winCompartimento, null);
 											winTipoCompartimento.doModal();
 											winTipoCompartimento.setClosable(true);
+											winTipoCompartimento.setWidth("750px");
 									   }
 									]]>
 								</attribute>
 							</button>
 						</row>
-						<row>
+						<row align="right">
 							<label value="TAG"/>
 							<textbox placeholder="Informe a TAG do compartimento" width="100%" constraint="no empty"
 									value="@bind(fx.tag)" disabled="@load(cvm.desativado)" />
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox placeholder="Informe o fabricante do compartimento" width="100%" 
 									value="@bind(fx.fabricante)" disabled="@load(cvm.desativado)" />							
 						</row>
-						<row>
+						<row align="right">
 							<label value="Capacidade"/>
 							<doublespinner placeholder="Indique a capacidade (L) do compartimento" width="100%" step="5"
 									value="@bind(fx.capacidade)" constraint="min 0" disabled="@load(cvm.desativado)" />
 						</row>
-						<row>
+						<row align="right">
 							<label value="Óleo"/>
 							<combobox id="cbxO" placeholder="Selecione um fluido para esse compartimento" width="100%"
 										model="@load(cvm.allOleo)" selectedItem="@bind(cvm.selectedOleo)" disabled="@load(cvm.desativado)" >

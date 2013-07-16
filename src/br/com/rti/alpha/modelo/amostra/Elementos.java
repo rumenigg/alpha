@@ -2,13 +2,15 @@
 package br.com.rti.alpha.modelo.amostra;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import br.com.rti.alpha.modelo.ativo.TipoCompartimento;
 
 @Entity
 public class Elementos 
@@ -54,13 +56,13 @@ public class Elementos
     private String filtro;
     private double diesel;
     private double zddp;
-        
-    //public br.com.rti.alpha.modelo.amostra.LimiteTendencia limiteTendencia;
 
     @OneToMany(mappedBy="elementosAnalise", fetch=FetchType.LAZY)
     public List<Analise> analise;
     
-   
+    @OneToOne(mappedBy="elementos", fetch=FetchType.LAZY)
+    public TipoCompartimento tipoCompartimento;
+    
 	public int getId() {
 		return id;
 	}
@@ -294,19 +296,18 @@ public class Elementos
 	}
 	public void setZddp(double zddp) {
 		this.zddp = zddp;
-	}
-	/*public br.com.rti.alpha.modelo.amostra.LimiteTendencia getLimiteTendencia() {
-		return limiteTendencia;
-	}
-	public void setLimiteTendencia(
-			br.com.rti.alpha.modelo.amostra.LimiteTendencia limiteTendencia) {
-		this.limiteTendencia = limiteTendencia;
-	}*/
+	}	
 	public List<Analise> getAnalise() {
 		return analise;
 	}
 	public void setAnalise(List<Analise> analise) {
 		this.analise = analise;
+	}
+	public TipoCompartimento getTipoCompartimento() {
+		return tipoCompartimento;
+	}
+	public void setTipoCompartimento(TipoCompartimento tipoCompartimento) {
+		this.tipoCompartimento = tipoCompartimento;
 	}
     
     

@@ -2,8 +2,8 @@
 package br.com.rti.alpha.modelo.amostra;
 
 import java.util.List;
-import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,8 +16,6 @@ import javax.persistence.OneToOne;
 import br.com.rti.alpha.modelo.ativo.Ativo;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.ativo.Oleo;
-import br.com.rti.alpha.modelo.pessoa.Pessoa;
-import br.com.rti.alpha.modelo.supervisao.Supervisao;
 
 @Entity
 public class Amostra 
@@ -35,6 +33,9 @@ public class Amostra
     private java.util.Date dataColeta;
     private java.util.Date dataEntrega;
     private String informacoes;
+    private String situacao;
+    private String vistoriado;
+    private java.util.Date dataVistoria;
     
     @ManyToOne
     @JoinColumn(name="ativo_id")
@@ -59,7 +60,7 @@ public class Amostra
     @JoinColumn(name="PlanoTrabalho_id")
     public PlanoTrabalho planoTrabalhoAmostra;
     
-    @OneToOne(mappedBy="amostraAnalise", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy="amostraAnalise", fetch = FetchType.LAZY, orphanRemoval=true, cascade=CascadeType.REMOVE)
     public Analise analise;
     
 	public int getId() {
@@ -127,6 +128,12 @@ public class Amostra
 	}
 	public void setInformacoes(String informacoes) {
 		this.informacoes = informacoes;
+	}	
+	public String getSituacao() {
+		return situacao;
+	}
+	public void setSituacao(String situacao) {
+		this.situacao = situacao;
 	}
 	public Ativo getAtivoAmostra() {
 		return ativoAmostra;
@@ -172,6 +179,18 @@ public class Amostra
 	}
 	public void setAnalise(Analise analise) {
 		this.analise = analise;
+	}
+	public String getVistoriado() {
+		return vistoriado;
+	}
+	public void setVistoriado(String vistoriado) {
+		this.vistoriado = vistoriado;
+	}
+	public java.util.Date getDataVistoria() {
+		return dataVistoria;
+	}
+	public void setDataVistoria(java.util.Date dataVistoria) {
+		this.dataVistoria = dataVistoria;
 	}
     
     

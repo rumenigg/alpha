@@ -62,7 +62,9 @@ public class Loging extends SelectorComposer<Window>
 			if ( pes != null )
 			{
 				winlogin.setVisible(false);
-				winlogin.getParent().getFellow("principalArea").setVisible(true);
+				this.senha.setValue("");
+				this.matricula.setValue("");				
+				winlogin.getParent().getFellow("principalArea").setVisible(true);				
 			}
 			else
 			{				

@@ -5,6 +5,14 @@
 <zk>
 	
 	<div id="principalCad" width="100%" height="100%" >
+	
+		<style>	
+			.label {
+				font-size: 14;
+				font-weight: bold;
+				}			
+		</style>
+		
 		<div height="36px" width="100%">
 			<hbox spacing="3">
 			<a id="nav" onClick="navegador(self.getLabel())" style="font-size:16px;" image="/img/btn/page/home.png" visible="false" 
@@ -19,7 +27,8 @@
 		<div id="principaldiv" align="center">
 			<vbox align="center" width="100%" height="100%">
 				<hbox pack="center" align="center" spacing="50px">					
-					<button label="Cadastros" orient="vertical" image="/img/btn/cadastros.png" tooltiptext="Cadastros" width="100" height="100">
+					<button label="Cadastros" orient="vertical" image="/img/btn/cadastros.png" tooltiptext="Cadastros" 
+							width="100" height="100" dir="reverse" sclass="label">
 						<attribute name="onClick">
 						<![CDATA[
 						   {								
@@ -40,7 +49,8 @@
 						</attribute>											
 					</button>			
 						
-					<button label="Coletas" orient="vertical" image="/img/btn/coletas.png" tooltiptext="Coletas" width="100" height="100">
+					<button label="Coletas" orient="vertical" image="/img/btn/coletas.png" tooltiptext="Coletas" 
+							width="100" height="100" dir="reverse" sclass="label">
 						<attribute name="onClick">
 						<![CDATA[
 						{
@@ -53,7 +63,7 @@
 							navicone.setTooltiptext("Você está na áre de Coletas");
 							navicone.setSrc("/img/btn/page/coletas_32.png");							
 									
-							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/amostra.zul", principalCad, null);
+							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/gerenciarAmostra.zul", principalCad, null);
 							cadGeral.setId("cadGeral");
 							cadGeral.setVisible(true);	
 						}
@@ -61,15 +71,29 @@
 						</attribute>
 					</button>			
 							
-					<button label="Faróis" orient="vertical" image="/img/btn/farol_2.png" tooltiptext="Faróis" width="100" height="100">
+					<button label="Faróis" orient="vertical" image="/img/btn/farol_2.png" tooltiptext="Faróis" 
+							width="100" height="100" dir="reverse" sclass="label">
 						<attribute name="onClick">
+						<![CDATA[
 						{
-							Messagebox.show("Área de Faróis", "Projeto Alpha - Hydro", Messagebox.OK, Messagebox.INFORMATION);
+							principaldiv.setVisible(false);
+							nav.setVisible(true);
+							navseta.setVisible(true);
+							
+							navicone.setVisible(true);
+							navicone.setTooltiptext("Você está na área de Faróis");
+							navicone.setSrc("/img/btn/page/farois_32.png");
+							
+							final Div cadGeral = (Div) Executions.createComponents("/zk/farol/farolPrincipal.zul", principalCad, null);
+							cadGeral.setId("cadGeral");
+							cadGeral.setVisible(true);
 						}
+						]]>
 						</attribute>
 					</button>			
 				
-					<button label="Relatórios" orient="vertical" image="/img/btn/relatorios.png" tooltiptext="Relatórios" width="100" height="100">
+					<button label="Relatórios" orient="vertical" image="/img/btn/relatorios.png" tooltiptext="Relatórios" 
+							width="100" height="100" dir="reverse" sclass="label">
 						<attribute name="onClick">
 						{
 							Messagebox.show("Área de Relatórios", "Projeto Alpha - Hydro", Messagebox.OK, Messagebox.INFORMATION);
@@ -77,7 +101,8 @@
 						</attribute>
 					</button>
 			
-					<button label="Contatos" orient="vertical" image="/img/btn/contatos_1.png" tooltiptext="Contatos" width="100" height="100">
+					<button label="Contatos" orient="vertical" image="/img/btn/contatos_1.png" tooltiptext="Contatos" 
+							width="100" height="100" dir="reverse" sclass="label">
 						<attribute name="onClick">
 						{
 							Messagebox.show("Área de Contatos", "Projeto Alpha - Hydro", Messagebox.OK, Messagebox.INFORMATION);
@@ -85,7 +110,8 @@
 						</attribute>
 					</button>
 								
-					<button label="Sair" onClick="sair()" orient="vertical" image="img/btn/sair.png" width="100" height="100"/>						
+					<button label="Sair" onClick="sair()" orient="vertical" image="img/btn/sair.png" 
+							width="100" height="100" dir="reverse" sclass="label"/>						
 				</hbox>
 			</vbox>	
 		</div>		

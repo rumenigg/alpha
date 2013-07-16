@@ -1,13 +1,15 @@
 <zk>
-	<window id="winTipoCompartimento" title="Tipos de Compartimento" border="normal" width="400px" apply="org.zkoss.bind.BindComposer" 
+	<window id="winTipoCompartimento" title="Tipos de Compartimentos" border="normal" width="100%" apply="org.zkoss.bind.BindComposer" 
 			viewModel="@id('tcvm') @init('br.com.rti.alpha.viewModel.TipoCompartimentoVM')" onClose="self.detach(); pageScope.clear()">
 		<toolbar>
 			<toolbarbutton id="tbtnNovoTipoCompartimento" tooltiptext="Incluir um novo Tipo de Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Tipo de Compartimento ou suas alterações" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')" disabled="@load(tcvm.desativado)"/>
 			<toolbarbutton tooltiptext="Excluir os dados do Tipo de Compartimento selecionado" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')" disabled="@load(tcvm.desativado)"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -16,17 +18,206 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winTipoCompartimento.detach()"/>
 		</toolbar>
 		
 		<separator spacing="5"/>
 		<grid>
+			<columns>
+				<column hflex="1"/>
+				<column hflex="4"/>
+			</columns>
 			<rows>
-				<row>
+				<row align="right">
 					<label value="Tipo de compartimento" />
 					<textbox id="txtTipoCompartimento" width="100%" value="@bind(tcvm.selectedTipoCompartimento.descricao)"
 							disabled="@load(tcvm.desativado)"/>
+				</row>
+			</rows>
+		</grid>
+		<grid>
+			<rows>
+				<row spans="4">
+					<groupbox width="100%" mold="3d" open="false">
+						<caption label="Condições do óleo" />
+						<grid>
+							<columns>
+								<column hflex="1"/>
+								<column hflex="2"/>
+								<column hflex="1"/>
+								<column hflex="2"/>
+								<column hflex="1"/>
+								<column hflex="2"/>
+								<column hflex="1"/>
+								<column hflex="2"/>
+							</columns>
+							<rows>
+								<row align="right">
+									<label value="Fuligem"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.fuligem)" 
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Oxidação"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.oxidacao)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+													
+									<label value="Nitração"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.nitracao)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Sulfatação"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.sulfatacao)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">
+									<label value="TBN"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.tbn)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Viscosidade"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.viscosidade)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									 
+									<label value="Água"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.agua)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="St"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.st)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="Sul"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.sul)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>														
+									<label value="Fe"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.fe)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+											
+									<label value="Cu"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.cu)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Cr"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.cr)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="Pb"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.pb)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>											
+									<label value="Sn"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.sn)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+											
+									<label value="Mo"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.mo)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Ni"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.ni)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="Ag"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.ag)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>														
+									<label value="Al"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.al)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+											
+									<label value="Si"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.si)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Na"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.na)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="K"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.k)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>														
+									<label value="Ca"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.ca)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+											
+									<label value="P"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.p)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="Zn"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.zn)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="Mg"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.mg)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>													
+									<label value="B"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.b)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+											
+									<label value="Ba"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.ba)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="W"/>
+									<textbox width="100%" value="@bind(tcvm.selectedElementos.w)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">									
+									<label value="F"/>
+									<textbox width="100%" value="@bind(tcvm.selectedElementos.f)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>																											
+									<label value="Diesel"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.diesel)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>	
+																								
+									<label value="Zddp"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.zddp)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>													
+							</rows>
+						</grid>
+					</groupbox>
+				</row>
+			</rows>
+		</grid>
+		<grid width="100%">
+			<rows>
+				<row spans="4">
+					<groupbox width="100%" mold="3d" open="false">
+						<caption label="Contagem de Partículas"/>
+						<grid>
+							<columns>
+								<column hflex="1"/>
+								<column hflex="2"/>
+								<column hflex="1"/>
+								<column hflex="2"/>
+								<column hflex="1"/>
+								<column hflex="2"/>
+							</columns>
+							<rows>
+								<row align="right">
+									<label value="ISO 4u"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.iso4u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value="ISO 6u"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.iso6u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+												
+									<label value="ISO 14u"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.iso14u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+								<row align="right">
+									<label value="Norma 4406"/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.norma4u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value=""/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.norma6u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+									<label value=""/>
+									<doublespinner width="100%" value="@bind(tcvm.selectedElementos.norma14u)"
+											disabled="@load(tcvm.desativado)" onChanging="@command('carregarElementos')"/>
+								</row>
+							</rows>
+						</grid>
+					</groupbox>
 				</row>
 			</rows>
 		</grid>

@@ -28,6 +28,7 @@ public class Analise
     private String silica;
     private String agua;
     private String informacaoAnalise;
+    private String situacao;
     
     @OneToOne
     @JoinColumn(name="amostra_id")
@@ -108,6 +109,14 @@ public class Analise
 
 	public void setInformacaoAnalise(String informacaoAnalise) {
 		this.informacaoAnalise = informacaoAnalise;
+	}
+	
+	public String getSituacao() {
+		return situacao;
+	}
+
+	public void setSituacao(String situacao) {
+		this.situacao = situacao;
 	}
 
 	public Amostra getAmostraAnalise() {

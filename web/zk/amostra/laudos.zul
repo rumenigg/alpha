@@ -1,0 +1,117 @@
+<?page title="Laudos" contentType="text/html;charset=UTF-8"?>
+<zk>
+    <window title="Laudos" border="normal" apply="org.zkoss.bind.BindComposer"
+        viewModel="@id('lvm') @init('br.com.rti.alpha.viewModel.LaudosVM')"
+        form="@id('fx') @load(lvm.selectedLaudos) @save(lvm.selectedLaudos, before='submit')">
+
+        <style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
+        <toolbar>
+            <toolbarbutton id="tbtnNovoLaudo" tooltiptext="Incluir um novo Laudo" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
+                                       onClick="@command('novo')"/>
+            <toolbarbutton tooltiptext="Salvar o novo Laudo ou suas alterações"  image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
+                                       onClick="@command('submit')"/>
+            <toolbarbutton tooltiptext="Excluir o Laudo selecionado" disabled="@load(lvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
+                                       onClick="@command('excluir')"/>
+            <toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
+                                       onClick="@command('navegar', acao='primeiro')"/>
+            <toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
+                                       onClick="@command('navegar', acao='anterior')"/>
+            <toolbarbutton tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"
+                                       onClick="@command('navegar', acao='proximo')"/>
+            <toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
+                                       onClick="@command('navegar', acao='ultimo')"/>
+             <!--   <toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
+                                       onClick="winAtivo.detach()"/>
+          <toolbarbutton id="tbtnAtivoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
+                                            onClick="winAtivo.setSizable(false); winAtivo.doEmbedded(); self.setDisabled(true); tbtnAtivoDesatrelar.setDisabled(false);"/>
+            <toolbarbutton id="tbtnAtivoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar.png">
+                    <attribute name="onClick">
+                            {
+                                    winAtivo.setSizable(true); 
+                                    winAtivo.doOverlapped(); 
+                                    self.setDisabled(true); 
+                                    tbtnAtivoAtrelar.setDisabled(false);
+                                    winAtivo.setPosition("center");
+                            }
+                    </attribute>
+            </toolbarbutton>-->
+        </toolbar>
+        <columnlayout>
+        <columnchildren hflex="1">	
+        <grid>
+            <columns>
+                <column hflex="1" label=""/>
+                <column hflex="6" label=""/>
+            </columns>
+            <rows>
+            	<row align="right">			
+				<label value="Ativo"/>
+					<combobox id="cbxAtivo" width="100%" placeholder="Selecione um ativo" model="@load(lvm.allAtivo)" constraint="no empty" 
+							selectedItem="@bind(fx.ativoLaudos) @bind(lvm.selectedLaudos.ativoLaudos)" onSelect="@command('atualizaCompartimento')" 
+							disabled="@load(lvm.desativado)" >
+						<template name="model" var="a1">
+							<comboitem label="@load(a1.tag)" value="@load(a1.id)"/>
+						</template>												
+					</combobox>
+				
+                </row>
+                <row align="right">
+                <label value="Compartimento"/>
+					<combobox id="cbxCompartimento" width="100%" placeholder="Selecione um Compartimento" model="@bind(lvm.allCompartimento)" 
+							selectedItem="@bind(lvm.selectedCompartimento)" disabled="@load(lvm.desativado)" >
+						<template name="model" var="c1">
+							<comboitem label="@load(c1.tag)" value="c1.id"/>
+						</template>												
+					</combobox>
+                </row>    	               
+                <row align="right">
+                    <label value ="Descrição" />
+                    <textbox id="lbdescricao" width="100%" value="@bind(fx.descricao)"  disabled="@load(lvm.desativado)" constraint="no empty"/>	
+                </row>
+                <row align="right">
+                    <label value ="Arquivo Laudo" />
+                    <div align="left" >
+                   <button id="btnArquivo" label="Localizar Arquivo" disabled="@load(lvm.desativado)" upload="true" >
+						<attribute name="onUpload">
+						<![CDATA[
+							org.zkoss.util.media.Media media = event.getMedia();
+								arquivo.setValue(media.getName());
+								System.out.println("Nome : " + media);
+						]]>
+					</attribute>
+					</button>
+					
+					<button id="btnDownload" label="Baixar" disabled="@load(lvm.desativado)" >
+					<attribute name="onClick"><![CDATA[
+						        java.io.InputStream is = desktop.getWebApp().getResourceAsStream(arquivo.getValue());
+						       // if (is != null)
+						           // org.zkoss.zul.Filedownload.save(is, "rti/alpha/hydro/laudos");
+						       // else
+						         //   alert("/test/download.html not found");
+						        
+						   		]]>
+					</attribute>							 
+					 </button>
+					<label id="arquivo" value="@load(lvm.selectedLaudos.arquivo)"/>
+                 </div>   
+                </row>
+                <row align="right">
+                    <label value ="Vistoriado" />
+                    <div align="left">
+                        <radiogroup selectedItem="@bind(fx.vistoriado)">
+                            <radio label="Sim" value="s" disabled="@load(lvm.desativado)"/> 
+                            <radio label="Não" value="n" disabled="@load(lvm.desativado)" selected="true"/>
+                        </radiogroup>
+                    </div>
+                </row>
+                <row align="right">
+                    <label value ="Obs.:" />
+                    <textbox value="@bind(fx.obs)" multiline="true" rows="4" width="100%" disabled="@load(lvm.desativado)"/>	
+                </row>
+            </rows>
+        </grid>
+        </columnchildren>     
+       </columnlayout> 		
+    </window>
+</zk>

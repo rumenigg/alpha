@@ -1,25 +1,27 @@
 package br.com.rti.alpha.viewModel;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
 
-import org.apache.commons.fileupload.FileItem;
+import net.sf.jasperreports.engine.export.data.DateTextValue;
+
+import org.jfree.ui.action.DowngradeActionMap;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -31,6 +33,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Component;
+import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.UploadEvent;
@@ -38,16 +41,14 @@ import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.Button;
+import org.zkoss.zul.Calendar;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.FieldComparator;
-import org.zkoss.zul.Fileupload;
-import org.zkoss.zul.GroupsModelArray;
-import org.zkoss.zul.Image;
-import org.zkoss.zul.ListModelList;
+import org.zkoss.zul.Filedownload;
 import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Toolbarbutton;
+
+import com.lowagie.text.pdf.AcroFields.Item;
 
 import br.com.rti.alpha.controle.CompartimentoAtivoListGroupRenderer;
 import br.com.rti.alpha.controle.Ordenar;
@@ -74,10 +75,14 @@ public class LaudosVM {
 	@Wire
 	private Listbox lbobs;
 	@Wire
-	private Button btnArquivo;
-	@Wire
-	private File lbarquivo;
+	private Listbox lbArquivo;
 	
+	public Listbox getLbArquivo() {
+		return lbArquivo;
+	}
+	public void setLbArquivo(Listbox lbArquivo) {
+		this.lbArquivo = lbArquivo;
+	}
 	private Media media;
 	public Media getMedia() {
 		return media;
@@ -85,7 +90,6 @@ public class LaudosVM {
 	public void setMedia(Media media) {
 		this.media = media;
 	}
-
 	private int navegador = 0;
 	
 	private Laudos selectedLaudos;
@@ -117,12 +121,7 @@ public class LaudosVM {
 	public void setLbobs(Listbox lbobs) {
 		this.lbobs = lbobs;
 	}
-	public Button getBtnarquivo() {
-		return btnArquivo;
-	}
-	public void setBtnarquivo(Button btnArquivo) {
-		this.btnArquivo = btnArquivo;
-	}
+
 	public Combobox getCbxAtivo() {
 		return cbxAtivo;
 	}
@@ -219,7 +218,7 @@ public class LaudosVM {
 	}
 	
 	@Command
-	@NotifyChange({"allCompartimento","selectedAtivo","selectedCompartimento"})
+	@NotifyChange("allCompartimento")
 	public void atualizaCompartimento()
 	{
 		DaoFactory daof = new DaoFactory();
@@ -248,8 +247,8 @@ public class LaudosVM {
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view)
 	{
 		Selectors.wireComponents(view, this, false);
-		//Selectors.wireEventListeners(view, this);			
-		Clients.showNotification("Clique aqui para adicionar um novo Ativo", "info", this.tbtnNovoLaudo, "end_center", 3000);
+		Selectors.wireEventListeners(view, this);			
+		Clients.showNotification("Clique aqui para adicionar um novo Laudo", "info", this.tbtnNovoLaudo, "end_center", 3000);
 		//init();
 	}
 	
@@ -263,17 +262,18 @@ public class LaudosVM {
 		this.desativado = false;
 				
 		this.selectedLaudos=null;
-		this.selectedLaudos = new Laudos();			
+		this.selectedLaudos = new Laudos();		
 	}
 	
 	@Command
-	@NotifyChange({"selectedAtivo","desativado","selectedCompartimento","selectedLaudos"})
+	@NotifyChange({"selectedAtivo","desativado","selectedLaudos"})
 	public void submit() throws IOException{
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		
-		this.salvarArquivo();
 		daof.getLaudosDAO().adiciona(this.selectedLaudos);
+		
+		this.criarDiretorio();
 
 		Messagebox.show("O Laudo " + this.selectedLaudos.getDescricao().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
 				"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
@@ -375,74 +375,50 @@ public class LaudosVM {
 		}
 	}
 	
-	
-	/*
-	 *  ENVIA O ARQUIVO DE LAUDOS
-	 */
-	
-	/*@Listen("onUpload=#btnArquivo")
-	public void addArquivo(UploadEvent evt)
-	{
-		this.media = evt.getMedia();
-	}
-	
-	public void salvarArquivo() throws IOException{
-		//if ( this.media != null ){
-		
-		String path = "C://rti/alpha";//System.getProperty("user.home"); 
-		 
-		path += "/hydro/laudos/" + this.selectedLaudos.getDescricao() + "_" + this.media.getName();
-		
-		//BufferedImage imagem = ImageIO.read( this.media.getStreamData() );
-		File arquivo = new File(path);
-		arquivo.mkdirs();
-		// fazer algo com a imagem...
-		// ImageIO.write(imagem, "DOC", arquivo);
-		
-		this.selectedLaudos.setArquivo(arquivo.getCanonicalPath());//"/img/imagens/pessoas/" + this.selectedPessoa.getNome()+"_" + this.media.getName());
-		System.out.println("Arquivo :"+ this.selectedLaudos.getDescricao()+"_"+ this.media.getName());
-		//}
-	}*/
-
+/*
+ *  ENVIA O ARQUIVO DE LAUDOS
+*/
 	
 	@Listen("onUpload=#btnArquivo")
-	public void addFoto(UploadEvent evt) throws IOException
-	{
-			this.media = evt.getMedia();
+	public void addArquivo(UploadEvent evt){
+		
+		media = evt.getMedia();
 	}
-	
-	public void salvarArquivo() throws IOException{
-				
-			String path = "/rti/alpha";
-			path+="/laudos/";
-
-			
-			File arquivo = new File(path);
-			arquivo.mkdirs();
-			//FileReader fr=new FileReader("");
-			//BufferedReader buf= new BufferedReader(fr);
-			
-			FileInputStream fi = new FileInputStream(arquivo.getName());
-			//System.out.println("nome do arquivo " + buf.toString());
-			/*FileInputStream fi = new FileInputStream(path);*/
-			BufferedInputStream buf = new BufferedInputStream(fi);
-			
-			FileOutputStream fo = new FileOutputStream(path);
-			BufferedOutputStream bo= new BufferedOutputStream(fo);
-			//this.media =getMedia(); 
-			System.out.println("%%%%%%% "+ arquivo + buf.toString()+lbarquivo.getName());
-			buf.close();
-			this.selectedLaudos.setArquivo(arquivo.getCanonicalPath());
+	@Listen("onClick=#btnDownload")
+	public void baixar(UploadEvent evt)  {
+		media = evt.getMedia();
 		
 	}
-		
-
-	public void delFoto(String foto) throws IOException
-	{
-		File arquivo = new File(foto);
-		
-		arquivo.delete();
+	public void criarDiretorio() throws IOException {
+		if(this.media!=null){	
+			BufferedInputStream in = null;
+	        BufferedOutputStream out = null;
+			String path = "rti/alpha";
+			path +="/hydro/laudos/";
+						
+			InputStream fin = media.getStreamData();
+            in = new BufferedInputStream(fin);
+            File Diretorio = new File(path);
+            Diretorio.mkdirs();
+             
+            File file = new File(path + this.selectedLaudos.getId()+"_"+media.getName());
+ 
+            OutputStream fout = new FileOutputStream(file);
+            out = new BufferedOutputStream(fout);
+            
+            byte buffer[] = new byte[1024];
+            int ch = in.read(buffer);
+            while (ch != -1) {
+                out.write(buffer, 0, ch);
+                ch = in.read(buffer);
+            }
+            fout.close();
+           // Messagebox.show("Arquivo carregado com sucesso :" + this.selectedLaudos.getId()+"_"+media.getName());
+            this.selectedLaudos.setArquivo(file.getCanonicalPath());
+            
+        	}else{
+        		//System.out.println("o arquivo nao foi caregado");
+		}
 	}
-
 }
 

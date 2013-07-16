@@ -6,6 +6,9 @@
 		<style src="/widgets/getting_started/menu_toolbar/styleFarol.css" />	
 	
 		<groupbox mold="3d" closable="false" contentStyle="border: 1px solid" >
+			<toolbar>
+				<toolbarbutton tooltiptext="Atualizar" image="/img/btn/page/atualizar-32.png" onClick="@global-command('atualizaAllSupervisao')" />
+			</toolbar>
 			<caption label="Supervisão(ões)"/>
 			<columnlayout >
 				<columnchildren style="float: left; padding: 20px;">

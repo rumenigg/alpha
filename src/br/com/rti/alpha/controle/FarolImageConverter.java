@@ -1,5 +1,7 @@
 package br.com.rti.alpha.controle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.zkoss.bind.BindContext;
@@ -17,6 +19,7 @@ import br.com.rti.alpha.modelo.supervisao.Supervisao;
 public class FarolImageConverter implements Converter
 {
 	private boolean compartimento = false;
+	List<String> situacao;
 
 	@Override
 	public Object coerceToBean(Object arg0, Component arg1, BindContext arg2) {
@@ -33,20 +36,26 @@ public class FarolImageConverter implements Converter
 		
 		
 		String resultado = verificarFarol(objeto, id);
+		//this.verificarFarol(objeto, id);
 		
 		if ( !compartimento )
 		{
-			if ( resultado.equals("semamostra") || resultado.equals("semanalise") )
-				src = "/img/farol/farol-desligado.png";		
-			else 
-				if ( resultado.equalsIgnoreCase("normal") )
-					src = "/img/farol/farol-aceso_verde-l.png";
+			/*System.out.println("--> Situação - Qtd: " + this.situacao.size());
+			for ( String s : this.situacao )
+				System.out.println("--> Situação - Desc: " + s);*/
+				
+			if ( this.situacao.contains("critico") )//resultado.equalsIgnoreCase("critico") )
+				return src = "/img/farol/farol-aceso_vermelho-l.png";
+			else
+				if ( this.situacao.contains("anormal") )//resultado.equalsIgnoreCase("anormal") )
+					return src = "/img/farol/farol-aceso_amarelo-l.png";
 				else
-					if ( resultado.equalsIgnoreCase("anormal") )
-						src = "/img/farol/farol-aceso_amarelo-l.png";
-					else		
-						if ( resultado.equalsIgnoreCase("critico") )
-							src = "/img/farol/farol-aceso_vermelho-l.png";
+					if ( this.situacao.contains("normal") )//resultado.equalsIgnoreCase("normal") )
+						return src = "/img/farol/farol-aceso_verde-l.png";
+					else
+						if ( this.situacao.contains("semamostra") || this.situacao.contains("semanalise") )//resultado.equals("semamostra") || resultado.equals("semanalise") )
+							return src = "/img/farol/farol-desligado.png";
+						
 		}
 		else
 		{
@@ -62,13 +71,16 @@ public class FarolImageConverter implements Converter
 	
 		//System.out.println("\n--> Resultado: " + resultado);
 		//System.out.println("\n--> Image Src: " + src);
-		
+		this.situacao.clear();
+		this.situacao = null;
 		return src;
 	}
 	
 	public String verificarFarol(String objeto, int id)
 	{
 		String situacao = "";
+		
+		this.situacao = new ArrayList<String>();
 		
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
@@ -79,25 +91,25 @@ public class FarolImageConverter implements Converter
 		
 			Set<Frota> allFrota = supervisao.getFrota();
 			if ( allFrota.isEmpty() )
-				situacao = "semamostra";
+				this.situacao.add("semamostra");//situacao = "semamostra";
 			else
 				for (Frota frota : allFrota)
 				{
 					Set<Ativo> allAtivo = frota.getAtivo();
 					if ( allAtivo.isEmpty() )
-						situacao = "semamostra";
+						this.situacao.add("semamostra");
 					else
 						for ( Ativo ativo : allAtivo)
 						{				
 							Set<Compartimento> allCompartimento = ativo.getCompartimento();
 							if ( allCompartimento.isEmpty() )
-								situacao = "semamostra";
+								this.situacao.add("semamostra");//situacao = "semamostra";
 							else
 								for (Compartimento compartimento : allCompartimento)
 								{
 									Set<Amostra> allAmostra = compartimento.getAmostra();
 									if ( allAmostra.isEmpty() )
-										situacao = "semamostra";
+										this.situacao.add("semamostra");//situacao = "semamostra";
 									else
 									{
 										for (Amostra amostra : allAmostra)
@@ -105,7 +117,7 @@ public class FarolImageConverter implements Converter
 											//System.out.println("\n--> Passo 1");
 											if ( amostra.getSituacao().isEmpty() )
 											{
-												situacao = "semanalise";
+												this.situacao.add("semanalise");//situacao = "semanalise";
 												//System.out.println("\n--> Passo 2");
 											}							
 											else
@@ -113,16 +125,17 @@ public class FarolImageConverter implements Converter
 												if ( amostra.getVistoriado() != null)
 												{
 													if (amostra.getVistoriado().equals("s") )
-														return situacao = "normal";
+														this.situacao.add("normal");//situacao = "normal";
 													else
-														return situacao = amostra.getSituacao();
+														this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 												}
 												else 
-													return situacao = amostra.getSituacao();
+													this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 												//System.out.println("\n--> Passo 3");
 												//System.out.println("\n--> Situação: " + situacao);
 											}
 										}
+										//return situacao;
 									}
 								}
 						}
@@ -134,19 +147,19 @@ public class FarolImageConverter implements Converter
 		
 			Set<Ativo> allAtivo = frota.getAtivo();
 			if ( allAtivo.isEmpty() )
-				situacao = "semamostra";
+				this.situacao.add("semamostra");//situacao = "semamostra";
 			else
 			for ( Ativo ativo : allAtivo)
 			{				
 				Set<Compartimento> allCompartimento = ativo.getCompartimento();
 				if ( allCompartimento.isEmpty() )
-					situacao = "semamostra";
+					this.situacao.add("semamostra");//situacao = "semamostra";
 				else
 				for (Compartimento compartimento : allCompartimento)
 				{
 					Set<Amostra> allAmostra = compartimento.getAmostra();
 					if ( allAmostra.isEmpty() )
-						situacao = "semamostra";
+						this.situacao.add("semamostra");//situacao = "semamostra";
 					else
 					{
 						for (Amostra amostra : allAmostra)
@@ -154,7 +167,7 @@ public class FarolImageConverter implements Converter
 							//System.out.println("\n--> Passo 1");
 							if ( amostra.getSituacao().isEmpty() )
 								{
-									situacao = "semanalise";
+								this.situacao.add("semanalise");//situacao = "semanalise";
 									//System.out.println("\n--> Passo 2");
 								}							
 							else
@@ -162,16 +175,17 @@ public class FarolImageConverter implements Converter
 								if ( amostra.getVistoriado() != null)
 								{
 									if (amostra.getVistoriado().equals("s") )
-										return situacao = "normal";
+										this.situacao.add("normal");//situacao = "normal";
 									else
-										return situacao = amostra.getSituacao();
+										this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 								}
 								else 
-									return situacao = amostra.getSituacao();
+									this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 								//System.out.println("\n--> Passo 3");
 								//System.out.println("\n--> Situação: " + situacao);
 							}
 						}
+						//return situacao;
 					}
 				}
 			}		
@@ -182,13 +196,13 @@ public class FarolImageConverter implements Converter
 		
 			Set<Compartimento> allCompartimento = ativo.getCompartimento();
 			if ( allCompartimento.isEmpty() )
-				situacao = "semamostra";
+				this.situacao.add("semamostra");//situacao = "semamostra";
 			else
 			for (Compartimento compartimento : allCompartimento)
 			{
 				Set<Amostra> allAmostra = compartimento.getAmostra();
 				if ( allAmostra.isEmpty() )
-					situacao = "semamostra";
+					this.situacao.add("semamostra");//situacao = "semamostra";
 				else
 				{
 					for (Amostra amostra : allAmostra)
@@ -196,7 +210,7 @@ public class FarolImageConverter implements Converter
 						//System.out.println("\n--> Passo 1");
 						if ( amostra.getSituacao().isEmpty() )
 							{
-								situacao = "semanalise";
+							this.situacao.add("semanalise");//situacao = "semanalise";
 								//System.out.println("\n--> Passo 2");
 							}							
 						else
@@ -204,16 +218,17 @@ public class FarolImageConverter implements Converter
 							if ( amostra.getVistoriado() != null)
 							{
 								if (amostra.getVistoriado().equals("s") )
-									return situacao = "normal";
+									this.situacao.add("normal");//situacao = "normal";
 								else
-									return situacao = amostra.getSituacao();
+									this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 							}
 							else 
-								return situacao = amostra.getSituacao();
+								this.situacao.add(amostra.getSituacao());//situacao = amostra.getSituacao();
 							//System.out.println("\n--> Passo 3");
 							//System.out.println("\n--> Situação: " + situacao);
 						}
 					}
+					//return situacao;
 				}
 			}
 		}		
@@ -231,7 +246,7 @@ public class FarolImageConverter implements Converter
 					//System.out.println("\n--> Passo 1");
 					if ( amostra.getSituacao().isEmpty() )
 						{
-							situacao = "semanalise";
+						situacao = "semanalise";
 							//System.out.println("\n--> Passo 2");
 						}							
 					else
@@ -240,19 +255,42 @@ public class FarolImageConverter implements Converter
 						if ( amostra.getVistoriado() != null)
 						{
 							if (amostra.getVistoriado().equals("s") )
-								return situacao = "normal";
+								situacao = "normal";
 							else
-								return situacao = amostra.getSituacao();
+								situacao = amostra.getSituacao();
 						}
 						else 
-							return situacao = amostra.getSituacao();
+							situacao = amostra.getSituacao();
 						//System.out.println("\n--> Passo 3");
 						//System.out.println("\n--> Situação: " + situacao);
 					}
 				}
+				return situacao;
 			}
-		}	
-		
+		}
+		if ( objeto.equals("amostra") )
+		{
+			Amostra amostra = daof.getAmostraDAO().procura(id);		
+			System.out.println("No. da Amostra" + amostra.getId());	
+			if ( amostra.getSituacao().equals("") )
+			{
+				situacao = "semanalise";
+			}
+			else
+			{
+				this.compartimento = true;
+				if ( amostra.getVistoriado() != null)
+				{
+					if (amostra.getVistoriado().equals("s") )
+						situacao = "normal";
+					else
+						situacao = amostra.getSituacao();
+				}
+				else 
+					situacao = amostra.getSituacao();
+			}
+			return situacao;
+		}		
 		return situacao;
 	}
 

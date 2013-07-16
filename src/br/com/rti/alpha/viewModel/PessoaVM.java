@@ -1,5 +1,7 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -255,7 +257,7 @@ public class PessoaVM
 		{	
 			if (selectedPessoa.getMatricula().equalsIgnoreCase("HA1234"))
 				Messagebox.show("Você não pode alterar os dados dessa pessoa, \nela é utiliza para testes pelo desenvolvedor.",
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
+						"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
 			else
 			{
 				DaoFactory daof = new DaoFactory();
@@ -278,7 +280,7 @@ public class PessoaVM
 				//daof.commit();
 		
 				Messagebox.show("A pessoa " + this.selectedPessoa.getNome().toUpperCase() + " foi adicionada ou atualizada com sucesso.", 
-								"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+								"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 				
 				this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedPessoa);
 				this.atualizaBindComponent("atualizaAllPessoaFrota", "atualizaAllPessoaFrota", this.selectedPessoa);
@@ -297,7 +299,7 @@ public class PessoaVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-							"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+							"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -319,7 +321,7 @@ public class PessoaVM
 								{
 									if (selectedPessoa.getMatricula().equalsIgnoreCase("HA1234"))
 										Messagebox.show("Você não pode excluir essa pessoa, \nela é utiliza para testes pelo desenvolvedor.",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
+												"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
 									else
 									{
 										DaoFactory daof = new DaoFactory();
@@ -339,7 +341,7 @@ public class PessoaVM
 											Messagebox.show("Você não pode excluir essa pessoa por que ela é responsável pela Supervisão - " + 
 													selectedPessoa.getSupervisao().getDescricao().toUpperCase()+
 													". Substitua por outro responsável para poder excluí-la.",
-													"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+													"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 										}
 										else
 										{
@@ -365,12 +367,12 @@ public class PessoaVM
 								catch (ConstraintViolationException cve)
 								{
 									Messagebox.show("Você não pode excluir essa pessoa pois ela está associada a uma supervisão ou frota. Substitua a pessoa, na supervisão ou na frota, por outra para poder excluir.",
-											"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+											"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								}
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-													"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+													"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}								
 							}
@@ -380,11 +382,11 @@ public class PessoaVM
 		catch (ConstraintViolationException cve)
 		{
 			Messagebox.show("Você não pode excluir essa pessoa pois ela está associada a uma supervisão ou frota. Substitua a pessoa, na supervisão ou na frota, por outra para poder excluir.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione uma Pessoa para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione uma Pessoa para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}		
 	}
@@ -543,7 +545,17 @@ public class PessoaVM
 			File arquivo = new File(path);
 			arquivo.mkdirs();
 			// fazer algo com a imagem...
-			ImageIO.write(imagem, "PNG", arquivo);
+			int type = BufferedImage.TYPE_INT_RGB;
+	        boolean isPng = path.toUpperCase().endsWith("PNG");
+			if (isPng) {
+	            type = BufferedImage.BITMASK;
+	        }
+	        
+	        if (isPng) {
+	            ImageIO.write(imagem, "PNG", arquivo);
+	        }else{
+	            ImageIO.write(imagem, "JPG", arquivo);
+	        }
 			
 			/*System.out.println("Src: \t" + media.getName() +
 							"\nContext" + media.getContentType()+
@@ -552,6 +564,21 @@ public class PessoaVM
 							"\nCaminho da URI-Path: " + arquivo.toURI().getPath());		
 			 */
 			this.selectedPessoa.setFoto(arquivo.getCanonicalPath());//"/img/imagens/pessoas/" + this.selectedPessoa.getNome()+"_" + this.media.getName());
+			
+			BufferedImage thumb = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumb.createGraphics();
+	        g.setComposite(AlphaComposite.Src);
+	        g.drawImage(imagem, 0, 0, 100, 100, null);
+	        
+			String extensao = path.substring(path.length()-4, path.length());
+			String nome = path.substring(0, path.length()-4);
+			File arquivoThumb = new File(nome+"_thumb"+extensao);
+
+			 if (isPng) {
+		            ImageIO.write(thumb, "PNG", arquivoThumb);
+		        }else{
+		            ImageIO.write(thumb, "JPG", arquivoThumb);
+		        }	
 		}
 	}
 	

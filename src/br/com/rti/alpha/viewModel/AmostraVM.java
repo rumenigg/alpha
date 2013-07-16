@@ -6,20 +6,23 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.hibernate.TransactionException;
 import org.hibernate.annotations.common.AssertionFailure;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.ExecutionArgParam;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
@@ -36,6 +39,8 @@ import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Toolbarbutton;
 
+import br.com.rti.alpha.controle.AmostraConverter;
+import br.com.rti.alpha.controle.FarolImageConverter;
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
 import br.com.rti.alpha.modelo.amostra.Amostra;
@@ -70,6 +75,8 @@ public class AmostraVM
 	private int navegador;
 	
 	private boolean desativado = true;
+	private boolean readOnly = false;
+	private String farol = "";
 	
 	private List<FotoAmostra> fotosAtuais = new ArrayList<FotoAmostra>();
 	private List<FotoAmostra> fotosRemovidas = new ArrayList<FotoAmostra>();
@@ -98,12 +105,27 @@ public class AmostraVM
 	private Elementos selectedElementos;
 	private List<Elementos> allElementos;
 	
+	private Converter amostraConverter = new AmostraConverter();
+	private Converter farolConverter = new FarolImageConverter();
+	
 	public boolean isDesativado() {
 		return desativado;
 	}
 	public void setDesativado(boolean desativado) {
 		this.desativado = desativado;
+	}		
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}	
+	public String getFarol() {
+		return farol;
+	}
+	public void setFarol(String farol) {
+		this.farol = farol;
+	}
 	/*public String getOleoDrenado() 
 	{		
 		return oleoDrenado = this.selectedAmostra.getOleoDrenado().equals("s") ? "Sim" : "Nao";
@@ -217,7 +239,20 @@ public class AmostraVM
 	}
 	public void setAllElementos(List<Elementos> allElementos) {
 		this.allElementos = allElementos;
+	}		
+	public Converter getAmostraConverter() {
+		return amostraConverter;
 	}
+	public void setAmostraConverter(Converter amostraConverter) {
+		this.amostraConverter = amostraConverter;
+	}	
+	public Converter getFarolConverter() {
+		return farolConverter;
+	}
+	public void setFarolConverter(Converter farolConverter) {
+		this.farolConverter = farolConverter;
+	}
+	
 	
 	
 	@Command
@@ -229,6 +264,28 @@ public class AmostraVM
 		daof.beginTransaction();
 		
 		this.allAmostra = daof.getAmostraDAO().listaTudo();
+		
+		Ordenar o = new Ordenar();
+		o.setDescending(true);
+		Collections.sort(this.allAmostra, o);
+		
+		o = null;
+		daof = null;
+	}
+	
+	@NotifyChange({"allAmostra", "selectedAmostra"})
+	public void atualizaAmostraCompartimento(int id)
+	{
+		this.allAmostra = null;
+		DaoFactory daof = new DaoFactory();
+		daof.beginTransaction();
+		
+		Compartimento compartimento = daof.getCompartimentoDAO().procura( id );
+		
+		if ( this.allAmostra == null )
+			this.allAmostra = new ArrayList<Amostra>();
+		
+		this.allAmostra.addAll( compartimento.getAmostra() );
 		
 		Ordenar o = new Ordenar();
 		o.setDescending(true);
@@ -324,9 +381,9 @@ public class AmostraVM
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view)
 	{
 		Selectors.wireComponents(view, this, false);
-		//Selectors.wireEventListeners(view, this);
-				
-		Clients.showNotification("Clique aqui para adicionar um novo Ativo", "info", this.tbtnNovoAmostra, "end_center", 3000);
+		//Selectors.wireEventListeners(view, this);		
+		//if ( this.tbtnNovoAmostra.isVisible() )
+			//Clients.showNotification("Clique aqui para adicionar uma nova Amostra", "info", this.tbtnNovoAmostra, "end_center", 3000);
 		//init();
 	}
 	
@@ -340,8 +397,11 @@ public class AmostraVM
 		this.selectedAmostra = new Amostra();
 		this.selectedAmostra.setAtivoAmostra(null);
 		
+		this.selectedAnalise = null;
 		this.selectedAnalise = new Analise();
-		//this.selectedElementos = new Elementos();		
+		
+		this.selectedElementos = null;
+		this.selectedElementos = new Elementos();		
 		
 		this.limparFotos();
 	}
@@ -355,45 +415,87 @@ public class AmostraVM
 			DaoFactory daof = new DaoFactory();
 			daof.beginTransaction();
 			
-			if ( !this.fotosRemovidas.isEmpty() )
+			if ( this.readOnly )
 			{
-				for ( FotoAmostra fa : this.fotosRemovidas )
-					daof.getFotoAmostraDAO().remove(fa);
-			}					
+				daof.getAmostraDAO().adiciona(this.selectedAmostra);
+				daof.commit();			
+				daof = null;
 			
-			this.selectedAmostra.setAnalise(this.selectedAnalise);
+				Messagebox.show("A amostra foi vistoriada com sucesso.",
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
+				
+				this.atualizaAmostraCompartimento(this.selectedAmostra.getCompartimentoAmostra().getId());
+				this.showAmostra(0);
+				
+				BindUtils.postNotifyChange(null, null, this, "allAmostra");
+				BindUtils.postNotifyChange(null, null, this, "selectedAmostra");
+				
+				//Métodos usados para atualizar as janelas de faróis anteriores, Supervisão, Frota, Ativo e Compartimento
+				Map<String, Object> args = new HashMap<String, Object>();
+				args.put("selectedCompartimento", this.selectedAmostra.getCompartimentoAmostra());
+				BindUtils.postGlobalCommand(null, null, "showSelectedAmostrasCompartimento", args);
+				
+				BindUtils.postGlobalCommand(null, null, "atualizaAllCompartimento", null);
+				BindUtils.postGlobalCommand(null, null, "atualizaAllAtivo", null);
+				BindUtils.postGlobalCommand(null, null, "atualizaAllFrota", null);
+				BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);				
+			}
+			else
+			{
+				if ( !this.fotosRemovidas.isEmpty() )
+				{
+					for ( FotoAmostra fa : this.fotosRemovidas )
+						daof.getFotoAmostraDAO().remove(fa);
+				}					
 			
-			daof.getAmostraDAO().adiciona(this.selectedAmostra);
+				this.selectedAmostra.setAnalise(this.selectedAnalise);
 			
-			this.selectedAnalise.setAmostraAnalise(this.selectedAmostra);	
+				if ( this.selectedAnalise != null && this.selectedElementos != null)
+					if ( this.selectedAmostra.getSituacao() != null )
+					{
+						if ( !this.selectedAmostra.getSituacao().equals("critico") )
+							this.selectedAmostra.setSituacao(this.verificarAnalise());
+					}
+					else
+						this.selectedAmostra.setSituacao(this.verificarAnalise());
 			
-			daof.getElementosDAO().adiciona(this.selectedElementos);
 			
-			this.selectedAnalise.setElementosAnalise(this.selectedElementos);
+				daof.getAmostraDAO().adiciona(this.selectedAmostra);
 			
-			daof.getAnaliseDAO().adiciona(this.selectedAnalise);			
+				this.selectedAnalise.setAmostraAnalise(this.selectedAmostra);	
 			
-			this.salvarFoto();
+				daof.getElementosDAO().adiciona(this.selectedElementos);
 			
-			daof.commit();			
-			daof = null;
+				this.selectedAnalise.setElementosAnalise(this.selectedElementos);
 			
-			Messagebox.show("A amostra foi adicionado ou atualizado com sucesso.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);		
+				daof.getAnaliseDAO().adiciona(this.selectedAnalise);			
+			
+				this.salvarFoto();
+			
+				daof.commit();			
+				daof = null;
+			
+				Messagebox.show("A amostra foi adicionado ou atualizado com sucesso.",
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
 						
-			this.atualizaAmostra();	
-			BindUtils.postNotifyChange(null, null, this, "allAmostra");
-			//this.novo();
-			this.selectedAmostra = null;
-			this.selectedAnalise = null;
-			this.selectedElementos = null;
-			this.desativado = true;
-			this.limparFotos();
+				this.atualizaAmostra();	
+				BindUtils.postNotifyChange(null, null, this, "allAmostra");
+				//this.novo();
+				this.selectedAmostra = null;
+				this.selectedAnalise = null;
+				this.selectedElementos = null;
+				this.desativado = true;
+				this.limparFotos();
+			
+				//Atualiza a lista de amostras no lado esquerdo da janela de gerenciamento de amostras.
+				BindUtils.postGlobalCommand(null, null, "atualizaAmostra", null);
+			}
 		}
 		catch (ConstraintViolationException e)
 		{
 			Messagebox.show("Por favor, verifique as informações fornecidas. Os campos (Ativo, Compartimento, Tipos de Coleta, Plano e Óleo), são obrigatórios.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
+			e.printStackTrace();
 		}
 		catch (AssertionFailure e)
 		{
@@ -402,8 +504,8 @@ public class AmostraVM
 		catch (NullPointerException npe)
 		{
 			Messagebox.show("Por favor, verifique as informações fornecidas. Os campos (Ativo, Compartimento, Tipos de Coleta, Plano e Óleo), são obrigatórios.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);
-			//npe.printStackTrace();
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);
+			npe.printStackTrace();
 		}
 		catch (Exception e)
 		{
@@ -418,7 +520,7 @@ public class AmostraVM
 		try
 		{
 			Messagebox.show("Você realmente deseja excluir a amostra selecionada?", 
-					"Hydro - Projeto Alpha", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
+					"Portal Hydro", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 				new EventListener<Event>() {
 					public void onEvent(Event event) throws SQLException, IOException
 					{
@@ -430,12 +532,15 @@ public class AmostraVM
 								daof.beginTransaction();
 								daof.getAmostraDAO().remove(selectedAmostra);
 
-								Messagebox.show("Amostra excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);																
+								Messagebox.show("Amostra excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
+								
+								//Atualiza a lista de amostras no lado esquerdo da janela de gerenciamento de amostras.
+								BindUtils.postGlobalCommand(null, null, "atualizaAmostra", null);
 							}
 							catch (Exception e)
 							{
 								Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-									"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+									"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								e.printStackTrace();									
 							}
 							
@@ -450,7 +555,7 @@ public class AmostraVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Tipo de Coleta para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}
@@ -498,21 +603,56 @@ public class AmostraVM
 		}		
 	}
 	
-	@Command
+	@GlobalCommand
 	@NotifyChange({"desativado","selectedAmostra"})
-	public void showSelectedAmostra() throws IOException
+	public void showSelectedAmostra(@BindingParam("selectedAmostra") Object obj, @BindingParam("readOnly") boolean readOnly) throws IOException
 	{		
 		this.desativado = false;
-		for ( Amostra a : this.allAmostra )
+		this.readOnly = false;
+		
+		if ( obj instanceof Amostra )
 		{
-			if ( a.getId() == this.selectedAmostra.getId() )
-			{
-				this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );
-			}
-		}			
+			this.selectedAmostra = (Amostra) obj;
+			for ( Amostra a : this.allAmostra )			
+				if ( a.getId() == this.selectedAmostra.getId() )
+					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );			
+		}
+		else
+		{
+			int id = (Integer) obj;		
+			for ( Amostra a : this.allAmostra )
+				if ( a.getId() == id )
+					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );
+		}
 	}
 	
-	@NotifyChange({"selectedAmostra","selectedAnalise"})
+	@GlobalCommand
+	@NotifyChange({"desativado", "readOnly"})
+	public void showAmostrasCompartimento(@BindingParam("selectedCompartimento") int id, @BindingParam("readOnly") boolean readOnly) throws IOException
+	{		
+		this.desativado = false;
+		this.readOnly = readOnly;
+		
+		this.atualizaAmostraCompartimento(id);
+		
+		this.showAmostra(0);
+		/*if ( obj instanceof Amostra )
+		{
+			this.selectedAmostra = (Amostra) obj;
+			for ( Amostra a : this.allAmostra )			
+				if ( a.getId() == this.selectedAmostra.getId() )
+					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );			
+		}
+		else
+		{
+			int id = (Integer) obj;		
+			for ( Amostra a : this.allAmostra )
+				if ( a.getId() == id )
+					this.showAmostra( this.navegador = this.allAmostra.indexOf(a) );
+		}*/
+	}
+	
+	@NotifyChange({"selectedAmostra","selectedAnalise","farol"})
 	public void showAmostra( int i ) throws IOException
 	{
 		this.tabAmostra.setSelected(true);
@@ -550,7 +690,38 @@ public class AmostraVM
 		BindUtils.postNotifyChange(null, null, this, "selectedAnalise");
 		BindUtils.postNotifyChange(null, null, this, "selectedElementos");
 		
-		this.showFotos();		
+		this.showFotos();
+		
+		if ( this.selectedAmostra.getSituacao() != null )
+		{
+			if ( this.selectedAmostra.getVistoriado() != null )
+			{
+				if ( this.selectedAmostra.getVistoriado().equals("s") )
+				{					
+					this.farol = "/img/farol/farol_verde_22x22.png";
+				}
+				else
+				{
+					if ( this.selectedAmostra.getSituacao().equals("normal") )
+						this.farol = "/img/farol/farol_verde_22x22.png";
+					if ( this.selectedAmostra.getSituacao().equals("anormal") )
+						this.farol = "/img/farol/farol_amarelo_22x22.png";
+					if ( this.selectedAmostra.getSituacao().equals("critico") )
+						this.farol = "/img/farol/farol_vermelho_22x22.png";
+				}
+			}
+			else
+			{
+				if ( this.selectedAmostra.getSituacao().equals("normal") )
+					this.farol = "/img/farol/farol_verde_22x22.png";
+				if ( this.selectedAmostra.getSituacao().equals("anormal") )
+					this.farol = "/img/farol/farol_amarelo_22x22.png";
+				if ( this.selectedAmostra.getSituacao().equals("critico") )
+					this.farol = "/img/farol/farol_vermelho_22x22.png";
+			}
+		}
+		
+		BindUtils.postNotifyChange(null, null, this, "farol");
 	}
 	
 	@NotifyChange({"selectedAtivo","allAtivo","allCompartimento"})
@@ -639,15 +810,23 @@ public class AmostraVM
 				tx.setMultiline(true);
 				tx.setRows(5);
 				tx.setId( String.valueOf(fa.getId()) );
+				
+				if ( this.readOnly )			
+					tx.setReadonly(true);
+				
 				tx.setParent(this.amostraFoto);
-			
-				Checkbox cb = new Checkbox();
+									
+				Checkbox cb = new Checkbox();				
 				cb.setImageContent(img);
 				cb.setContext("popupFoto");
 				cb.setTooltiptext("Marque a foto para excluí-la");
 				cb.setName(img.getName());
+				
+				if ( this.readOnly )				
+					cb.setDisabled(true);
+				
 				cb.setParent(this.amostraFoto);
-			
+				
 				this.fotosAtuais.add(fa);
 			}
 			this.amostraFoto.setHeight(height);
@@ -774,5 +953,73 @@ public class AmostraVM
 		}
 		if (amostraFoto.getChildren().isEmpty())
 			amostraFoto.setHeight("70px");
+	}
+	
+	public String verificarAnalise()
+	{
+		String situacao = "normal";
+		
+		if ( this.selectedAnalise.getCombustivel() !=null )
+			if ( this.selectedAnalise.getCombustivel().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getOleoescuro() !=null )
+			if ( this.selectedAnalise.getOleoescuro().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getImpureza() != null )
+			if ( this.selectedAnalise.getImpureza().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getLimalha() != null )
+			if ( this.selectedAnalise.getLimalha().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getSilica() != null )
+			if ( this.selectedAnalise.getSilica().equals("s") )
+				situacao = "anormal";
+		
+		if ( this.selectedAnalise.getAgua() != null )
+			if ( this.selectedAnalise.getAgua().equals("s") )
+				situacao = "anormal";
+		
+		Elementos tendencia = this.selectedAmostra.getCompartimentoAmostra().getTipoCompartimento().getElementos();
+				
+		if ( this.selectedElementos.getFuligem() > tendencia.getFuligem() || this.selectedElementos.getFuligem() > tendencia.getFuligem() ||
+			 this.selectedElementos.getOxidacao() > tendencia.getOxidacao() || this.selectedElementos.getNitracao() > tendencia.getNitracao() ||
+			 this.selectedElementos.getSulfatacao() > tendencia.getSulfatacao() || this.selectedElementos.getTbn() > tendencia.getTbn() ||
+			 this.selectedElementos.getViscosidade() > tendencia.getViscosidade() || this.selectedElementos.getAgua() > tendencia.getAgua() ||
+			 this.selectedElementos.getSt() > tendencia.getSt() || this.selectedElementos.getSul() > tendencia.getSul() ||
+			 this.selectedElementos.getFe() > tendencia.getFe() || this.selectedElementos.getCu() > tendencia.getCu() ||
+			 this.selectedElementos.getCr() > tendencia.getCr() || this.selectedElementos.getPb() > tendencia.getPb() ||
+			 this.selectedElementos.getSn() > tendencia.getSn() || this.selectedElementos.getMo() > tendencia.getMo() ||
+			 this.selectedElementos.getNi() > tendencia.getNi() || this.selectedElementos.getNi() > tendencia.getNi() || 
+			 this.selectedElementos.getAg() > tendencia.getAg() || this.selectedElementos.getAl() > tendencia.getAl() ||
+			 this.selectedElementos.getSi() > tendencia.getSi() || this.selectedElementos.getNa() > tendencia.getNa() ||
+			 this.selectedElementos.getK() > tendencia.getK() || this.selectedElementos.getCa() > tendencia.getCa() ||
+			 this.selectedElementos.getP() > tendencia.getP() || this.selectedElementos.getZn() > tendencia.getZn() ||
+			 this.selectedElementos.getMg() > tendencia.getMg() || this.selectedElementos.getB() > tendencia.getB() ||
+			 this.selectedElementos.getBa() > tendencia.getBa() || this.selectedElementos.getDiesel() > tendencia.getDiesel() ||
+			 this.selectedElementos.getZddp() > tendencia.getZddp() || this.selectedElementos.getIso4u() > tendencia.getIso4u() ||
+			 this.selectedElementos.getIso6u() > tendencia.getIso6u() || this.selectedElementos.getIso14u() > tendencia.getIso14u() ||
+			 this.selectedElementos.getNorma4u() > tendencia.getNorma4u() || this.selectedElementos.getNorma6u() > tendencia.getNorma6u() ||
+			 this.selectedElementos.getNorma14u() > tendencia.getNorma14u() )
+		{
+			situacao = "anormal";
+		}
+		
+		if ( this.selectedElementos.getFiltro() != null )			
+			if ( this.selectedElementos.getFiltro().equals("anormal") )
+				situacao = "anormal";
+		
+		if ( this.selectedElementos.getW() != null )
+			if ( !this.selectedElementos.getW().equals(tendencia.getW()) )
+				situacao = "anormal";
+		
+		if ( this.selectedElementos.getW() != null )
+			if ( !this.selectedElementos.getF().equals(tendencia.getF()) )
+					situacao = "anormal";
+					
+		return situacao;
 	}
 }

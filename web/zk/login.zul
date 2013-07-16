@@ -9,7 +9,8 @@
 				<![CDATA[
 			         {
 		         		self.setVisible(false);
-		         		winlogin.setVisible(true);		         		
+		         		winlogin.setVisible(true);
+		         		winlogin.getFellow("matricula").setFocus(true);
 			         }
 				]]>
 			</attribute>
@@ -21,7 +22,7 @@
 				<rows>
 					<row>		 	
 						<label value="Matrícula:"/>
-						<textbox id="matricula" width="100px" onFocus="msg.setVisible(false)"/>
+						<textbox id="matricula" width="100px" onFocus="msg.setVisible(false)" focus="true"/>
 					</row>
 					<row>
 						<label value="Senha:"/>

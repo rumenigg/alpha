@@ -1,6 +1,7 @@
 
 package br.com.rti.alpha.modelo.ativo;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import br.com.rti.alpha.modelo.amostra.Amostra;
+import br.com.rti.alpha.modelo.amostra.Laudos;
 
 /**
  * 
@@ -44,6 +46,9 @@ public class Compartimento {
     
     @OneToMany(mappedBy="compartimentoAmostra", fetch=FetchType.LAZY)
     private Set<Amostra> amostra;
+    
+    @OneToMany(mappedBy="compartimentoLaudos", fetch=FetchType.LAZY)
+    private List<Laudos> laudos;
     
     public Compartimento()
     {
@@ -108,13 +113,11 @@ public class Compartimento {
 		this.oleo = oleo;
 	}  
 	
-	public Ativo getAtivo()
-	{
+	public Ativo getAtivo()	{
 		return this.ativo;
 	}
 	
-	public void setAtivo(Ativo ativo)
-	{
+	public void setAtivo(Ativo ativo) {
 		this.ativo = ativo;
 	}
 
@@ -124,6 +127,14 @@ public class Compartimento {
 
 	public void setAmostra(Set<Amostra> amostra) {
 		this.amostra = amostra;
+	}
+
+	public List<Laudos> getLaudos() {
+		return laudos;
+	}
+
+	public void setLaudos(List<Laudos> laudos) {
+		this.laudos = laudos;
 	}
 	
 	

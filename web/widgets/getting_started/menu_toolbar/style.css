@@ -10,3 +10,9 @@
 .taskbar{
 	background-color:lightgray;
 }
+.comboboxwarning .z-combobox-inp { 
+	border: 1px solid red;
+}			
+.doublespinwarning .z-doublespinner-inp  {
+	border: 1px solid red;
+}			

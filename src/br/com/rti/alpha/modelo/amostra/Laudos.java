@@ -21,11 +21,11 @@ public class Laudos {
 	
 	@ManyToOne
     @JoinColumn(name="Ativo_id")
-    public Ativo ativoLaudos;
+    private Ativo ativoLaudos;
 
     @ManyToOne
     @JoinColumn(name="Compartimento_id")
-    public Compartimento compartimentoLaudos;
+    private Compartimento compartimentoLaudos;
 
 	public int getId() {
 		return id;

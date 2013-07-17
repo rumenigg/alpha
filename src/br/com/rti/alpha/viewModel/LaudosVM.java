@@ -225,10 +225,11 @@ public class LaudosVM {
 		daof.beginTransaction();
 							
 		this.selectedAtivo = daof.getAtivoDAO().procura(this.selectedLaudos.getAtivoLaudos().getId());
+		
 		this.allCompartimento.clear();
 		this.allCompartimento.addAll(this.selectedAtivo.getCompartimento());
 				
-		Collections.sort(this.allCompartimento, new Ordenar());			
+		Collections.sort(this.allCompartimento, new Ordenar());		
 	}
 	
 /*
@@ -241,6 +242,7 @@ public class LaudosVM {
 		this.selectedCompartimento = new Compartimento();
 		this.atualizaAtivo();
 		this.atualizaLaudos();
+
 	}
 	
 	@AfterCompose
@@ -256,13 +258,19 @@ public class LaudosVM {
  * FUNÇÕES -- TOOLBAR
  */
 	@Command
-	@NotifyChange({"selectedLaudos","desativado","novo"})
+	@NotifyChange({"selectedLaudos","selectedAtivo", "selectedCompartimento", "desativado"})
 	public void novo(){
 		
 		this.desativado = false;
 				
-		this.selectedLaudos=null;
-		this.selectedLaudos = new Laudos();		
+		this.selectedLaudos =null;
+		this.selectedLaudos = new Laudos();	
+		
+		this.selectedAtivo = null;
+		this.selectedAtivo = new Ativo();
+		
+		this.selectedCompartimento = null;
+		this.selectedCompartimento = new Compartimento();		
 	}
 	
 	@Command
@@ -279,11 +287,14 @@ public class LaudosVM {
 				"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
 		
 		this.desativado = true;
-		this.selectedAtivo.setCompartimento(null);
+		this.selectedLaudos = null;
+		this.selectedAtivo = null;
+		this.selectedCompartimento = null;		
+		//this.selectedAtivo.setCompartimento(null);
 	}
 	
 	@Command
-	@NotifyChange({"selectedLaudos","desativado"})
+	@NotifyChange({"selectedLaudos"})
 	public void excluir(){
 		try
 		{
@@ -310,6 +321,7 @@ public class LaudosVM {
 							}
 							
 							selectedLaudos = null;						
+							BindUtils.postNotifyChange(null, null, this, "selectedLaudos");
 							
 							novo();																
 							navegar("proximo");							
@@ -325,7 +337,7 @@ public class LaudosVM {
 	}
 	
 	@Command
-	@NotifyChange({"selectedLaudos","selectedAtivo","selectedCompartimento"})
+	@NotifyChange({"selectedLaudos","desativado"})
 	public void navegar(@BindingParam("acao") String acao) throws IOException
 	{
 		this.selectedLaudos = null;
@@ -336,45 +348,88 @@ public class LaudosVM {
 			if ( acao.equals("primeiro") )
 			{
 				this.navegador = 0;
-				this.selectedLaudos = this.allLaudos.get(this.navegador);
-				
+				this.showLaudo( this.navegador );
 			}
 			
-			if( acao.equals("anterior") ){
-				if ( this.navegador > 0 ){
-					this.selectedLaudos = this.allLaudos.get(--this.navegador);
-					
+			if( acao.equals("anterior") )
+			{
+				if ( this.navegador > 0 )
+				{
+					this.showLaudo( --this.navegador );					
 				}
 				else 
 					this.navegar("primeiro");
 			}
 		
 			if ( acao.equals("proximo")){
-				if ( this.navegador < this.allLaudos.size()-1 ){
-					this.selectedLaudos = this.allLaudos.get(++this.navegador);
+				if ( this.navegador < this.allLaudos.size()-1 )
+				{
+					this.showLaudo( ++this.navegador );				
 				}
 				else
 					this.navegar("ultimo");
 			}
 		
-			if ( acao.equals("ultimo") ){
-				this.selectedLaudos = this.allLaudos.get(this.navegador = this.allLaudos.size()-1);
-			}
-		}
-		else
-		{
-			if (this.selectedLaudos == null)
-				this.selectedLaudos = new Laudos();
-			else
+			if ( acao.equals("ultimo") )
 			{
-				
-				//this.selectedLaudos.setDescricao("");
-				//this.selectedLaudos.setObs("");
-				
+				this.showLaudo( this.navegador = this.allLaudos.size()-1 );				
 			}
+			
+			BindUtils.postNotifyChange(null, null, this, "selectedLaudos");
+			BindUtils.postNotifyChange(null, null, this, "selectedCompartimento");
 		}
 	}
 	
+	@NotifyChange("selectedLaudos")
+	public void showLaudo( int i)
+	{
+		this.selectedLaudos = this.allLaudos.get(i);
+		
+		DaoFactory daof = new DaoFactory();
+		daof.beginTransaction();
+		
+		this.selectedLaudos = daof.getLaudosDAO().procura(this.selectedLaudos.getId());
+		
+		this.selectAtivo(this.selectedLaudos.getAtivoLaudos());
+		this.atualizaCompartimento();
+	}
+	
+	@NotifyChange({"selectedAtivo", "allAtivo", "allCompartimento"})
+	public void selectAtivo(Ativo ativo)
+	{
+		this.selectedAtivo = ativo;
+		
+		for ( Ativo a : this.allAtivo )
+		{			
+			if ( a.getId() == this.selectedAtivo.getId() )
+			{				
+				this.cbxCompartimento.setSelectedItem(null);
+				this.cbxAtivo.setSelectedIndex( this.allAtivo.indexOf( a ) );
+				this.cbxAtivo.select();	
+				
+				BindUtils.postNotifyChange(null, null, this, "allCompartimento");
+			}
+		}	
+		
+	}
+	
+	@NotifyChange("selectedLaudos")
+	public void selectCompartimento(Compartimento compartimento)
+	{
+		this.selectedCompartimento = compartimento;
+		
+		for ( Compartimento c : this.allCompartimento )
+		{			
+			if ( c.getId() == this.selectedCompartimento.getId() )
+			{				
+				this.cbxCompartimento.setSelectedItem(null);
+				this.cbxCompartimento.setSelectedIndex( this.allCompartimento.indexOf( c ) );
+				this.cbxCompartimento.select();				
+			}
+		}	
+		BindUtils.postNotifyChange(null, null, this, "selectedCompartimento");
+		//BindUtils.postNotifyChange(null, null, this, "allCompartimento");		
+	}
 /*
  *  ENVIA O ARQUIVO DE LAUDOS
 */

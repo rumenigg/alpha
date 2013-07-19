@@ -53,5 +53,6 @@
   <mapping class="br.com.rti.alpha.modelo.amostra.FotoAmostra"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Analise"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Elementos"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.Laudos"/>
  </session-factory>
 </hibernate-configuration>

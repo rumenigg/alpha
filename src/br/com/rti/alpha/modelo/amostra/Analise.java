@@ -1,17 +1,12 @@
 
 package br.com.rti.alpha.modelo.amostra;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-
-import br.com.rti.alpha.modelo.ativo.Oleo;
-import br.com.rti.alpha.modelo.pessoa.Pessoa;
 
 @Entity
 public class Analise 

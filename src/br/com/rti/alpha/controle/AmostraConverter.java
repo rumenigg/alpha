@@ -7,7 +7,6 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Doublespinner;
 import org.zkoss.zul.Textbox;
 
-import br.com.rti.alpha.modelo.amostra.Amostra;
 import br.com.rti.alpha.modelo.amostra.Analise;
 import br.com.rti.alpha.modelo.amostra.Elementos;
 
@@ -42,224 +41,224 @@ public class AmostraConverter implements Converter
 					Doublespinner ds = (Doublespinner) arg1; 
 					double valor = ds.getValue();						
 					if ( valor > elemento.getFuligem() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}			
 				if ( tipoElemento.equals("oxidacao") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getOxidacao() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("nitracao") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getNitracao() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("sulfatacao") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getSulfatacao() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("tbn") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getTbn() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("viscosidade") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getViscosidade() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}				
 				if ( tipoElemento.equals("agua") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getAgua() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("st") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getSt() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("sul") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getSul() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("fe") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getFe() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("cu") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getCu() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("cr") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getCr() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("pb") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getPb() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("sn") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getSn() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("mo") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getMo() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("ni") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getNi() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("ag") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getAg() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("al") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getAl() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("si") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getSi() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("na") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getNa() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("k") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getK() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("ca") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getCa() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("p") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getP() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("zn") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getZn() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("mg") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getMg() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("b") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getB() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("ba") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getBa() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("w") )
 				{
 					Textbox ts = (Textbox) arg1;
 					String valor = ts.getValue();
 					if ( valor.equalsIgnoreCase("e") )
-						style = "textboxwarning";
+						return style = "textboxwarning";
 				}
 				if ( tipoElemento.equals("f") )
 				{
 					Textbox ts = (Textbox) arg1;
 					String valor = ts.getValue();
 					if ( valor.equalsIgnoreCase("e") )
-						style = "textboxwarning";
+						return style = "textboxwarning";
 				}
 				if ( tipoElemento.equals("diesel") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getDiesel() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("sddp") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getZddp() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("iso4u") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getIso4u() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}	
 				if ( tipoElemento.equals("iso6u") )
 				{
@@ -297,25 +296,25 @@ public class AmostraConverter implements Converter
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getNorma6u() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 				if ( tipoElemento.equals("norma14u") )
 				{
 					Doublespinner ds = (Doublespinner) arg1;
 					double valor = ds.getValue();
 					if ( valor > elemento.getNorma14u() )
-						style = "doublespinwarning";
+						return style = "doublespinwarning";
 				}
 			}
 			if ( arg0 instanceof Analise )
 			{
 				Analise analise = (Analise) arg0;
-				if ( tipoElemento.equals("combustivel") )
+				if ( tipoElemento.equalsIgnoreCase("combustivel") )
 				{					
 					if ( analise.getCombustivel() != null)
 					{
-						if ( analise.getCombustivel().equals("s"));
-							style = "comboboxwarning";
+						if ( analise.getCombustivel().equalsIgnoreCase("s") )
+							return style="comboboxwarning";
 					}
 				}
 				if ( tipoElemento.equals("oleoescuro") )
@@ -323,7 +322,7 @@ public class AmostraConverter implements Converter
 					if ( analise.getOleoescuro() != null )
 					{
 						if ( analise.getOleoescuro().equals("s") )
-							style = "comboboxwarning";
+							return style = "comboboxwarning";
 					}
 				}
 				if ( tipoElemento.equals("impureza") )
@@ -331,7 +330,7 @@ public class AmostraConverter implements Converter
 					if ( analise.getImpureza() != null )
 					{
 						if ( analise.getImpureza().equals("s") )
-							style = "comboboxwarning";
+							return style = "comboboxwarning";
 					}
 				}
 				if ( tipoElemento.equals("limalha") )
@@ -339,7 +338,7 @@ public class AmostraConverter implements Converter
 					if ( analise.getLimalha() != null )
 					{
 						if ( analise.getLimalha().equals("s") )
-							style = "comboboxwarning";
+							return style = "comboboxwarning";
 					}
 				}
 				if ( tipoElemento.equals("silica") )
@@ -347,7 +346,7 @@ public class AmostraConverter implements Converter
 					if ( analise.getSilica() != null )
 					{
 						if ( analise.getSilica().equals("s") )
-							style = "comboboxwarning";
+							return style = "comboboxwarning";
 					}
 				}
 				if ( tipoElemento.equals("agua") )
@@ -355,7 +354,7 @@ public class AmostraConverter implements Converter
 					if ( analise.getAgua() != null )
 					{
 						if ( analise.getAgua().equals("s") )
-							style = "comboboxwarning";
+							return style = "comboboxwarning";
 					}
 				}
 			}

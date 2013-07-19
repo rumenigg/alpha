@@ -388,7 +388,7 @@ public class AmostraVM
 	}
 	
 	@Command
-	@NotifyChange({"desativado", "selectedAmostra", "selectedAtivo", "selectedCompartimento", "selectedTipoColeta", "selectedPlano", "selectedOleo","selectedAnalise"})
+	@NotifyChange({"desativado", "selectedAmostra", "selectedAtivo", "selectedCompartimento", "selectedTipoColeta", "selectedPlano", "selectedOleo","selectedAnalise", "selectedElementos"})
 	public void novo()
 	{
 		this.desativado = false;
@@ -404,6 +404,7 @@ public class AmostraVM
 		this.selectedElementos = new Elementos();		
 		
 		this.limparFotos();
+		BindUtils.postNotifyChange(null, null, this, "selectedElementos");
 	}
 	
 	@Command
@@ -419,10 +420,7 @@ public class AmostraVM
 			{
 				daof.getAmostraDAO().adiciona(this.selectedAmostra);
 				daof.commit();			
-				//daof = null;
-			
-				Messagebox.show("A amostra foi vistoriada com sucesso.",
-						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
+				//daof = null;				
 				
 				this.showAmostrasCompartimento(this.selectedAmostra.getCompartimentoAmostra().getId(), true);				
 				BindUtils.postNotifyChange(null, null, this, "allAmostra");
@@ -437,7 +435,10 @@ public class AmostraVM
 				BindUtils.postGlobalCommand(null, null, "atualizaAllCompartimento", null);
 				BindUtils.postGlobalCommand(null, null, "atualizaAllAtivo", null);
 				BindUtils.postGlobalCommand(null, null, "atualizaAllFrota", null);
-				BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);				
+				BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);	
+				
+				Messagebox.show("A amostra foi vistoriada com sucesso.",
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			}
 			else
 			{

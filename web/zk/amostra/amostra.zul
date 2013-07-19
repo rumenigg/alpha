@@ -69,11 +69,11 @@
 						<tab label="Análise" />
 						<tab label="Partículas" />						
 					</tabs>	
-					<toolbar width="@load(avm.readOnly ? '580px' : '370px')" >
+					<toolbar width="580px" >
 						<hlayout spacing="20px">
 							<hlayout spacing="5px">
-								<label value="Vistoriado" visible="@load(avm.readOnly)" style="font-size: 14px"/>
-								<combobox visible="@load(avm.readOnly)" selectedItem="@bind(fx.vistoriado)">
+								<label value="Vistoriado" style="font-size: 14px"/>
+								<combobox selectedItem="@bind(fx.vistoriado)" readonly="@load(avm.readOnly ? false : true)" buttonVisible="@load(avm.readOnly)">
 									<comboitem label="Sim" value="s"/>
 									<comboitem label="Não" value="n"/>
 								</combobox>								
@@ -326,6 +326,13 @@
 																readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)">
 															<comboitem label="Sim" value="s"/>
 															<comboitem label="Não" value="n"/>
+														</combobox>
+														<label value="Combustível"/>
+														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.combustivel)" disabled="@load(avm.desativado)"
+																sclass="@load(avm.selectedAnalise) @converter(avm.amostraConverter, elemento='combustivel')" 
+																readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)">
+															<comboitem label="Sim" value="s"/>
+															<comboitem label="Não" value="n"/>
 														</combobox>														
 													</row>
 												</rows>
@@ -381,26 +388,19 @@
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='viscosidade')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													
-														<label value="Combustível"/>
-														<combobox width="100%" selectedItem="@bind(avm.selectedAnalise.combustivel)" disabled="@load(avm.desativado)"
-																sclass="@load(avm.selectedAnalise) @converter(avm.amostraConverter, elemento='combustivel')" 
-																readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)">
-															<comboitem label="Sim" value="s"/>
-															<comboitem label="Não" value="n"/>
-														</combobox>
+																										
 														<label value="Água"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.agua)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='agua')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
 														<label value="St"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.st)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='st')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+													</row>
+													<row align="right">														
 														<label value="Sul"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.sul)"
 																	disabled="@load(avm.desativado)"
@@ -411,121 +411,122 @@
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='fe')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																	
 														<label value="Cu"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.cu)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='cu')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
 														<label value="Cr"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.cr)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='cr')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+													</row>
+													<row align="right">
 														<label value="Pb"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.pb)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='pb')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-														
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
 														<label value="Sn"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.sn)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='sn')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																	
 														<label value="Mo"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.mo)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='mo')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
 														<label value="Ni"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.ni)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='ni')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-														<label value="Ag"/>
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>																											
+													</row>
+													<row align="right">
+														<label value="Ag"/>	
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.ag)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='ag')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-														
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
 														<label value="Al"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.al)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='al')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																	
 														<label value="Si"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.si)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='si')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
 														<label value="Na"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.na)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='na')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+													</row>
+													<row align="right">														
 														<label value="K"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.k)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='k')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-														
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
 														<label value="Ca"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.ca)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='ca')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																	
 														<label value="P"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.p)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='p')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
 														<label value="Zn"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.zn)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='zn')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+													</row>
+													<row align="right">								
 														<label value="Mg"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.mg)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='mg')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-														
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
 														<label value="B"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.b)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='b')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																	
 														<label value="Ba"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.ba)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='ba')"
 																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
-													</row>
-													<row align="right">
 														<label value="W"/>
 														<textbox width="100%" value="@bind(avm.selectedElementos.w)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='w')"
 																	readonly="@load(avm.readOnly)"/>
+													</row>
+													<row align="right">														
 														<label value="F"/>
 														<textbox width="100%" value="@bind(avm.selectedElementos.f)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='f')"
-																	readonly="@load(avm.readOnly)"/>
-																												
+																	readonly="@load(avm.readOnly)"/>																												
 														<label value="Diesel"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.diesel)"
 																	disabled="@load(avm.desativado)"
 																	sclass="@load(avm.selectedAmostra.compartimentoAmostra.tipoCompartimento.elementos) @converter(avm.amostraConverter, elemento='diesel')"
-																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>														
+																	readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)"/>
+																															
 														<label value="Zddp"/>
 														<doublespinner width="100%" value="@bind(avm.selectedElementos.zddp)"
 																	disabled="@load(avm.desativado)"

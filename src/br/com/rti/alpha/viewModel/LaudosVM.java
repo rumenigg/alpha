@@ -23,6 +23,7 @@ import net.sf.jasperreports.engine.export.data.DateTextValue;
 
 import org.jfree.ui.action.DowngradeActionMap;
 import org.zkoss.bind.BindUtils;
+import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -50,6 +51,7 @@ import org.zkoss.zul.Toolbarbutton;
 
 import com.lowagie.text.pdf.AcroFields.Item;
 
+import br.com.rti.alpha.controle.ArquivoConverter;
 import br.com.rti.alpha.controle.CompartimentoAtivoListGroupRenderer;
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
@@ -100,8 +102,10 @@ public class LaudosVM {
 	
 	private Compartimento selectedCompartimento;
 	private List<Compartimento> allCompartimento = new ArrayList<Compartimento>();
-	
+		
 	private boolean desativado = true;
+
+	private Converter arquivoConverter = new ArquivoConverter();
 	
 	public Listbox getLbdescricao() {
 		return lbdescricao;
@@ -181,9 +185,14 @@ public class LaudosVM {
 	}
 	public void setDesativado(boolean desativado) {
 		this.desativado = desativado;
+	}	
+	public Converter getArquivoConverter() {
+		return arquivoConverter;
 	}
-	
-/*
+	public void setArquivoConverter(Converter arquivoConverter) {
+		this.arquivoConverter = arquivoConverter;
+	}
+	/*
  *  METODOS DE ATUALIZAÇÃO
  */
 	@Command
@@ -409,41 +418,28 @@ public class LaudosVM {
 				
 				BindUtils.postNotifyChange(null, null, this, "allCompartimento");
 			}
-		}	
-		
+		}			
 	}
 	
-	@NotifyChange("selectedLaudos")
-	public void selectCompartimento(Compartimento compartimento)
-	{
-		this.selectedCompartimento = compartimento;
-		
-		for ( Compartimento c : this.allCompartimento )
-		{			
-			if ( c.getId() == this.selectedCompartimento.getId() )
-			{				
-				this.cbxCompartimento.setSelectedItem(null);
-				this.cbxCompartimento.setSelectedIndex( this.allCompartimento.indexOf( c ) );
-				this.cbxCompartimento.select();				
-			}
-		}	
-		BindUtils.postNotifyChange(null, null, this, "selectedCompartimento");
-		//BindUtils.postNotifyChange(null, null, this, "allCompartimento");		
-	}
 /*
  *  ENVIA O ARQUIVO DE LAUDOS
 */
 	
 	@Listen("onUpload=#btnArquivo")
-	public void addArquivo(UploadEvent evt){
-		
+	public void addArquivo(UploadEvent evt)
+	{		
 		media = evt.getMedia();
 	}
-	@Listen("onClick=#btnDownload")
-	public void baixar(UploadEvent evt)  {
-		media = evt.getMedia();
+	
+	@Command
+	public void baixar() throws FileNotFoundException  
+	{
+		File file = new File(selectedLaudos.getArquivo());
 		
+		Filedownload fd = new Filedownload();
+		fd.save(file, null);		
 	}
+	
 	public void criarDiretorio() throws IOException {
 		if(this.media!=null){	
 			BufferedInputStream in = null;

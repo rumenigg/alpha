@@ -13,6 +13,47 @@
 				}			
 		</style>
 		
+		<popup id="coletas">					
+			<hlayout spacing="10px">
+				<button label="Amostras" orient="vertical" image="/img/btn/coletas.png" tooltiptext="Amostras"
+						width="100" height="100" dir="reverse" sclass="label">
+					<attribute name="onClick">
+						<![CDATA[
+						{
+							principaldiv.setVisible(false);							
+							//nav.setLabel("Principal");
+							nav.setVisible(true);
+							navseta.setVisible(true);
+					
+							navicone.setVisible(true);						
+							navicone.setTooltiptext("Você está na áre de Coletas");
+							navicone.setSrc("/img/btn/page/coletas_32.png");							
+									
+							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/gerenciarAmostra.zul", principalCad, null);
+							cadGeral.setId("cadGeral");
+							cadGeral.setVisible(true);	
+						}
+						]]>
+					</attribute>
+				</button>
+				<button label="Laudos" orient="vertical" image="/img/btn/coletas.png" tooltiptext="Laudos"
+						width="100" height="100" dir="reverse" sclass="label">
+					<attribute name="onClick">
+						<![CDATA[
+						{
+							final Window cadLaudos = (Window) Executions.createComponents("/zk/amostra/laudos.zul", null, null);
+							cadLaudos.setWidth("750px");
+							cadLaudos.setId("winLaudo");
+							cadLaudos.setVisible(true);
+							cadLaudos.setSizable(true);
+							cadLaudos.setMode("modal");							
+						}
+						]]>
+					</attribute>		
+				</button>							
+			</hlayout>
+		</popup>
+		
 		<div height="36px" width="100%">
 			<hbox spacing="3">
 			<a id="nav" onClick="navegador(self.getLabel())" style="font-size:16px;" image="/img/btn/page/home.png" visible="false" 
@@ -50,26 +91,7 @@
 					</button>			
 						
 					<button label="Coletas" orient="vertical" image="/img/btn/coletas.png" tooltiptext="Coletas" 
-							width="100" height="100" dir="reverse" sclass="label">
-						<attribute name="onClick">
-						<![CDATA[
-						{
-							principaldiv.setVisible(false);							
-							//nav.setLabel("Principal");
-							nav.setVisible(true);
-							navseta.setVisible(true);
-							
-							navicone.setVisible(true);						
-							navicone.setTooltiptext("Você está na áre de Coletas");
-							navicone.setSrc("/img/btn/page/coletas_32.png");							
-									
-							final Div cadGeral = (Div) Executions.createComponents("/zk/amostra/gerenciarAmostra.zul", principalCad, null);
-							cadGeral.setId("cadGeral");
-							cadGeral.setVisible(true);	
-						}
-						]]>
-						</attribute>
-					</button>			
+							width="100" height="100" dir="reverse" sclass="label" tooltip="coletas, position=middle_center"/>							
 							
 					<button label="Faróis" orient="vertical" image="/img/btn/farol_2.png" tooltiptext="Faróis" 
 							width="100" height="100" dir="reverse" sclass="label">

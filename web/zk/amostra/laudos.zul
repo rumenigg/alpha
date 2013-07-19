@@ -42,7 +42,7 @@
         <grid>
             <columns>
                 <column hflex="1" label=""/>
-                <column hflex="6" label=""/>
+                <column hflex="3" label=""/>
             </columns>
             <rows>
             	<row align="right">			
@@ -74,26 +74,17 @@
                     <div align="left" >
                   		 <button id="btnArquivo" label="Localizar Arquivo" disabled="@load(lvm.desativado)" upload="true" >
 							<attribute name="onUpload">
-							<![CDATA[
-								org.zkoss.util.media.Media media = event.getMedia();
+								<![CDATA[
+									org.zkoss.util.media.Media media = event.getMedia();
 									arquivo.setValue(media.getName());
-									System.out.println("Nome : " + media);
-							]]>
+								]]>
 							</attribute>
 						</button>
 					
-						<button id="btnDownload" label="Baixar" disabled="@load(lvm.desativado)" mold="trendy">
-							<attribute name="onClick"><![CDATA[
-						        java.io.InputStream is = desktop.getWebApp().getResourceAsStream(arquivo.getValue());
-						       // if (is != null)
-						           // org.zkoss.zul.Filedownload.save(is, "rti/alpha/hydro/laudos");
-						       // else
-						         //   alert("/test/download.html not found");
-						        
-						   		]]>
-							</attribute>							 
+						<button id="btnDownload" label="Baixar" disabled="@load(lvm.desativado)" mold="trendy" onClick="@command('baixar')">
+						        						 
 					 	</button>
-						<label id="arquivo" value="@load(lvm.selectedLaudos.arquivo)"/>
+						<label id="arquivo" value="@load(lvm.selectedLaudos.arquivo) @converter(lvm.arquivoConverter)"/>
                  	</div>   
                 </row>
                 <row align="right">

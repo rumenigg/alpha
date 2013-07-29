@@ -21,6 +21,7 @@ public class Supervisao {
     private int id;
     private String descricao;
     private String local;
+    private String foto;
     private String obs;
     
     @OneToMany(mappedBy="pessoaSupervisao", fetch=FetchType.LAZY)
@@ -50,10 +51,19 @@ public class Supervisao {
 	}
 	public void setLocal(String local) {
 		this.local = local;
+	}	
+	public String getFoto() {
+		return foto;
+	}
+	public void setFoto(String foto) {
+		this.foto = foto;
 	}
 	public String getObs() {
 		return obs;
-	}	
+	}
+	public void setObs(String obs) {
+		this.obs = obs;
+	}
 	public Set<Pessoa> getPessoaSupervisao() {
 		return pessoaSupervisao;
 	}
@@ -65,10 +75,7 @@ public class Supervisao {
 	}
 	public void setPessoaResponsavelSupervisao(Pessoa pessoaResponsavelSupervisao) {
 		this.pessoaResponsavelSupervisao = pessoaResponsavelSupervisao;
-	}
-	public void setObs(String obs) {
-		this.obs = obs;
-	}
+	}	
 	public Set<Frota> getFrota() {
 		return frota;
 	}

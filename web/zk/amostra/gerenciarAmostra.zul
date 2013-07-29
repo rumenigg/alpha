@@ -1,0 +1,43 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div width="100%" height="100%" apply="org.zkoss.bind.BindComposer" 
+			viewModel="@id('gavm') @init('br.com.rti.alpha.viewModel.GerenciarAmostraVM')">
+			
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		<style>
+			.textboxwarning .z-textbox {
+					border: 1px solid red;
+			}
+			.comboboxwarning .z-combobox-inp { 
+					border: 1px solid red;
+			}			
+			.doublespinwarning .z-doublespinner-inp  {
+					border: 1px solid red;
+			}	
+		</style>
+		
+		<borderlayout>
+			<west width="20%" splittable="true" collapsible="true" autoscroll="true" >
+				<listbox model="@load(gavm.allAmostra)" selectedItem="@bind(gavm.selectedAmostra)" 
+						onSelect="@global-command('showSelectedAmostra', selectedAmostra=gavm.selectedAmostra, readOnly='false')" >
+					<listhead menupopup="auto">
+						<listheader label="Data" sort="auto(dataAmostra, id)" sortDirection="descending" align="center"/>
+						<listheader label="Ativo" sort="auto(ativoAmostra.tag)" align="center"/>
+					</listhead>					
+					<template name="model" var="a">
+						<listitem>
+							<listcell label="@load(a.dataAmostra) @converter('formatedDate', format='dd/MM/yyyy')" > 
+								<!-- <datebox value="@load(a.dataAmostra)" buttonVisible="false" inplace="true" lenient="true" readonly="true" /> -->
+							</listcell>
+							<listcell label="@load(a.ativoAmostra.tag)" value="@load(a.id)"/>
+						</listitem>
+					</template>
+				</listbox>
+			</west>
+			
+			<center>
+				<include src="/zk/amostra/amostra.zul"/>
+			</center>
+		</borderlayout>	
+	</div>
+</zk>

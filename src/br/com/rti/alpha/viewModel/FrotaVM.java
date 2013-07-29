@@ -1,5 +1,7 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -247,6 +249,9 @@ public class FrotaVM
 				else
 					this.selectedFrota.setPessoa(this.selectedPessoa);
 				
+				if ( this.media != null && this.selectedFrota.getFoto() != null )
+					this.delFoto(this.selectedFrota.getFoto());
+				
 				this.salvarFoto();
 				
 				daof.getFrotaDAO().adiciona(this.selectedFrota);
@@ -270,7 +275,7 @@ public class FrotaVM
 				}
 			
 				Messagebox.show("A Frota " + this.selectedFrota.getDescricao().toUpperCase() + " foi adicionada ou atualizada com sucesso",
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 				
 				//Atualiza a lista na aba Compartimento na janela de Cadastros;
@@ -305,7 +310,7 @@ public class FrotaVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -319,7 +324,7 @@ public class FrotaVM
 			if ( !this.selectedFrota.getAtivo().isEmpty() )
 			{
 				Messagebox.show("Atenção, a Frota " + this.selectedFrota.getDescricao().toUpperCase() + " possui ativo(s) associado(s). "+
-						"Caso prossiga com a exclusão os ativos ficarão sem frota. Você realmente deseja prosseguir com a exclusão?", "Hydro - Projeto Alpha",
+						"Caso prossiga com a exclusão os ativos ficarão sem frota. Você realmente deseja prosseguir com a exclusão?", "Portal Hydro",
 						Messagebox.YES | Messagebox.NO, Messagebox.EXCLAMATION, 
 						new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -341,7 +346,7 @@ public class FrotaVM
 										if ( selectedFrota.getFoto() != null )
 											delFoto(selectedFrota.getFoto());
 										
-										Messagebox.show("Frota excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+										Messagebox.show("Frota excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 										
 										desativado = true;
 										atualizaAllFrota();													
@@ -353,12 +358,12 @@ public class FrotaVM
 									catch (ConstraintViolationException cve)
 									{
 										Messagebox.show("Você não pode excluir essa frota pois ela está associado a uma supervisão. Substitua ou remova a frota, na supervisão, por outro para excluir.",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									}
 									catch (Exception e)
 									{
 										Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-													"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+													"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 										e.printStackTrace();									
 									}
 								}								
@@ -367,7 +372,7 @@ public class FrotaVM
 			}
 			else 
 			{			
-				Messagebox.show("Você realmente deseja excluir a Frota " + this.selectedFrota.getDescricao().toUpperCase() + "?", "Hydro - Projeto Alpha",
+				Messagebox.show("Você realmente deseja excluir a Frota " + this.selectedFrota.getDescricao().toUpperCase() + "?", "Portal Hydro",
 					Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 					new EventListener<Event>() {
 						public void onEvent(Event event) throws SQLException
@@ -382,7 +387,10 @@ public class FrotaVM
 									daof.getFrotaDAO().remove(selectedFrota);
 									//daof.commit();
 									
-									Messagebox.show("Frota excluida com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+									if ( selectedFrota.getFoto() != null )
+										delFoto(selectedFrota.getFoto());
+									
+									Messagebox.show("Frota excluida com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 									
 									desativado = true;
 									atualizaAllFrota();													
@@ -394,12 +402,12 @@ public class FrotaVM
 								catch (ConstraintViolationException cve)
 								{
 									Messagebox.show("Você não pode excluir essa frota pois ela está associado a uma supervisão. Substitua ou remova a frota, na supervisão, por outra para excluir.",
-											"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+											"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								}
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}
 							}							
@@ -409,7 +417,7 @@ public class FrotaVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione uma Frota para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione uma Frota para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}		
 	}
@@ -474,7 +482,7 @@ public class FrotaVM
 			this.ativoFrotaDataModel.add(a);
 		else if ( this.ativoFrotaDataModel.contains(a) )
 		{
-			Messagebox.show("O Ativo " + a.getTag() + " já faz parte dessa Frota", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+			Messagebox.show("O Ativo " + a.getTag() + " já faz parte dessa Frota", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			//break;
 		}
 		else 
@@ -498,7 +506,7 @@ public class FrotaVM
 				{
 					Messagebox.show("ATENÇÃO, o Ativo selecionado pertence a outra Frota. "+
 							"Caso continue com a adição, o ativo selecionado passará a fazer parte da frota atual. "+ 
-							"Você deseja continuar com a adição do ativo?", "Hydro - Projeto Alpha",
+							"Você deseja continuar com a adição do ativo?", "Portal Hydro",
 							Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 							new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -647,9 +655,35 @@ public class FrotaVM
 			File arquivo = new File(path);
 			arquivo.mkdirs();
 			// fazer algo com a imagem...
-			ImageIO.write(imagem, "PNG", arquivo);
+			int type = BufferedImage.TYPE_INT_RGB;
+	        boolean isPng = path.toUpperCase().endsWith("PNG");
+	 
+	        if (isPng) {
+	            type = BufferedImage.BITMASK;
+	        }
+	        
+	        if (isPng) {
+	            ImageIO.write(imagem, "PNG", arquivo);
+	        }else{
+	            ImageIO.write(imagem, "JPG", arquivo);
+	        }			
 			
 			this.selectedFrota.setFoto(arquivo.getCanonicalPath());//"/img/imagens/pessoas/" + this.selectedPessoa.getNome()+"_" + this.media.getName());
+			
+			BufferedImage thumb = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumb.createGraphics();
+	        g.setComposite(AlphaComposite.Src);
+	        g.drawImage(imagem, 0, 0, 100, 100, null);
+	        
+			String extensao = path.substring(path.length()-4, path.length());
+			String nome = path.substring(0, path.length()-4);
+			File arquivoThumb = new File(nome+"_thumb"+extensao);
+
+			 if (isPng) {
+		            ImageIO.write(thumb, "PNG", arquivoThumb);
+		        }else{
+		            ImageIO.write(thumb, "JPG", arquivoThumb);
+		        }		
 		}
 	}
 	

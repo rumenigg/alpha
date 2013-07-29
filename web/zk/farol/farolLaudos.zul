@@ -1,0 +1,32 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Portal Hydro" border="normal" closable="true" maximizable="true" width="80%" height="50%"
+			apply="org.zkoss.bind.BindComposer" viewModel="@id('flaudovm') @init('br.com.rti.alpha.viewModel.FarolLaudoVM')">
+		
+		<borderlayout>
+			<west width="20%" splittable="true" collapsible="true" autoscroll="true" >
+				<listbox model="@load(flaudovm.allLaudos)" selectedItem="@bind(flaudovm.selectedLaudo)" 
+						onSelect="@global-command('showSelectedLaudo', selectedLaudo=flaudovm.selectedLaudo, readOnly='true')" >
+					<listhead menupopup="auto">
+						<listheader label="Laudo" sort="auto(id)" sortDirection="descending" align="center"/>
+						<!-- <listheader label="Data" sort="auto(dataAmostra, id)" sortDirection="descending" align="center"/> -->						
+						<listheader label="Farol" align="center"/>
+					</listhead>					
+					<template name="model" var="l">
+						<listitem>
+							<listcell label="@load(l.id)" value="@load(l.id)"/>
+							<!--<listcell label="@load(l.dataAmostra) @converter('formatedDate', format='dd/MM/yyyy')" > 
+								 <datebox value="@load(l.dataAmostra)" buttonVisible="false" inplace="true" lenient="true" readonly="true" /> 
+							</listcell>-->
+							<listcell image="@load(l.id) @converter(flaudovm.farolConverter, objeto='laudos')"/>
+						</listitem>
+					</template>
+				</listbox>
+			</west>
+			
+			<center>
+				<include src="/zk/amostra/laudos.zul"/>
+			</center>
+		</borderlayout>
+	</window>
+</zk>

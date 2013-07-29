@@ -6,7 +6,7 @@
 		<borderlayout>
 			<west width="20%" splittable="true" collapsible="true" autoscroll="true" >
 				<listbox model="@load(famostravm.allAmostra)" selectedItem="@bind(famostravm.selectedAmostra)" 
-						onSelect="@global-command('showSelectedAmostra', selectedAmostra=famostravm.selectedAmostra, readOnly='false')" >
+						onSelect="@global-command('showSelectedAmostra', selectedAmostra=famostravm.selectedAmostra, readOnly='true')" >
 					<listhead menupopup="auto">
 						<listheader label="Amostra" sort="auto(id)" align="center"/>
 						<listheader label="Data" sort="auto(dataAmostra, id)" sortDirection="descending" align="center"/>						

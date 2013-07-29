@@ -87,8 +87,9 @@ public class AmostraVM
 	private Ativo selectedAtivo;
 	private List<Ativo> allAtivo;
 	
+	private Compartimento compartimentoAmostras;
 	private Compartimento selectedCompartimento;
-	private List<Compartimento> allCompartimento = new ArrayList<Compartimento>();
+	private List<Compartimento> allCompartimento;
 	
 	private TipoColeta selectedTipoColeta;
 	private List<TipoColeta> allTipoColeta;
@@ -259,11 +260,21 @@ public class AmostraVM
 	@NotifyChange("allAmostra")
 	public void atualizaAmostra()
 	{
-		this.allAmostra = null;
+		//this.allAmostra = null;
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		
-		this.allAmostra = daof.getAmostraDAO().listaTudo();
+		//this.allAmostra = new ArrayList<Amostra>();
+		this.allAmostra.clear();
+		if ( this.readOnly == true )
+		{
+			this.compartimentoAmostras = daof.getCompartimentoDAO().procura(this.compartimentoAmostras.getId());
+			this.allAmostra.addAll( this.compartimentoAmostras.getAmostra() );
+		}
+		else
+		{
+			this.allAmostra = daof.getAmostraDAO().listaTudo();
+		}
 		
 		Ordenar o = new Ordenar();
 		o.setDescending(true);
@@ -273,7 +284,7 @@ public class AmostraVM
 		daof = null;
 	}
 	
-	@NotifyChange({"allAmostra", "selectedAmostra"})
+	/*@NotifyChange("allAmostra")
 	public void atualizaAmostraCompartimento(int id)
 	{
 		this.allAmostra = null;
@@ -293,7 +304,7 @@ public class AmostraVM
 		
 		o = null;
 		daof = null;
-	}
+	}*/
 	
 	@NotifyChange("allAtivo")
 	public void atualizaAtivo()
@@ -313,12 +324,15 @@ public class AmostraVM
 	@NotifyChange("allCompartimento")
 	public void atualizaCompartimento()
 	{
+		this.allCompartimento = null;
+		this.allCompartimento = new ArrayList<Compartimento>();
+		
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 							
 		this.selectedAtivo = daof.getAtivoDAO().procura(this.selectedAmostra.getAtivoAmostra().getId()); 
 			
-		this.allCompartimento.clear();
+		//this.allCompartimento.clear();
 		this.allCompartimento.addAll(this.selectedAtivo.getCompartimento());
 				
 		Collections.sort(this.allCompartimento, new Ordenar());			
@@ -364,6 +378,9 @@ public class AmostraVM
 	@Init
 	public void init()
 	{
+		if ( this.allAmostra == null )
+			this.allAmostra = new ArrayList<Amostra>();
+		
 		this.selectedAmostra = new Amostra();
 		
 		this.selectedAnalise = new Analise();
@@ -408,7 +425,7 @@ public class AmostraVM
 	}
 	
 	@Command
-	@NotifyChange({"desativado", "selectedAmostra","allAmostra","selectedAnalise","selectedElementos"})
+	@NotifyChange({"desativado", "selectedAmostra","allAmostra","selectedAnalise","selectedElementos","farol"})
 	public void submit()
 	{
 		try
@@ -420,25 +437,30 @@ public class AmostraVM
 			{
 				daof.getAmostraDAO().adiciona(this.selectedAmostra);
 				daof.commit();			
-				//daof = null;				
+				//daof = null;								
 				
-				this.showAmostrasCompartimento(this.selectedAmostra.getCompartimentoAmostra().getId(), true);				
-				BindUtils.postNotifyChange(null, null, this, "allAmostra");
 				//BindUtils.postNotifyChange(null, null, this, "allAmostra");
 				//BindUtils.postNotifyChange(null, null, this, "selectedAmostra");
 				
-				//Métodos usados para atualizar as janelas de faróis anteriores, Supervisão, Frota, Ativo e Compartimento
-				Map<String, Object> args = new HashMap<String, Object>();
-				args.put("selectedCompartimento", this.selectedAmostra.getCompartimentoAmostra());
-				BindUtils.postGlobalCommand(null, null, "showSelectedAmostrasCompartimento", args);
-				
-				BindUtils.postGlobalCommand(null, null, "atualizaAllCompartimento", null);
-				BindUtils.postGlobalCommand(null, null, "atualizaAllAtivo", null);
-				BindUtils.postGlobalCommand(null, null, "atualizaAllFrota", null);
-				BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);	
-				
 				Messagebox.show("A amostra foi vistoriada com sucesso.",
 						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
+				
+				this.atualizaAmostra();
+				
+				//Métodos usados para atualizar as janelas de faróis anteriores, Supervisão, Frota, Ativo e Compartimento
+				BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);
+				BindUtils.postGlobalCommand(null, null, "atualizaAllFrota", null);	
+				BindUtils.postGlobalCommand(null, null, "atualizaAllAtivo", null);
+				BindUtils.postGlobalCommand(null, null, "atualizaAllCompartimento", null);			
+				BindUtils.postGlobalCommand(null, null, "atualizaFarolAllAmostra", null);				
+				
+				this.selectedAmostra = null;
+				this.selectedAnalise = null;
+				this.selectedElementos = null;
+				this.limparFotos();
+				this.farol = "";
+				//this.navegar("primeiro");				
+				//BindUtils.postNotifyChange(null, null, this, "allAmostra");
 			}
 			else
 			{
@@ -472,8 +494,7 @@ public class AmostraVM
 			
 				this.salvarFoto();
 			
-				daof.commit();			
-				daof = null;
+				daof.commit();
 			
 				Messagebox.show("A amostra foi adicionado ou atualizado com sucesso.",
 						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);		
@@ -486,10 +507,14 @@ public class AmostraVM
 				this.selectedElementos = null;
 				this.desativado = true;
 				this.limparFotos();
+				this.farol = "";
 			
 				//Atualiza a lista de amostras no lado esquerdo da janela de gerenciamento de amostras.
 				BindUtils.postGlobalCommand(null, null, "atualizaAmostra", null);
 			}
+			
+			daof = null;
+			
 		}
 		catch (ConstraintViolationException e)
 		{
@@ -608,7 +633,7 @@ public class AmostraVM
 	public void showSelectedAmostra(@BindingParam("selectedAmostra") Object obj, @BindingParam("readOnly") boolean readOnly) throws IOException
 	{		
 		this.desativado = false;
-		this.readOnly = false;
+		this.readOnly = readOnly;
 		
 		if ( obj instanceof Amostra )
 		{
@@ -626,17 +651,23 @@ public class AmostraVM
 		}
 	}
 	
+	/*
+	 * Método recebe da janela FarolCompartimento o compartimento para atualizar as amostras referentes ao compartimento.
+	 */
 	@GlobalCommand
 	@NotifyChange({"desativado", "readOnly"})
-	public void showAmostrasCompartimento(@BindingParam("selectedCompartimento") int id, @BindingParam("readOnly") boolean readOnly) throws IOException
+	public void showAmostrasCompartimento(@BindingParam("selectedCompartimento") Compartimento c, @BindingParam("readOnly") boolean readOnly) throws IOException
 	{		
 		this.desativado = false;
 		this.readOnly = readOnly;
 		
-		this.atualizaAmostraCompartimento(id);
-		BindUtils.postNotifyChange(null, null, this, "allAmostra");
+		this.compartimentoAmostras = c;
 		
-		this.showAmostra(0);		
+		this.atualizaAmostra();
+		//this.atualizaAmostraCompartimento(id);
+		//BindUtils.postNotifyChange(null, null, this, "allAmostra");
+		
+		this.navegar("primeiro");		
 	}
 	
 	@NotifyChange({"selectedAmostra","selectedAnalise","farol"})
@@ -653,7 +684,7 @@ public class AmostraVM
 		this.selectedAmostra = daof.getAmostraDAO().procura(this.selectedAmostra.getId());
 				
 		this.selectAtivo( this.selectedAmostra.getAtivoAmostra() );
-		this.atualizaCompartimento();
+		this.atualizaCompartimento(); System.out.println(" --> Passo 1");
 				
 		this.selectTipoColeta( this.selectedAmostra.getTipoColetaAmostra() );
 		this.atualizaPlano();

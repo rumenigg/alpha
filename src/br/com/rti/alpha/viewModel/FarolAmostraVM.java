@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Converter;
+import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
+import org.zkoss.bind.annotation.ExecutionArgParam;
 import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.NotifyChange;
 
@@ -17,8 +20,10 @@ import br.com.rti.alpha.modelo.ativo.Compartimento;
 
 public class FarolAmostraVM 
 {
-	private Amostra selectedAmostra;
-	private List<Amostra> allAmostra;
+	private int idCompartimento;
+	
+	private Amostra selectedAmostra = new Amostra();
+	private List<Amostra> allAmostra = new ArrayList<Amostra>();
 	
 	private Converter farolConverter = new FarolImageConverter();
 	
@@ -43,14 +48,14 @@ public class FarolAmostraVM
 	
 	
 	@GlobalCommand
-	@NotifyChange("allAmostra")
-	public void atualizaFarolAllAmostra(Compartimento compartimento)
+	@NotifyChange({"allAmostra","farolConverter"})
+	public void atualizaFarolAllAmostra()
 	{
 		this.allAmostra = null;
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		
-		Compartimento comp = daof.getCompartimentoDAO().procura(compartimento.getId());
+		Compartimento comp = daof.getCompartimentoDAO().procura(this.idCompartimento);
 		
 		this.allAmostra = new ArrayList<Amostra>();
 		
@@ -62,13 +67,17 @@ public class FarolAmostraVM
 		
 		o = null;
 		daof = null;
+		
+		//BindUtils.postNotifyChange(null, null, this, "allAmostra");
 	}
 	
-	@GlobalCommand
-	@NotifyChange("allAmostra")
-	public void showSelectedAmostrasCompartimento(@BindingParam("selectedCompartimento") Compartimento compartimento)
+	@AfterCompose
+	public void afterCompose(@ExecutionArgParam("compartimento") int id)
 	{
-		this.atualizaFarolAllAmostra(compartimento);
+		this.idCompartimento = id;
+		
+		this.atualizaFarolAllAmostra();
 	}
+
 
 }

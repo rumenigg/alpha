@@ -76,16 +76,21 @@
 								<combobox selectedItem="@bind(fx.vistoriado)" readonly="@load(avm.readOnly ? false : true)" buttonVisible="@load(avm.readOnly)">
 									<comboitem label="Sim" value="s"/>
 									<comboitem label="Não" value="n"/>
-								</combobox>								
-								<label value="Situação" style="font-size: 14px"/>
-								<combobox onSelect="self.setStyle(self.getSelectedItem().getStyle())" disabled="@load(avm.desativado)" 
-										selectedItem="@bind(fx.situacao)" readonly="@load(avm.readOnly)" buttonVisible="@load(avm.readOnly ? false : true)">
+								</combobox>
+								<!-- Mostra a opção de data de vistoria caso esteja na janela de faróis -->
+								<label visible="@load(avm.readOnly)" value="Data Vistoria" style="font-size: 14px"/>
+								<datebox visible="@load(avm.readOnly)" value="@bind(fx.dataVistoria)"/>
+																
+								<label visible="@load(avm.readOnly ? false : true)" value="Situação" style="font-size: 14px"/>
+								<combobox visible="@load(avm.readOnly? false : true)" onSelect="self.setStyle(self.getSelectedItem().getStyle())" 
+										disabled="@load(avm.desativado)" selectedItem="@bind(fx.situacao)" readonly="@load(avm.readOnly)" 
+										buttonVisible="@load(avm.readOnly ? false : true)">
 									<comboitem label="Normal" value="normal" style="color: green"/>
 									<comboitem label="Anormal" value="anormal" style="color: #FFCC00"/>
 									<comboitem label="Crítico" value="critico" style="color: red"/>
 								</combobox>
 							</hlayout>	
-							<image visible="true" src="@load(avm.farol)" />						
+							<image visible="@load(empty avm.farol ? false : true)" src="@load(avm.farol)" />						
 							<hlayout spacing="5px">
 								<label value="N. Amostra:" style="font-size:14px"/>
 								<label value="@load(fx.id)" style="font-size:14px; color:red"/>
@@ -123,6 +128,7 @@
 												selectedItem="@bind(fx.compartimentoAmostra) @bind(avm.selectedAmostra.compartimentoAmostra)"	
 												disabled="@load(avm.desativado)" constraint="no empty" readonly="@load(avm.readOnly)"
 												buttonVisible="@load(avm.readOnly ? false : true)">
+											<!-- selectedItem="@bind(fx.compartimentoAmostra) @bind(avm.selectedAmostra.compartimentoAmostra)"	 -->
 											<template name="model" var="c1">
 												<comboitem label="@load(c1.tag)" value="c1.id"/>
 											</template>												

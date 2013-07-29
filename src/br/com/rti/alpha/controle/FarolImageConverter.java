@@ -11,6 +11,7 @@ import org.zkoss.zul.Image;
 
 import br.com.rti.alpha.dao.DaoFactory;
 import br.com.rti.alpha.modelo.amostra.Amostra;
+import br.com.rti.alpha.modelo.amostra.Laudos;
 import br.com.rti.alpha.modelo.ativo.Ativo;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.supervisao.Frota;
@@ -54,19 +55,18 @@ public class FarolImageConverter implements Converter
 						return src = "/img/farol/farol-aceso_verde-l.png";
 					else
 						if ( this.situacao.contains("semamostra") || this.situacao.contains("semanalise") )//resultado.equals("semamostra") || resultado.equals("semanalise") )
-							return src = "/img/farol/farol-desligado.png";
-						
+							return src = "/img/farol/farol-desligado.png";						
 		}
 		else
 		{
-			if ( resultado.equals("semamostra") || resultado.equals("semanalise") || resultado.equalsIgnoreCase("normal") )
-				src = "/img/farol/farol_verde.png";
+			if ( this.situacao.contains("critico") )
+				return src = "/img/farol/farol_vermelho.png";
 			else
-				if ( resultado.equalsIgnoreCase("anormal") )
-					src = "/img/farol/farol_amarelo.png";
-				else		
-					if ( resultado.equalsIgnoreCase("critico") )
-						src = "/img/farol/farol_vermelho.png";
+				if ( this.situacao.contains("anormal") )
+					return src = "/img/farol/farol_amarelo.png";
+				else
+					if ( this.situacao.contains("semamostra") || this.situacao.contains("semanalise") || this.situacao.contains("normal") )
+						return src = "/img/farol/farol_verde.png";
 		}
 	
 		//System.out.println("\n--> Resultado: " + resultado);
@@ -137,7 +137,29 @@ public class FarolImageConverter implements Converter
 										}
 										//return situacao;
 									}
+									
+									this.verificarLaudosCompartimento(compartimento, id);
+									
 								}
+							
+							this.verificarLaudosAtivos(ativo, id);
+							
+							/*
+							if ( ativo.getLaudos() != null && !ativo.getLaudos().isEmpty() )
+							{
+								//this.compartimento = true;
+								//List<Laudos> ll = ativo.getLaudos();
+								for ( Laudos laudo : ativo.getLaudos())
+								{
+									if ( laudo.getVistoriado() != null )
+									{
+										if ( laudo.getVistoriado().equals("s") )
+											this.situacao.add("normal");
+										else
+											this.situacao.add("anormal");
+									}
+								}
+							}*/
 						}
 				}
 		}
@@ -187,7 +209,29 @@ public class FarolImageConverter implements Converter
 						}
 						//return situacao;
 					}
+					
+					this.verificarLaudosCompartimento(compartimento, id);
+					
 				}
+				
+				this.verificarLaudosAtivos(ativo, id);
+				
+				/*
+				if ( ativo.getLaudos() != null && !ativo.getLaudos().isEmpty() )
+				{
+					//this.compartimento = true;
+					//List<Laudos> ll = ativo.getLaudos();
+					for ( Laudos laudo : ativo.getLaudos())
+					{
+						if ( laudo.getVistoriado() != null )
+						{
+							if ( laudo.getVistoriado().equals("s") )
+								this.situacao.add("normal");
+							else
+								this.situacao.add("anormal");
+						}
+					}
+				}*/
 			}		
 		}
 		if ( objeto.equals("ativo") )
@@ -230,7 +274,28 @@ public class FarolImageConverter implements Converter
 					}
 					//return situacao;
 				}
+				
+				this.verificarLaudosCompartimento(compartimento, id);
+				
 			}
+			
+			this.verificarLaudosAtivos(ativo, id);
+			
+			/*if ( ativo.getLaudos() != null && !ativo.getLaudos().isEmpty() )
+			{
+				//this.compartimento = true;
+				//List<Laudos> ll = ativo.getLaudos();
+				for ( Laudos laudo : ativo.getLaudos())
+				{
+					if ( laudo.getVistoriado() != null )
+					{
+						if ( laudo.getVistoriado().equals("s") )
+							this.situacao.add("normal");
+						else
+							this.situacao.add("anormal");
+					}
+				}
+			}*/
 		}		
 		if ( objeto.equals("compartimento") )
 		{
@@ -238,7 +303,7 @@ public class FarolImageConverter implements Converter
 				
 			Set<Amostra> allAmostra = compartimento.getAmostra();
 			if ( allAmostra.isEmpty() )
-				situacao = "semamostra";
+				this.situacao.add("semamostra");
 			else
 			{
 				for (Amostra amostra : allAmostra)
@@ -246,7 +311,7 @@ public class FarolImageConverter implements Converter
 					//System.out.println("\n--> Passo 1");
 					if ( amostra.getSituacao().isEmpty() )
 						{
-						situacao = "semanalise";
+						this.situacao.add("semanalise");
 							//System.out.println("\n--> Passo 2");
 						}							
 					else
@@ -255,26 +320,29 @@ public class FarolImageConverter implements Converter
 						if ( amostra.getVistoriado() != null)
 						{
 							if (amostra.getVistoriado().equals("s") )
-								situacao = "normal";
+								this.situacao.add("normal");
 							else
-								situacao = amostra.getSituacao();
+								this.situacao.add(amostra.getSituacao());
 						}
 						else 
-							situacao = amostra.getSituacao();
+							this.situacao.add(amostra.getSituacao());
 						//System.out.println("\n--> Passo 3");
 						//System.out.println("\n--> Situação: " + situacao);
 					}
 				}
-				return situacao;
+				return situacao;				
 			}
+			
+			this.verificarLaudosCompartimento(compartimento, id);
+			
 		}
 		if ( objeto.equals("amostra") )
 		{
 			Amostra amostra = daof.getAmostraDAO().procura(id);		
-			System.out.println("No. da Amostra" + amostra.getId());	
+			//System.out.println("No. da Amostra" + amostra.getId());	
 			if ( amostra.getSituacao().equals("") )
 			{
-				situacao = "semanalise";
+				this.situacao.add("semanalise");
 			}
 			else
 			{
@@ -282,16 +350,79 @@ public class FarolImageConverter implements Converter
 				if ( amostra.getVistoriado() != null)
 				{
 					if (amostra.getVistoriado().equals("s") )
-						situacao = "normal";
+						this.situacao.add("normal");
 					else
-						situacao = amostra.getSituacao();
+						this.situacao.add(amostra.getSituacao());
 				}
 				else 
-					situacao = amostra.getSituacao();
+					this.situacao.add(amostra.getSituacao());
 			}
 			return situacao;
-		}		
-		return situacao;
+		}
+		
+		if ( objeto.equals("laudos") )
+		{
+			this.compartimento = true;
+			Laudos laudo = daof.getLaudosDAO().procura(id);
+			if ( laudo.getVistoriado() != null )
+				if ( laudo.getVistoriado().equals("s") )
+					this.situacao.add("normal");
+				else
+					this.situacao.add("anormal");
+		}
+		
+		if ( objeto.equals("laudosAtivo") ) 
+		{	
+			this.compartimento = true;
+			Ativo ativo = daof.getAtivoDAO().procura(id);
+			this.verificarLaudosAtivos(ativo, id);
+		}
+		
+		if ( objeto.equals("laudosCompartimento") ) 
+		{
+			this.compartimento = true;
+			Compartimento compartimento = daof.getCompartimentoDAO().procura(id);
+			this.verificarLaudosCompartimento(compartimento, id);
+		}
+		
+		return situacao;		
+	}
+	
+	public void verificarLaudosAtivos(Ativo ativo, int id)
+	{
+		//Ativo ativo = daof.getAtivoDAO().procura(id);
+		if ( ativo.getLaudos() != null && !ativo.getLaudos().isEmpty() )
+		{
+			//this.compartimento = true;
+			//List<Laudos> ll = ativo.getLaudos();
+			for ( Laudos laudo : ativo.getLaudos())
+			{
+				if ( laudo.getVistoriado() != null )
+				{
+					if ( laudo.getVistoriado().equals("s") )
+						this.situacao.add("normal");
+					else
+						this.situacao.add("anormal");
+				}
+			}
+		}
+	}
+	
+	public void verificarLaudosCompartimento(Compartimento compartimento, int id)
+	{
+		//Compartimento compartimento = daof.getCompartimentoDAO().procura(id);
+		if ( compartimento.getLaudos() != null && !compartimento.getLaudos().isEmpty() )
+		{
+			//this.compartimento = true;
+			for ( Laudos laudo : compartimento.getLaudos() )
+			{
+				if ( laudo.getVistoriado() != null )
+					if ( laudo.getVistoriado().equals("s") )
+						this.situacao.add("normal");
+					else
+						this.situacao.add("anormal");
+			}
+		}
 	}
 
 }

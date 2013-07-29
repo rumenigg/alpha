@@ -103,9 +103,12 @@ public class LaudosVM {
 	private Compartimento selectedCompartimento;
 	private List<Compartimento> allCompartimento = new ArrayList<Compartimento>();
 		
-	private boolean desativado = true;
+	private boolean desativado = true;	
+	private boolean readOnly = false;
 
 	private Converter arquivoConverter = new ArquivoConverter();
+	
+	private Object objeto;
 	
 	public Listbox getLbdescricao() {
 		return lbdescricao;
@@ -186,6 +189,12 @@ public class LaudosVM {
 	public void setDesativado(boolean desativado) {
 		this.desativado = desativado;
 	}	
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
 	public Converter getArquivoConverter() {
 		return arquivoConverter;
 	}
@@ -203,7 +212,23 @@ public class LaudosVM {
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		
-		this.allLaudos = daof.getLaudosDAO().listaTudo();
+		if ( this.objeto != null )
+		{
+			if ( this.objeto instanceof Ativo )
+			{
+				Ativo ativo = (Ativo) objeto;
+				ativo = daof.getAtivoDAO().procura(ativo.getId());
+				this.allLaudos = ativo.getLaudos();
+			}
+			if ( this.objeto instanceof Compartimento )
+			{
+				Compartimento compartimento = (Compartimento) objeto;
+				compartimento = daof.getCompartimentoDAO().procura(compartimento.getId());
+				this.allLaudos = compartimento.getLaudos();
+			}
+		}
+		else
+			this.allLaudos = daof.getLaudosDAO().listaTudo();
 		
 		Ordenar o = new Ordenar();
 		o.setDescending(true);
@@ -288,18 +313,42 @@ public class LaudosVM {
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		
-		daof.getLaudosDAO().adiciona(this.selectedLaudos);
+		if ( this.readOnly )
+		{
+			daof.getLaudosDAO().adiciona(this.selectedLaudos);
+			
+			Messagebox.show("Laudo vistoriado com sucesso",	"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
+			
+			this.atualizaLaudos();
+			
+			//Métodos usados para atualizar as janelas de faróis anteriores, Supervisão, Frota, Ativo e Compartimento
+			BindUtils.postGlobalCommand(null, null, "atualizaAllSupervisao", null);
+			BindUtils.postGlobalCommand(null, null, "atualizaAllFrota", null);	
+			BindUtils.postGlobalCommand(null, null, "atualizaAllAtivo", null);
+			BindUtils.postGlobalCommand(null, null, "atualizaAllCompartimento", null);			
+			BindUtils.postGlobalCommand(null, null, "atualizaFarolAllLaudos", null);
+			
+			this.selectedLaudos = null;
+			this.selectedAtivo = null;
+			this.selectedCompartimento = null;
+		}
+		else
+		{
+			this.selectedLaudos.setVistoriado("n");
 		
-		this.criarDiretorio();
+			daof.getLaudosDAO().adiciona(this.selectedLaudos);
+		
+			this.criarDiretorio();
 
-		Messagebox.show("O Laudo " + this.selectedLaudos.getDescricao().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
-				"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+			Messagebox.show("O Laudo " + this.selectedLaudos.getDescricao().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 		
-		this.desativado = true;
-		this.selectedLaudos = null;
-		this.selectedAtivo = null;
-		this.selectedCompartimento = null;		
-		//this.selectedAtivo.setCompartimento(null);
+			this.desativado = true;
+			this.selectedLaudos = null;
+			this.selectedAtivo = null;
+			this.selectedCompartimento = null;		
+			//this.selectedAtivo.setCompartimento(null);
+		}
 	}
 	
 	@Command
@@ -325,7 +374,7 @@ public class LaudosVM {
 							catch (Exception e)
 							{
 								Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-									"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+									"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 								e.printStackTrace();									
 							}
 							
@@ -389,6 +438,38 @@ public class LaudosVM {
 		}
 	}
 	
+	@GlobalCommand
+	@NotifyChange({"desativado","selectedLaudos"})
+	public void showSelectedLaudo(@BindingParam("selectedLaudo") Laudos laudo, @BindingParam("readOnly") boolean readOnly) throws IOException
+	{		
+		this.desativado = false;
+		this.readOnly = readOnly;
+		
+		this.selectedLaudos = laudo;
+		
+		for ( Laudos l : this.allLaudos )			
+			if ( l.getId() == this.selectedLaudos.getId() )
+				this.showLaudo( this.navegador = this.allLaudos.indexOf(l) );
+		
+	}
+	
+	@GlobalCommand
+	@NotifyChange({"desativado", "readOnly"})
+	public void showLaudosObjetos(@BindingParam("selectedLaudo") Object obj, @BindingParam("readOnly") boolean readOnly) throws IOException
+	{		
+		this.desativado = false;
+		this.readOnly = readOnly;
+		
+		this.objeto = obj;
+		
+		this.atualizaLaudos();
+		//this.atualizaAmostraCompartimento(id);
+		//BindUtils.postNotifyChange(null, null, this, "allAmostra");
+		
+		this.navegar("primeiro");		
+	}
+	
+	
 	@NotifyChange("selectedLaudos")
 	public void showLaudo( int i)
 	{
@@ -440,35 +521,74 @@ public class LaudosVM {
 		fd.save(file, null);		
 	}
 	
-	public void criarDiretorio() throws IOException {
-		if(this.media!=null){	
-			BufferedInputStream in = null;
-	        BufferedOutputStream out = null;
+	public void criarDiretorio() throws IOException 
+	{
+		if ( this.media!=null )
+		{	
 			String path = "rti/alpha";
 			path +="/hydro/laudos/";
 						
 			InputStream fin = media.getStreamData();
-            in = new BufferedInputStream(fin);
+
             File Diretorio = new File(path);
             Diretorio.mkdirs();
              
             File file = new File(path + this.selectedLaudos.getId()+"_"+media.getName());
- 
-            OutputStream fout = new FileOutputStream(file);
-            out = new BufferedOutputStream(fout);
-            
-            byte buffer[] = new byte[1024];
-            int ch = in.read(buffer);
-            while (ch != -1) {
-                out.write(buffer, 0, ch);
-                ch = in.read(buffer);
-            }
-            fout.close();
-           // Messagebox.show("Arquivo carregado com sucesso :" + this.selectedLaudos.getId()+"_"+media.getName());
-            this.selectedLaudos.setArquivo(file.getCanonicalPath());
-            
-        	}else{
-        		//System.out.println("o arquivo nao foi caregado");
+           
+        	OutputStream outputStream = null;
+        	 
+        	try 
+        	{
+        		// read this file into InputStream
+        		//inputStream = new FileInputStream("/Users/mkyong/Downloads/holder.js");
+        	 
+        			// write the inputStream to a FileOutputStream
+        		outputStream = new FileOutputStream(file);
+        	 
+        		int read = 0;
+        		byte[] bytes = new byte[1024];
+        	 
+        		while ((read = fin.read(bytes)) != -1) 
+        		{
+        			outputStream.write(bytes, 0, read);
+        		}
+        	 
+        		System.out.println("Arquivo gravado!");
+        	 
+        	} 
+        	catch (IOException e) 
+        	{
+        		e.printStackTrace();
+        	} 
+        	finally 
+        	{        		
+        		if ( fin != null ) 
+        		{
+        			try 
+        			{
+        				fin.close();        			
+        			} 
+        			catch (IOException e) 
+        			{
+        				e.printStackTrace();
+        			}
+        		}
+        		if ( outputStream != null ) 
+        		{
+        			try 
+        			{
+        				// outputStream.flush();
+        				outputStream.close();
+        			}
+        			catch (IOException e) 
+        			{
+        				e.printStackTrace();
+        			}
+        	 
+        		}
+        	}
+        	
+        	this.selectedLaudos.setArquivo(file.getCanonicalPath());
 		}
 	}
 }

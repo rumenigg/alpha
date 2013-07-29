@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -77,6 +78,8 @@ public class FarolAtivoVM
 		this.allAtivo.addAll(this.selectedFrota.getAtivo());
 		
 		Collections.sort(this.allAtivo, new Ordenar());
+		
+		BindUtils.postNotifyChange(null, null, this, "allAtivo");
 	}
 	
 	@AfterCompose

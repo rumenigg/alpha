@@ -79,6 +79,8 @@ public class FarolCompartimentoVM
 		
 		this.allCompartimento.addAll(this.selectedAtivo.getCompartimento());
 		Collections.sort(this.allCompartimento, new Ordenar());		
+		
+		BindUtils.postNotifyChange(null, null, this, "allCompartimento");
 	}
 
 	@AfterCompose
@@ -97,11 +99,11 @@ public class FarolCompartimentoVM
 		else
 		{
 			
-			//final HashMap<String, Object> map = new HashMap<String, Object>();
-			//map.put("ativo", id);
+			final HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("compartimento", id);
 			//Executions.createComponents("/zk/amostra/farolCompartimento.zul", null, map);
 			
-			final Window winAmostra = (Window) Executions.createComponents("/zk/farol/farolAmostra.zul", null, null);		
+			final Window winAmostra = (Window) Executions.createComponents("/zk/farol/farolAmostra.zul", null, map);		
 						
 			//winAmostra.setVisible(true);
 			//winAmostra.setWidth("100%");
@@ -109,16 +111,35 @@ public class FarolCompartimentoVM
  			winAmostra.setId("winAmostra");
  			winAmostra.setClosable(true);
  			winAmostra.setMaximizable(true);
+ 			winAmostra.setWidth("100%");
  			winAmostra.setMode("modal");
  						
  			final HashMap<String, Object> args = new HashMap<String, Object>();
- 			args.put("selectedCompartimento", id);
+ 			args.put("selectedCompartimento", c);
  			args.put("readOnly", true);
  			BindUtils.postGlobalCommand(null, null, "showAmostrasCompartimento", args);
  			
- 			Map<String, Object> args2 = new HashMap<String, Object>();
- 			args2.put("selectedCompartimento", c);
- 			BindUtils.postGlobalCommand(null, null, "showSelectedAmostrasCompartimento", args2);
+ 			//Map<String, Object> args2 = new HashMap<String, Object>();
+ 			//args2.put("selectedCompartimento", c);
+ 			//BindUtils.postGlobalCommand(null, null, "atualizaFarolAllAmostra", args);
 		}
 	}	
+	
+	@Command
+	public void showLaudos(@BindingParam("objeto") Object obj)
+	{
+		final HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put("objeto", obj);
+		
+		final Window winLaudo = (Window) Executions.createComponents("/zk/farol/farolLaudos.zul", null, map);
+		winLaudo.setId("winLaudo");
+		winLaudo.setClosable(true);
+		winLaudo.setMaximizable(true);
+		winLaudo.setMode("modal");
+		
+		final HashMap<String, Object> args = new HashMap<String, Object>();
+		args.put("selectedLaudo", obj);
+		args.put("readOnly", true);
+		BindUtils.postGlobalCommand(null, null, "showLaudosObjetos", args);
+	}
 }

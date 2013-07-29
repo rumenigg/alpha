@@ -1,5 +1,7 @@
 package br.com.rti.alpha.modelo.amostra;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,6 +19,7 @@ public class Laudos {
 	private String descricao;
 	private String arquivo;
 	private String vistoriado;
+	private Date dataVistoria;
 	private String obs;
 	
 	@ManyToOne
@@ -57,6 +60,14 @@ public class Laudos {
 
 	public void setVistoriado(String vistoriado) {
 		this.vistoriado = vistoriado;
+	}
+	
+	public Date getDataVistoria() {
+		return dataVistoria;
+	}
+
+	public void setDataVistoria(Date dataVistoria) {
+		this.dataVistoria = dataVistoria;
 	}
 
 	public String getObs() {

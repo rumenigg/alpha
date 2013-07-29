@@ -21,6 +21,12 @@
 				<label value="Responsável:" style="font-weight: bold;"/>
 				<label value="@load(fcvm.selectedAtivo.frota.pessoa.nome)"/>
 			</hlayout>
+			<hlayout spacing="5px">				
+				<label value="Laudos:" style="font-weight: bold;" />
+				<image src="@load(fcvm.selectedAtivo.id) @converter(fcvm.farolConverter, objeto='laudosAtivo')" 
+						style="position: relative; cursor: pointer;"
+						onClick="@command('showLaudos', objeto=fcvm.selectedAtivo)"/>
+			</hlayout>
 		</vlayout>
 		
 		<separator spacing="10px"/>
@@ -35,7 +41,7 @@
 					<div children="@bind(fcvm.allCompartimento) @template('model')" width="100%" > 	
 						<template name="model" var="f">
 							<vlayout style="float: left;">																							
-								<label value="@load(f.tag)" style="float: left; color: red; font-weight: bold; margin: 0px 0px 0px 15px"/>
+								<label value="@load(f.tag)" style="float: left; font-size: 14px; color: red; font-weight: bold; margin: 0px 0px 0px 15px"/>
 								<!-- <button label="@load(f.tag)" width="130px" height="150px" orient="vertical" dir="reverse"
 									imageContent="@load(f.foto) @converter(fcvm.converter, tipo='thumb')" 
 									style="float: left; color: red; font-weight: bold; margin: 0px 0px 30px 35px;" />-->
@@ -45,14 +51,15 @@
 							
 							<vlayout style="float: left;" height="100%">
 								<hlayout spacing="5px">
-									<image src="@load(f.id) @converter(fcvm.farolConverter, objeto='compartimento')" style="cursor: pointer; margin: 0px 0px 0px 0px;"
+									<image src="@load(f.id) @converter(fcvm.farolConverter, objeto='compartimento')" style="cursor: pointer;"
 											onClick="@command('showAmostra', compartimento=f.id, objeto=f)"/>	 
-									<label value="Análise de Óleo" style="font-size: 14px; font-weight: bold; position: relative;"/>
+									<label value="Análise de Óleo" style="font-size: 14px; font-weight: bold;"/>
 								</hlayout>
 								<hlayout spacing="5px">
-									<image src="@load(f.id) @converter(fcvm.farolConverter, objeto='compartimento')" 
-										style="cursor: pointer; margin: 0px 0px 30px 15px;"/>	 
-									<label value="Laudos" style="font-size: 14px; font-weight: bold; position: relative; padding: 10px 0px; "/>
+									<image src="@load(f.id) @converter(fcvm.farolConverter, objeto='laudosCompartimento')" 
+										style="cursor: pointer; margin: 0px 0px 30px 15px;"
+										onClick="@command('showLaudos', objeto=f)"/>	 
+									<label value="Laudos" style="font-size: 14px; font-weight: bold; position: relative;"/>
 								</hlayout>
 							</vlayout>						
 						</template>

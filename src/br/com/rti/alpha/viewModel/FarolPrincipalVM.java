@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.Converter;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
@@ -91,6 +92,8 @@ public class FarolPrincipalVM
 		Collections.sort(this.allSupervisao, new Ordenar());
 		
 		daof = null;
+		
+		BindUtils.postNotifyChange(null, null, this, "allSupervisao");
 	}
 	
 	@Init

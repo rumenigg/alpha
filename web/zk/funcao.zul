@@ -1,6 +1,6 @@
 <?page title="Função" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window id="winFuncao" title="Função" border="normal" width="400px"
+	<window id="winFuncao" title="Função" border="normal" width="450px"
 			apply="br.com.rti.alpha.controle.Funcao_zul" >
 		<toolbar>
 			<toolbarbutton id="tbtnAdicionar" tooltiptext="Incluir uma nova pessoa" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" />
@@ -19,8 +19,12 @@
 		
 		<separator spacing="5"/>
 		<grid>
+			<columns>
+				<column hflex="1"/>
+				<column hflex="3"/>
+			</columns>
 			<rows>
-				<row>
+				<row align="right">
 					<label value="Função" />
 					<textbox id="txtFuncao" width="100%" disabled="true" />
 				</row>

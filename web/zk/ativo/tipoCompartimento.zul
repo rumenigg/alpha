@@ -1,6 +1,24 @@
 <zk>
-	<window id="winTipoCompartimento" title="Tipos de Compartimentos" border="normal" width="100%" apply="org.zkoss.bind.BindComposer" 
+	<window id="winTipoCompartimento" title="Tipos de Compartimentos" border="normal" apply="org.zkoss.bind.BindComposer" 
 			viewModel="@id('tcvm') @init('br.com.rti.alpha.viewModel.TipoCompartimentoVM')" onClose="self.detach(); pageScope.clear()">
+		
+		<caption>
+			<button id="tbtnTipoCompartimentoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar_c_2.png" disabled="true" 
+							onClick="winTipoCompartimento.setSizable(false); winTipoCompartimento.doEmbedded(); self.setDisabled(true); 
+							tbtnTipoCompartimentoDesatrelar.setDisabled(false);"/>
+			<button id="tbtnTipoCompartimentoDesatrelar" tooltiptext="Desatrelar Janela" image="/img/btn/page/toolbarbtn/desatrelar_c_2.png">
+				<attribute name="onClick">
+					{
+						winTipoCompartimento.setSizable(true); 
+						winTipoCompartimento.doOverlapped(); 
+						self.setDisabled(true); 
+						tbtnTipoCompartimentoAtrelar.setDisabled(false);
+						winTipoCompartimento.setPosition("center");
+					}
+				</attribute>
+			</button>
+		</caption>
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoTipoCompartimento" tooltiptext="Incluir um novo Tipo de Compartimento" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>

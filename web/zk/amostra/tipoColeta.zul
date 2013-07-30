@@ -20,13 +20,17 @@
 			</button>
 		</caption>
 		
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoTipoColeta" tooltiptext="Incluir um novo Tipo de Coleta" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Tipo de Coleta ou suas alterações" disabled="@load(tcvm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')"/>
 			<toolbarbutton tooltiptext="Excluir o Tipo de Coleta selecionada" disabled="@load(tcvm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -35,6 +39,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winTipoColeta.detach()"/>
 			<!-- <toolbarbutton id="tbtnTipoColetaAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
@@ -57,15 +62,15 @@
 			<grid>
 				<columns>
 					<column hflex="1" />
-					<column hflex="2" />
+					<column hflex="4" />
 				</columns>
 				<rows>
-					<row>
+					<row align="right">
 						<label value="Descricao"/>
 						<textbox placeholder="Informe o tipo de coleta" width="100%" 
 									value="@bind(fx.descricao)" constraint="no empty" disabled="@load(tcvm.desativado)" />
 					</row>
-					<row>
+					<row align="right">
 						<label value="Obs.:"/>
 						<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(tcvm.desativado)"/>
 					</row>
@@ -86,13 +91,13 @@
 					</template>							
 				</listbox>
 				
-				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<vbox width="40px" style="margin: 40px 5px">
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
 							disabled="@load(tcvm.desativado)" /> -->
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
-							disabled="@load(tcvm.desativado)" onClick="@command('adicionarPlano')"/>
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
-							disabled="@load(tcvm.desativado)" onClick="@command('removerPlano')"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/adicionar-um_azul.png"
+							onClick="@command('adicionarPlano')" sclass="icon"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/remover-um_azul.png"
+							onClick="@command('removerPlano')" sclass="icon"/>
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
 							disabled="@load(tcvm.desativado)" /> -->
 				</vbox>

@@ -22,10 +22,12 @@
 		<toolbar>
 			<toolbarbutton id="tbtnNovoOleo" tooltiptext="Incluir um novo Oleo" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Oleo ou suas alterações" disabled="@load(ovm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')"/>
 			<toolbarbutton tooltiptext="Excluir o Oleo selecionado" disabled="@load(ovm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -34,6 +36,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winOleo.detach()"/>
 			<!-- <toolbarbutton id="tbtnOleoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
@@ -60,22 +63,22 @@
 						<column hflex="2" />
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="Referência"/>
 							<textbox placeholder="Informe a referência do óleo" constraint="no empty"
 									value="@bind(fx.referencia)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox placeholder="Informe o fabricante do óleo"
 									value="@bind(fx.fabricante)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Tendência de viscosidade"/>
 							<spinner placeholder="Informe o limite da tendência de viscosidade" step="5" constraint="min 0"
 									value="@bind(fx.tendenciaViscosidade)" width="100%" disabled="@load(ovm.desativado)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Obs.:"/>
 							<textbox multiline="true" value="@bind(fx.obs)" width="100%" rows="3" disabled="@load(ovm.desativado)"/>
 						</row>

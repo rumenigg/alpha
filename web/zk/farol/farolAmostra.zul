@@ -1,0 +1,32 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Portal Hydro" border="normal" closable="true" maximizable="true" width="80%" height="80%"
+			apply="org.zkoss.bind.BindComposer" viewModel="@id('famostravm') @init('br.com.rti.alpha.viewModel.FarolAmostraVM')">
+		
+		<borderlayout>
+			<west width="20%" splittable="true" collapsible="true" autoscroll="true" >
+				<listbox model="@load(famostravm.allAmostra)" selectedItem="@bind(famostravm.selectedAmostra)" 
+						onSelect="@global-command('showSelectedAmostra', selectedAmostra=famostravm.selectedAmostra, readOnly='true')" >
+					<listhead menupopup="auto">
+						<listheader label="Amostra" sort="auto(id)" align="center"/>
+						<listheader label="Data" sort="auto(dataAmostra, id)" sortDirection="descending" align="center"/>						
+						<listheader label="Farol" align="center"/>
+					</listhead>					
+					<template name="model" var="a">
+						<listitem>
+							<listcell label="@load(a.id)" value="@load(a.id)"/>
+							<listcell label="@load(a.dataAmostra) @converter('formatedDate', format='dd/MM/yyyy')" > 
+								<!-- <datebox value="@load(a.dataAmostra)" buttonVisible="false" inplace="true" lenient="true" readonly="true" /> -->
+							</listcell>
+							<listcell image="@load(a.id) @converter(famostravm.farolConverter, objeto='amostra')"/>
+						</listitem>
+					</template>
+				</listbox>
+			</west>
+			
+			<center>
+				<include src="/zk/amostra/amostra.zul"/>
+			</center>
+		</borderlayout>
+	</window>
+</zk>

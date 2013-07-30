@@ -1,23 +1,30 @@
 <?page title="Função" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window id="winFuncao" title="Função" border="normal" width="400px"
+	<window id="winFuncao" title="Função" border="normal" width="450px"
 			apply="br.com.rti.alpha.controle.Funcao_zul" >
 		<toolbar>
 			<toolbarbutton id="tbtnAdicionar" tooltiptext="Incluir uma nova pessoa" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" />
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton id="tbtnSalvar" disabled="true" tooltiptext="Salvar a nova pessoa ou suas alterações" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"/>
 			<toolbarbutton id="tbtnExcluir" disabled="true" tooltiptext="Excluir os dados da pessoa selecionada" image="/img/btn/page/toolbarbtn/lixeira_1.png"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton id="tbtnPrimeiro" tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"/>
 			<toolbarbutton id="tbtnAnterior" tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"/>
 			<toolbarbutton id="tbtnProximo" tooltiptext="Próximo registro" image="/img/btn/page/toolbarbtn/proximo-reg_32_azul.png"/>
 			<toolbarbutton id="tbtnUltimo" tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winFuncao.detach()" />
 		</toolbar>
 		
 		<separator spacing="5"/>
 		<grid>
+			<columns>
+				<column hflex="1"/>
+				<column hflex="3"/>
+			</columns>
 			<rows>
-				<row>
+				<row align="right">
 					<label value="Função" />
 					<textbox id="txtFuncao" width="100%" disabled="true" />
 				</row>

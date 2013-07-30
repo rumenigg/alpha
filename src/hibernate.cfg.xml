@@ -17,7 +17,7 @@
   <property name="hibernate.connection.username">root</property>
   <property name="hibernate.connection.password">root</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-  <property name="hibernate.show_sql">true</property>
+  <property name="hibernate.show_sql">false</property>
   <property name="hibernate.format_sql">true</property>
   
   <property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
@@ -53,5 +53,6 @@
   <mapping class="br.com.rti.alpha.modelo.amostra.FotoAmostra"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Analise"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Elementos"/>
+  <mapping class="br.com.rti.alpha.modelo.amostra.Laudos"/>
  </session-factory>
 </hibernate-configuration>

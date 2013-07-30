@@ -19,13 +19,17 @@
 			</button>
 		</caption>
 		
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoAtivo" tooltiptext="Incluir um novo Ativo" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar o novo Ativo ou suas alterações" disabled="@load(avm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')"/>
 			<toolbarbutton tooltiptext="Excluir o Ativo selecionado" disabled="@load(avm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -34,6 +38,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winAtivo.detach()"/>
 			<!--  <toolbarbutton id="tbtnAtivoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
@@ -61,32 +66,32 @@
 						<column hflex="2"/>
 					</columns>
 					<rows>
-						<row>
+						<row align="right">
 							<label value="TAG"/>
 							<textbox width="100%" placeholder="Digite a TAG do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.tag)" constraint="no empty"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Fabricante"/>
 							<textbox width="100%" placeholder="Informe o fabricante do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.fabricante)"/>
 						</row>								
-						<row>
+						<row align="right">
 							<label value="Modelo"/>
 							<textbox width="100%" placeholder="Informe o modelo do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.modelo)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Série"/>
 							<textbox width="100%" placeholder="Informe a série do ativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.serie)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Data de Aquisição"/>
 							<datebox width="100%" placeholder="Forneça a data de aquisição doativo" disabled="@load(avm.desativado)" 
 									value="@bind(fx.dataAquisicao)"/>
 						</row>
-						<row>
+						<row align="right">
 							<label value="Obs.:"/>
 							<textbox multiline="true" width="100%" rows="3" disabled="@load(avm.desativado)" 
 									value="@bind(fx.obs)"/>
@@ -133,13 +138,13 @@
 				<listbox id="lbCompartimentoList" height="250px" width="280px" tooltiptext="Selecione os compartimentos que fazem parte desse Ativo"
 						disabled="@load(avm.desativado)" rows="5" />
 						
-				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
+				<vbox width="40px" style="margin: 40px 5px">
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
 							disabled="@load(avm.desativado)" /> -->
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
-							disabled="@load(avm.desativado)" onClick="@command('adicionarCompartimento')"/>
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
-							disabled="@load(avm.desativado)" onClick="@command('removerCompartimento')"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/adicionar-um_azul.png"
+							onClick="@command('adicionarCompartimento')" sclass="icon"/>
+					<image style="cursor: pointer;" src="/img/btn/page/navbtn/remover-um_azul.png"
+							onClick="@command('removerCompartimento')" sclass="icon" />
 				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
 							disabled="@load(avm.desativado)" /> -->
 				</vbox>

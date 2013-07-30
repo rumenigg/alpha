@@ -1,18 +1,19 @@
 package br.com.rti.alpha.viewModel;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.ContextParam;
 import org.zkoss.bind.annotation.ContextType;
+import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
@@ -26,6 +27,7 @@ import org.zkoss.zul.Toolbarbutton;
 
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
+import br.com.rti.alpha.modelo.amostra.Elementos;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.ativo.TipoCompartimento;
 
@@ -35,9 +37,12 @@ public class TipoCompartimentoVM
 	private Toolbarbutton tbtnNovoTipoCompartimento;
 	
 	private List<TipoCompartimento> allTipoCompartimento;
-	private TipoCompartimento selectedTipoCompartimento;
+	private TipoCompartimento selectedTipoCompartimento;	
 	
 	private List<Compartimento> allCompartimento;
+	
+	private List<Elementos> allElementos;
+	private Elementos selectedElementos;
 	
 	private boolean desativado = true;
 	
@@ -63,13 +68,32 @@ public class TipoCompartimentoVM
 	public void setDesativado(boolean desativado)
 	{
 		this.desativado = desativado;
+	}	
+	public List<Elementos> getAllElementos() {
+		return allElementos;
 	}
-	
+	public void setAllElementos(List<Elementos> allElementos) {
+		this.allElementos = allElementos;
+	}
+	public Elementos getSelectedElementos() {		
+		return selectedElementos;
+	}
+	public void setSelectedElementos(Elementos selectedElementos) {
+		this.selectedElementos = selectedElementos;
+	}
+	@Command
+	public void carregarElementos()
+	{
+		if ( this.selectedElementos == null )
+		{
+			this.selectedElementos = new Elementos();
+		}
+	}
 	@Init
 	public void init()
 	{
 		this.selectedTipoCompartimento = new TipoCompartimento();
-		this.atualiza();
+		this.atualizaAllTipoCompartimento();
 	}
 	
 	@AfterCompose
@@ -81,8 +105,9 @@ public class TipoCompartimentoVM
 		Clients.showNotification("Clique aqui para adicionar um novo Tipo de Compartimento", "info", this.tbtnNovoTipoCompartimento, "end_center", 3000);
 	}
 	
+	@GlobalCommand
 	@NotifyChange("allTipoCompartimento")
-	public void atualiza()
+	public void atualizaAllTipoCompartimento()
 	{
 		this.allTipoCompartimento = null;
 		
@@ -101,13 +126,27 @@ public class TipoCompartimentoVM
 		//daof.close();
 	}
 	
+	public void atualizaElementos()
+	{
+		this.allElementos = null;
+		DaoFactory daof = new DaoFactory();
+		daof.beginTransaction();
+		
+		this.allElementos = daof.getElementosDAO().listaTudo();
+		
+		daof = null;
+	}
+	
 	@Command
-	@NotifyChange({"selectedTipoCompartimento","desativado"})
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
 	public void novo()
 	{
 		this.desativado = false;
 		this.selectedTipoCompartimento = null;
 		this.selectedTipoCompartimento = new TipoCompartimento();
+		
+		this.selectedElementos = null;
+		//this.selectedElementos = new Elementos();
 	}
 	
 	@Command
@@ -119,22 +158,30 @@ public class TipoCompartimentoVM
 			DaoFactory daof = new DaoFactory();
 			daof.beginTransaction();
 			
+			if ( this.selectedElementos != null )
+			{
+				daof.getElementosDAO().adiciona(this.selectedElementos);
+				this.selectedTipoCompartimento.setElementos(this.selectedElementos);
+			}
+						
 			daof.getTipoCompartimentoDAO().adiciona(this.selectedTipoCompartimento);
+			
 			daof.commit();
 			
 			Messagebox.show("O tipo de compartimento " + this.selectedTipoCompartimento.getDescricao().toUpperCase() + 
-					"\nfoi adicionado ou atualizado com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+					"\nfoi adicionado ou atualizado com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 			//Atualiza o combobox Tipo de Compartimento na janela Compartimento
 			this.atualizaBindComponent("atualizaCompartimentoLists", "atualizaCompartimentoLists", this.selectedTipoCompartimento);
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent("atualizaListas", "atualizaListas", this.selectedTipoCompartimento);
-			this.atualiza();
+			this.atualizaAllTipoCompartimento();
+			this.atualizaElementos();
 		}
 		catch(Exception e)
 		{
 			Messagebox.show("Problemas de conexão com o banco de dados.\nContate o administrador ou o desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+					"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			
 			e.printStackTrace();
 		}
@@ -150,14 +197,14 @@ public class TipoCompartimentoVM
 			Messagebox.show("Você não pode excluir o Tipo de Compartimento " + 
 					selectedTipoCompartimento.getDescricao().toUpperCase() + 
 					"\ndevido possuir compartimentos atribuidos à ele.\nPara excluí-lo você deve primeiro excluir os Compartimentos existentes.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.EXCLAMATION);	
+					"Portal Hydro", Messagebox.OK, Messagebox.EXCLAMATION);	
 		}
 		else 
 			 {
 				try
 				{
 					Messagebox.show("Você realmente deseja excluir o Tipo de Compartimento " + this.selectedTipoCompartimento.getDescricao().toUpperCase() + "?",
-							"Hydro - Projeto Alpha", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
+							"Portal Hydro", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 							new EventListener<Event>()
 							{
 								public void onEvent(Event event) throws SQLException
@@ -172,19 +219,19 @@ public class TipoCompartimentoVM
 											daof.getTipoCompartimentoDAO().remove(selectedTipoCompartimento);
 											daof.commit();
 											
-											Messagebox.show("Tipo de compartimento excluído com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, 
+											Messagebox.show("Tipo de compartimento excluído com sucesso.", "Portal Hydro", Messagebox.OK, 
 													Messagebox.INFORMATION);
 											
 											//Atualiza o combobox Tipo de Compartimento na janela Compartimento
 											atualizaBindComponent("atualizaCompartimentoLists", "atualizaCompartimentoLists", selectedTipoCompartimento);
 											//Atualiza a lista na aba Compartimento na janela de Cadastros;
 											atualizaBindComponent("atualizaListas", "atualizaListas", selectedTipoCompartimento);
-											atualiza();
+											atualizaAllTipoCompartimento();
 										}
 										catch (Exception e)
 										{
 											Messagebox.show("Problemas de conexão com o banco de dados.\nContate o administrador ou o desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 											
 											e.printStackTrace();
 										}
@@ -196,7 +243,7 @@ public class TipoCompartimentoVM
 				}
 				catch (NullPointerException n)
 				{
-						Messagebox.show("Selecione um Tipo de Compartimento para a exclusão!", "Hydro - Projeto Alpha", 
+						Messagebox.show("Selecione um Tipo de Compartimento para a exclusão!", "Portal Hydro", 
 								Messagebox.OK, Messagebox.EXCLAMATION);				
 				}
 			}				
@@ -217,7 +264,7 @@ public class TipoCompartimentoVM
 	}
 	
 	@Command
-	@NotifyChange({"selectedTipoCompartimento","desativado"})
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
 	public void navegar(@BindingParam("acao") String acao)
 	{	
 		this.desativado = false;
@@ -226,14 +273,14 @@ public class TipoCompartimentoVM
 		if ( !this.allTipoCompartimento.isEmpty() ){
 		if ( acao.equals("primeiro") )
 		{
-			this.selectedTipoCompartimento = this.allTipoCompartimento.get(this.navegador = 0);
+			this.showSelectedTipoCompartimentoItem(this.navegador = 0);
 		}
 		
 		if ( acao.equals("anterior") )
 		{
 			if ( this.navegador > 0 )
 			{
-				this.selectedTipoCompartimento = this.allTipoCompartimento.get(--this.navegador);
+				this.showSelectedTipoCompartimentoItem(--this.navegador);
 			}
 			else this.navegar("primeiro");
 		}
@@ -242,14 +289,14 @@ public class TipoCompartimentoVM
 		{
 			if ( this.navegador < this.allTipoCompartimento.size()-1 )
 			{
-				this.selectedTipoCompartimento = this.allTipoCompartimento.get(++this.navegador);
+				this.showSelectedTipoCompartimentoItem(++this.navegador);
 			}
 			else this.navegar("ultimo");
 		}
 		
 		if ( acao.equals("ultimo") )
 		{
-			this.selectedTipoCompartimento = this.allTipoCompartimento.get(this.navegador = this.allTipoCompartimento.size()-1);
+			this.showSelectedTipoCompartimentoItem(this.navegador = this.allTipoCompartimento.size()-1);
 		}}
 	}
 	
@@ -259,5 +306,19 @@ public class TipoCompartimentoVM
 		Map args = new HashMap();
 		args.put(bindingParam, obj);
 		BindUtils.postGlobalCommand(null, null, metodo, args);
+	}
+	
+	@GlobalCommand
+	@NotifyChange({"selectedTipoCompartimento","selectedElementos","desativado"})
+	public void showSelectedTipoCompartimentoItem(@BindingParam("showSelectedTipoCompartimentoItem") int i )
+	{
+		this.desativado = false;
+		
+		this.selectedTipoCompartimento = null;
+		//this.selectedPessoa = selectedPessoa;
+		
+		this.selectedTipoCompartimento = this.allTipoCompartimento.get( this.navegador = i );
+		
+		this.selectedElementos = this.selectedTipoCompartimento.getElementos();		
 	}
 }

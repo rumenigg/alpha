@@ -1,5 +1,7 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -273,7 +275,7 @@ public class AtivoVM
 			this.salvarFoto();
 			
 			Messagebox.show("O Ativo " + this.selectedAtivo.getTag().toUpperCase() + " foi \nadicionado ou atualizado com sucesso",
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);			
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);			
 				
 			//Atualiza a lista na aba Compartimento na janela de Cadastros;
 			this.atualizaBindComponent(this.selectedAtivo);
@@ -310,7 +312,7 @@ public class AtivoVM
 		catch (Exception e)
 		{
 			Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema.",
-					"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+					"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 			e.printStackTrace();
 		}
 	}
@@ -324,7 +326,7 @@ public class AtivoVM
 			if ( !this.selectedAtivo.getCompartimento().isEmpty() )
 			{
 				Messagebox.show("Atenção, o Ativo " + this.selectedAtivo.getTag().toUpperCase() + " possui compartimento(s) associado(s). "+
-						"Caso prossiga com a exclusão os compartimentos ficarão sem ativo. Você realmente deseja prosseguir com a exclusão?", "Hydro - Projeto Alpha",
+						"Caso prossiga com a exclusão os compartimentos ficarão sem ativo. Você realmente deseja prosseguir com a exclusão?", "Portal Hydro",
 						Messagebox.YES | Messagebox.NO, Messagebox.EXCLAMATION, 
 						new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -350,7 +352,7 @@ public class AtivoVM
 										//Atualiza a lista na aba Compartimento na janela de Cadastros;
 										atualizaBindComponent(selectedAtivo);				
 										
-										Messagebox.show("Ativo excluido com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+										Messagebox.show("Ativo excluido com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 																				
 										BindUtils.postNotifyChange(null,null,this,"selectedAtivo");
 										atualizaAllAtivo();													
@@ -359,7 +361,7 @@ public class AtivoVM
 									catch (Exception e)
 									{
 										Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-													"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+													"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 										e.printStackTrace();									
 									}
 								}								
@@ -368,7 +370,7 @@ public class AtivoVM
 			}
 			else 
 			{			
-				Messagebox.show("Você realmente deseja excluir o Ativo " + this.selectedAtivo.getTag().toUpperCase() + "?", "Hydro - Projeto Alpha",
+				Messagebox.show("Você realmente deseja excluir o Ativo " + this.selectedAtivo.getTag().toUpperCase() + "?", "Portal Hydro",
 					Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 					new EventListener<Event>() {
 						public void onEvent(Event event) throws SQLException
@@ -390,7 +392,7 @@ public class AtivoVM
 									//Atualiza a lista na aba Compartimento na janela de Cadastros;
 									atualizaBindComponent(selectedAtivo);		
 									
-									Messagebox.show("Ativo excluido com sucesso.", "Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+									Messagebox.show("Ativo excluido com sucesso.", "Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 									
 									atualizaAllAtivo();													
 									navegar("proximo");
@@ -399,7 +401,7 @@ public class AtivoVM
 								catch (Exception e)
 								{
 									Messagebox.show("Problemas com a conexão com o banco de dados.\nContate o administrador ou desenvolvedor do sistema",
-												"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.ERROR);
+												"Portal Hydro", Messagebox.OK, Messagebox.ERROR);
 									e.printStackTrace();									
 								}
 							}							
@@ -409,7 +411,7 @@ public class AtivoVM
 		}
 		catch (NullPointerException n)
 		{
-			Messagebox.show("Selecione um Ativo para a exclusão!", "Hydro - Projeto Alpha", 
+			Messagebox.show("Selecione um Ativo para a exclusão!", "Portal Hydro", 
 					Messagebox.OK, Messagebox.EXCLAMATION);
 		}
 	}
@@ -472,7 +474,7 @@ public class AtivoVM
 			if ( this.compartimentoAtivoDataModel.getInnerList().contains(c) )
 			{			
 				Messagebox.show("O Compartimento " + c.getTag() + " já faz parte desse Ativo", 
-						"Hydro - Projeto Alpha", Messagebox.OK, Messagebox.INFORMATION);
+						"Portal Hydro", Messagebox.OK, Messagebox.INFORMATION);
 			}		
 			else
 			{
@@ -501,7 +503,7 @@ public class AtivoVM
 				{
 					Messagebox.show("ATENÇÃO, o compartimento selecionado pertence a outro ATIVO. "+
 							"Caso continue com a adição, o compartimento selecionado passará a fazer parte do ativo atual. "+ 
-							"Você deseja continuar com a adição do compartimento?", "Hydro - Projeto Alpha",
+							"Você deseja continuar com a adição do compartimento?", "Portal Hydro",
 							Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, 
 							new EventListener<Event>() {
 							public void onEvent(Event event) throws SQLException
@@ -600,9 +602,34 @@ public class AtivoVM
 			File arquivo = new File(path);
 			arquivo.mkdirs();
 			// fazer algo com a imagem...
-			ImageIO.write(imagem, "PNG", arquivo);
+			int type = BufferedImage.TYPE_INT_RGB;
+	        boolean isPng = path.toUpperCase().endsWith("PNG");
+			if (isPng) {
+	            type = BufferedImage.BITMASK;
+	        }
+	        
+	        if (isPng) {
+	            ImageIO.write(imagem, "PNG", arquivo);
+	        }else{
+	            ImageIO.write(imagem, "JPG", arquivo);
+	        }
 			
 			this.selectedAtivo.setFoto(arquivo.getCanonicalPath());//path);
+			
+			BufferedImage thumb = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = thumb.createGraphics();
+	        g.setComposite(AlphaComposite.Src);
+	        g.drawImage(imagem, 0, 0, 100, 100, null);
+	        
+			String extensao = path.substring(path.length()-4, path.length());
+			String nome = path.substring(0, path.length()-4);
+			File arquivoThumb = new File(nome+"_thumb"+extensao);
+
+			 if (isPng) {
+		            ImageIO.write(thumb, "PNG", arquivoThumb);
+		        }else{
+		            ImageIO.write(thumb, "JPG", arquivoThumb);
+		        }		
 		}
 	}
 	

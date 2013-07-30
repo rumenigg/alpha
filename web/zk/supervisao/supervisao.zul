@@ -19,13 +19,17 @@
 			</button>
 		</caption>
 		
+		<style src="/widgets/getting_started/menu_toolbar/style.css" />
+		
 		<toolbar>
 			<toolbarbutton id="tbtnNovoSupervisao" tooltiptext="Incluir uma nova Supervisão" image="/img/btn/page/toolbarbtn/novo-reg_32_2.png" 
 							onClick="@command('novo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Salvar a nova Supervisão ou suas alterações" disabled="@load(svm.desativado)" image="/img/btn/page/toolbarbtn/atualiza-reg_32_2.png"
 							onClick="@command('submit')"/>
 			<toolbarbutton tooltiptext="Excluir a Supervisão selecionada" disabled="@load(svm.desativado)" image="/img/btn/page/toolbarbtn/lixeira_1.png"
 							onClick="@command('excluir')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Ir para o primeiro registro" image="/img/btn/page/toolbarbtn/primeiro-reg_32_verde.png"
 							onClick="@command('navegar', acao='primeiro')"/>
 			<toolbarbutton tooltiptext="Registro anterior" image="/img/btn/page/toolbarbtn/anterior-reg_32_azul.png"
@@ -34,6 +38,7 @@
 							onClick="@command('navegar', acao='proximo')"/>
 			<toolbarbutton tooltiptext="Ir para o último registro" image="/img/btn/page/toolbarbtn/ultimo-reg_32_verde.png"
 							onClick="@command('navegar', acao='ultimo')"/>
+			<space bar="true" spacing="15px"/>
 			<toolbarbutton tooltiptext="Sair" image="/img/btn/page/toolbarbtn/sair_32_2.png" 
 							onClick="winSupervisao.detach()"/>
 			<!-- <toolbarbutton id="tbtnSupervisaoAtrelar" tooltiptext="Atrelar Janela" image="/img/btn/page/toolbarbtn/atrelar.png" disabled="true" 
@@ -52,71 +57,114 @@
 		</toolbar>
 		
 		<separator spacing="5"/>
-		<div width="100%">
-			<grid width="100%" >
-				<columns>
-					<column hflex="1"/>
-					<column hflex="2"/>
-				</columns>
-				<rows>
-					<row>
-						<label value="Responsável" />
-						<combobox id="cbxResponsavel" width="100%" placeholder="Selecione o responsável pela supervisão" model="@load(svm.allPessoa)"								 
-								selectedItem="@bind(svm.selectedPessoa)" onSelect="@command('verificarResponsavel')" constraint="no empty" 
-								autocomplete="true" autodrop="true" disabled="@load(svm.desativado)">
-							<template name="model" var="r">
-								<comboitem label="@load(r.nome)" value="@load(r.id)" />
-							</template>		
-						</combobox>
-					</row>
-					<row>
-						<label value="Descrição" />
-						<textbox width="100%" placeholder="Informe a descrição da Supervisão" constraint="no empty" value="@bind(fx.descricao)"
-								disabled="@load(svm.desativado)"/>
-					</row>
-					<row>
-						<label value="Local" />
-						<textbox width="100%" placeholder="Forneça o local da supervisão" value="@bind(fx.local)" disabled="@load(svm.desativado)"/>
-					</row>
-					<row>
-						<label value="Obs.:" />
-						<textbox width="100%" multiline="true" rows="3" value="@bind(fx.obs)" disabled="@load(svm.desativado)" />
-					</row>
-				</rows>
-			</grid>
-		</div>
-		
-		<separator spacing="5"/>
-		
-		<groupbox closable="false">
-			<caption label="Definir as Frotas da Supervisão" />
+		<columnlayout>
+			<columnchildren hflex="2">			
 			
-			<hlayout height="100%" style="padding: 10px">
-				<listbox id="lbFrota" height="250px" width="280px" tooltiptext="Selecione as Frotas que fazem parte dessa Supervisão" 
-						disabled="@load(svm.desativado)" multiple="true" checkmark="true">
-					<template name="model" var="f">
-						<listitem label="${f.descricao}" disabled="@load(svm.desativado)" checkable="true"/>
-					</template>							
-				</listbox>
+				<!-- <div width="100%">  -->
+				<grid width="100%" >
+					<columns>
+						<column hflex="1"/>
+						<column hflex="4"/>
+					</columns>
+					<rows>
+						<row align="right">
+							<label value="Responsável" />
+							<combobox id="cbxResponsavel" width="100%" placeholder="Selecione o responsável pela supervisão" model="@load(svm.allPessoa)"								 
+									selectedItem="@bind(svm.selectedPessoa)" onSelect="@command('verificarResponsavel')" constraint="no empty" 
+									autocomplete="true" autodrop="true" disabled="@load(svm.desativado)">
+								<template name="model" var="r">
+									<comboitem label="@load(r.nome)" value="@load(r.id)" />
+								</template>		
+							</combobox>
+						</row>
+						<row align="right">
+							<label value="Descrição" />
+							<textbox width="100%" placeholder="Informe a descrição da Supervisão" constraint="no empty" value="@bind(fx.descricao)"
+									disabled="@load(svm.desativado)"/>
+						</row>
+						<row align="right">
+							<label value="Local" />
+							<textbox width="100%" placeholder="Forneça o local da supervisão" value="@bind(fx.local)" disabled="@load(svm.desativado)"/>
+						</row>
+						<row align="right">
+							<label value="Obs.:" />
+							<textbox width="100%" multiline="true" rows="3" value="@bind(fx.obs)" disabled="@load(svm.desativado)" />
+						</row>
+					</rows>
+				</grid>
+				<!-- </div>-->
+		
+				<separator spacing="5"/>
+		
+				<groupbox closable="false">
+					<caption label="Definir as Frotas da Supervisão" />
+			
+					<hlayout height="100%" style="padding: 10px">
+						<listbox id="lbFrota" height="250px" width="280px" tooltiptext="Selecione as Frotas que fazem parte dessa Supervisão" 
+								disabled="@load(svm.desativado)" multiple="true" checkmark="true">
+							<template name="model" var="f">
+								<listitem label="${f.descricao}" disabled="@load(svm.desativado)" checkable="true"/>
+							</template>							
+						</listbox>
 				
-				<vbox spacing="20px" width="40px" style="margin: 80px 5px">
-				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
-							disabled="@load(svm.desativado)" /> -->
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-um_azul.png"
-							disabled="@load(svm.desativado)" onClick="@command('adicionarFrota')"/>
-					<button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-um_azul.png"
-							disabled="@load(svm.desativado)" onClick="@command('removerFrota')"/>
-				<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
-							disabled="@load(svm.desativado)" /> -->
-				</vbox>
+						<vbox width="40px" style="margin: 40px 5px">
+						<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/adicionar-todos_azul.png"
+									disabled="@load(svm.desativado)" /> -->
+							<image style="cursor: pointer;" src="/img/btn/page/navbtn/adicionar-um_azul.png"
+									onClick="@command('adicionarFrota')" sclass="icon"/>
+							<image style="cursor: pointer;" src="/img/btn/page/navbtn/remover-um_azul.png"
+									onClick="@command('removerFrota')" sclass="icon"/>
+						<!-- <button style="border: none; background: none; cursor: pointer;" image="/img/btn/page/navbtn/remover-todos_azul.png"
+									disabled="@load(svm.desativado)" /> -->
+						</vbox>
 				
-				<listbox id="lbFrotaSupervisao" height="250px" width="280px" disabled="@load(svm.desativado)" multiple="true" checkmark="true">
-					<template name="model" var="f">
-						<listitem label="${f.descricao}" disabled="@load(svm.desativado)" checkable="true"/>
-					</template>
-				</listbox>			
-			</hlayout>		
-		</groupbox>
+						<listbox id="lbFrotaSupervisao" height="250px" width="280px" disabled="@load(svm.desativado)" multiple="true" checkmark="true">
+							<template name="model" var="f">
+								<listitem label="${f.descricao}" disabled="@load(svm.desativado)" checkable="true"/>
+							</template>
+						</listbox>			
+					</hlayout>		
+				</groupbox>
+			</columnchildren>
+			<columnchildren hflex="1" style="margin: 0px 20px;">
+				<button label="Localizar foto" disabled="@load(svm.desativado)" upload="true,maxsize=200">
+					<attribute name="onUpload">
+						<![CDATA[								    
+							org.zkoss.util.media.Media media = event.getMedia();
+							if (media instanceof org.zkoss.image.Image)
+							{	
+								org.zkoss.zul.Image image = new org.zkoss.zul.Image();										
+								image.setContent(((org.zkoss.image.Image)media));
+								//image.setHeight("100");
+								//image.setWidth("100");										
+								//foto.setContent((org.zkoss.image.Image)image.getContent());
+								gbFotoSupervisao.setWidth(image.getWidth());
+								fotoSupervisao.setWidth(image.getWidth());
+								//if (fotoFrota.getChildren().size() != 0)
+									//fotoFrota.removeChild(fotoFrota.getChildren().get(0));
+								//image.setParent(fotoFrota);
+								fotoSupervisao.setContent((org.zkoss.image.Image)media);
+								
+								Map args = new HashMap();
+								args.put("carregarFoto", media);
+								BindUtils.postGlobalCommand(null, null, "carregarFoto", args);
+										
+							}
+							else
+							{
+								Messagebox.show("Não existe nenhuma imagem no arquivo: " +media, "Hydro - Projeto Alpha", 
+										Messagebox.OK, Messagebox.ERROR);
+								break;
+							}
+						]]>					
+					</attribute>
+				</button>
+				<groupbox id="gbFotoSupervisao" height="100%" closable="false" >								
+					<caption label="Foto"/>
+					<image id="fotoSupervisao" width="100%" height="100%" align="center"/>
+				</groupbox>			
+			</columnchildren>
+		</columnlayout>
 
 	</window>
 </zk>

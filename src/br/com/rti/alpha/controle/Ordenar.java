@@ -3,6 +3,7 @@ package br.com.rti.alpha.controle;
 import java.util.Comparator;
 
 import br.com.rti.alpha.modelo.amostra.Amostra;
+import br.com.rti.alpha.modelo.amostra.Laudos;
 import br.com.rti.alpha.modelo.amostra.PlanoTrabalho;
 import br.com.rti.alpha.modelo.amostra.TipoColeta;
 import br.com.rti.alpha.modelo.ativo.Ativo;
@@ -114,24 +115,33 @@ public class Ordenar implements Comparator
 			
 			result = p1.getPlano() < p2.getPlano() ? -1 : 1;
 		}
+		
 		if ( (o1 instanceof Amostra) && (o2 instanceof Amostra) )
 		{
+			Amostra a1 = (Amostra) o1;
+			Amostra a2 = (Amostra) o2;
+			
 			if ( this.descending )
-			{
-				Amostra a1 = (Amostra) o1;
-				Amostra a2 = (Amostra) o2;
+			{				
 				//if ( a2.getId() < a1.getId() )
 					//result = a2.getDataAmostra().compareTo(a1.getDataAmostra());
 				//else
 					//result = a2.getDataAmostra().compareTo(a1.getDataAmostra());		
 				return new CompareToBuilder().append(a2.getDataAmostra(), a1.getDataAmostra()).append(a2.getId(), a1.getId()).toComparison();
 			}
+			else			
+				result = a1.getDataAmostra().compareTo(a2.getDataAmostra());			
+		}
+		
+		if ( (o1 instanceof Laudos) && (o2 instanceof Laudos) )
+		{
+			Laudos l1 = (Laudos) o1;
+			Laudos l2 = (Laudos) o2;
+			
+			if ( this.descending )
+				result = l2.getId() > l1.getId() ? 1 : -1;
 			else
-			{
-				Amostra a1 = (Amostra) o1;
-				Amostra a2 = (Amostra) o2;
-				result = a1.getDataAmostra().compareTo(a2.getDataAmostra());
-			}
+				result = l1.getId() < l2.getId() ? -1 : 1;
 		}
 	
 		return result;

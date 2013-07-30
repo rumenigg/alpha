@@ -317,6 +317,7 @@ public class CadastrosVM
 	
 	/*Métodos responsáveis por popular e atualizar os Tipos de Compartimento e os compartimentos */
 	//Método utilizado para carregar os Tipos de Compartimentos do banco de dados em um objeto List 
+	@Command
 	@NotifyChange("allTipoCompartimento")
 	public void atualizaTipoCompartimento()
 	{
@@ -621,7 +622,7 @@ public class CadastrosVM
 	@Command
     public void showCenterWindow(@BindingParam("aba") String label)
     {
-    	if ( label.equalsIgnoreCase("pessoas") )
+    	if ( label.equalsIgnoreCase("Pessoas") )
     	{
     		esconderJanelas("win"+label);
    		
@@ -639,7 +640,24 @@ public class CadastrosVM
 				    	winPessoas.setMinimizable(true);
     		}
     	}
-   	 
+    	if ( label.equalsIgnoreCase("Tipos de Compartimentos") )
+    	{
+    		esconderJanelas("winTipoCompartimento");
+   		
+    		if ( (winCenter.hasFellow("winTipoCompartimento")) )
+    		{
+    			winCenter.getFellowIfAny("winTipoCompartimento").setVisible(winCenter.getFellowIfAny("winTipoCompartimento").isVisible() ? false : true);
+    		}
+    		else 
+    		{
+    			final Window winPessoas = (Window)Executions.createComponents(
+    					"/zk/ativo/tipoCompartimento.zul", winCenter, null);;
+				    							    	
+						winPessoas.setId("winTipoCompartimento");
+				    	winPessoas.setClosable(true);
+				    	winPessoas.setMinimizable(true);
+    		}
+    	}
     	if (label.equalsIgnoreCase("compartimento"))
     	{
     		esconderJanelas("win"+label);
@@ -781,6 +799,13 @@ public class CadastrosVM
 			
 			metodo = "showSelectedPessoaItem";
 			args.put("atualizaPessoa", this.allPessoa.indexOf(this.getSelectedPessoa()));
+		}
+		if ( tipoItem.equals("tipoCompartimento") )
+		{
+			this.showWindow("winTipoCompartimento", "/zk/ativo/tipoCompartimento.zul");
+			
+			metodo = "showSelectedTipoCompartimentoItem";
+			args.put("showSelectedTipoCompartimentoItem", this.allTipoCompartimento.indexOf(this.getSelectedTipoCompartimento()));
 		}
 		if ( tipoItem.equals("compartimento") )
 		{

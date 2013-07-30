@@ -6,8 +6,11 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.OneToOne;
+
+import br.com.rti.alpha.modelo.amostra.Elementos;
 
 @Entity
 public class TipoCompartimento {
@@ -22,7 +25,9 @@ public class TipoCompartimento {
     @OneToMany(mappedBy="tipoCompartimento") 
     public Set<Compartimento> compartimento;
     
-    //public br.com.rti.alpha.modelo.amostra.limiteTendencia limiteTendencia;
+    @OneToOne
+    @JoinColumn(name="Elementos_id")
+    public Elementos elementos;
     
     public TipoCompartimento()
     {
@@ -47,19 +52,16 @@ public class TipoCompartimento {
 	public void setFoto(String foto) {
 		this.foto = foto;
 	}
-	/*public br.com.rti.alpha.modelo.amostra.limiteTendencia getLimiteTendencia() {
-		return limiteTendencia;
+	public Elementos getElementos() {
+		return elementos;
 	}
-	public void setLimiteTendencia(
-			br.com.rti.alpha.modelo.amostra.limiteTendencia limiteTendencia) {
-		this.limiteTendencia = limiteTendencia;
-	} */   
-	
+	public void setElementos(Elementos elementos) {
+		this.elementos = elementos;
+	} 	
 	public Set<Compartimento> getCompartimento()
 	{
 		return this.compartimento;
 	}
-	
 	public void setCompartimento(Set<Compartimento> compartimento)
 	{
 		this.compartimento = compartimento;

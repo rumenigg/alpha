@@ -1,0 +1,7 @@
+<?page title="Teste componente HTML" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Teste componente HTML" border="normal" width="100%" height="100%">
+		Teste com Componente HTML para pré-visualização de imagens.
+		<html content="F:\java\eclipse juno x64\rti\alpha\hydro\laudos\5_2013191449135432.pdf" />
+	</window>
+</zk>

@@ -1,0 +1,80 @@
+<?page title="Planilha" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window title="Relatório" border="normal" apply="org.zkoss.bind.BindComposer"
+        viewModel="@id('rvm') @init('br.com.rti.alpha.viewModel.Relatorio')"
+        form="@id('fx')">
+
+<vlayout apply="org.zkoss.bind.BindComposer"
+    viewModel="@id('vm') @init('br.com.rti.alpha.viewModel.Relatorio')">
+    <chart  title="Gráficos dos Resultados"
+        width="550" height="400" paneColor="#ffffff" fgAlpha="192"
+        type="pie" threeD="true"
+        model="@bind(vm.model)"
+        onClick="@command('showMessage',msg=event.areaComponent.tooltiptext)"/>
+    <hlayout  visible="@bind(not empty vm.message)">
+        Selecionado :<label value="@bind(vm.message)"/>
+    </hlayout>
+</vlayout>
+
+<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('rvm') @init('br.com.rti.alpha.viewModel.Relatorio')">
+	<grid width="28%">
+        <columns>
+            <column label="Situação"  />
+            <column label="Valor" width="90px" />
+        </columns>
+        <rows>
+            <row>
+                <label value="Normal" />
+                <doublebox value="@bind(rvm.nNormal)" constraint="no empty" width="70px"
+                    onChange="@global-command('dataChanged', category='Normal', num=rvm.nNormal)" />
+            </row>
+            <row>
+                <label value="Anormal" />
+                <doublebox value="@bind(rvm.nAnormal)" constraint="no empty" width="70px"
+                    onChange="@global-command('dataChanged', category='Anormal', num=rvm.nAnormal)" />
+            </row>
+            <row>
+                <label value="Critico" />
+                <doublebox value="@bind(rvm.nCriticos)" constraint="no empty" width="70px"
+                    onChange="@global-command('dataChanged', category='Critico', num=rvm.nCriticos)" />
+            </row>
+        </rows>
+    </grid>
+</vlayout>    
+
+  
+<vlayout>
+   <listbox model="@bind(rvm.allAmostra)">
+	<listhead>
+		<listheader label="Data da Preventiva"/>
+		<listheader label="Pauta" />
+		<listheader label="Horimetro" />
+		<listheader label="H/T" />
+		<listheader label="Drenado" />
+		<listheader label="Diagnóstico/Recomendação" />
+		<listheader label="Resultado" />
+		<listheader label="Amostra" />
+	</listhead>
+	<template name="model">
+	<listitem >
+		<listcell label="@bind(each.dataAmostra) @converter('formatedDate', format='dd/MM/yyyy')" />
+		<listcell label="@bind(each.planoTrabalhoAmostra.plano)" />
+		<listcell label="@bind(each.horimetro)" />
+		<listcell label="@bind(each.horaTrabalhada)" />
+		<listcell label="" />
+		<listcell label="" />
+		<listcell label="@bind(each.situacao)" />
+		<listcell label="@bind(each.id)" />
+	</listitem>
+	</template>
+</listbox>
+
+
+
+</vlayout>
+
+
+
+
+</window>
+</zk>

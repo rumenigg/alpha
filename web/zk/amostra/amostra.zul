@@ -21,7 +21,7 @@
 		
 			<div height="100%" width="100%">
 				<menupopup id="popupFoto">
-					<menuitem label="Remover" onClick="@command('removerFotos')"/>											
+					<menuitem label="Remover" onClick="@command('removerFotos')" />											
 				</menupopup>
 				
 				<toolbar>

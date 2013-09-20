@@ -247,8 +247,8 @@ form="@id('fx') @load(rvm.selectedAmostra) @bind(rvm.selectedAmostra)">
 <div width="100%" height="100%" visible="true">
 	<hlayout style="margin-top:20px" width="100%" hflex="max">
 
-	<groupbox  mold="3d" closable="true" open="false" hflex="100%">
-		<caption label="Gráfico Geral" />
+	<groupbox  mold="3d" closable="true" open="true" hflex="100%">
+		<caption label="Gráfico de Resultados" />
     	  	<chart paneColor="#E6E6FA" fgAlpha="192" width="600px" type="bar" threeD="true" 
     	  	model="@bind(rvm.modelcat)" onClick="@command('showMessage',msg=event.areaComponent.tooltiptext)"/>
       	

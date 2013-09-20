@@ -62,53 +62,53 @@ public class Relatorio {
 
 	@Wire
 	private int totalAmostras,totaldeFrotas,totalAtivos,totalSupervisao,totalCompartimento,totalAnalise;
-	
+
 	@Wire
 	private int nNormal, nCriticos, nAnormal;
 
 	private Analise amostra_id;
-	
+
 	private boolean explode = false;
 	private boolean threeD=false;
 
 	private PieModel model;
 	private CategoryModel modelcat;
-	
+
 	private String message;
-	
+
 	private Ativo selectedAtivo;
 	private List<Ativo> allAtivo;
-	
+
 	private Frota ativo;
 	private Frota selectedFrota;
 	private List<Frota> allFrota=new ArrayList<Frota>();
-	
+
 	private Amostra selectedAmostra;
 	private List<Amostra>allAmostra;
-	
+
 	private Elementos selectedElementos;
 	private List<Elementos> allElementos;
-	
+
 	private Analise amostraAnalise;
 	private Analise selectedAnalise;
 	private List<Analise> allAnalise;
-	
+
 	private Compartimento compartimentoAmostras;
 	private Compartimento selectedCompartimento;
 	private List<Compartimento> allCompartimento;
-	
+
 	private Supervisao pessoaResponsavelSupervisao;
 	private Supervisao selectedSupervisao;
 	private List<Supervisao> allSupervisao;
-	
+
 	//private Laudos laudos;
 	private Laudos selectedLaudos;
 	private List<Laudos> allLaudos;
-	
+
 	public Supervisao pessoaSupervisao;
 	private Pessoa selectedPessoa=new Pessoa();
 	private List<Pessoa> allPessoa=new ArrayList<Pessoa>();
-	
+
 
 	public int getTotalAmostras() {
 		return totalAmostras;
@@ -149,7 +149,7 @@ public class Relatorio {
 	public void setTotalCompartimento(int totalCompartimento) {
 		this.totalCompartimento = totalCompartimento;
 	}
-	
+
 	public int getTotalAnalise() {
 		return totalAnalise;
 	}
@@ -403,7 +403,7 @@ public class Relatorio {
 		return explode;
 	}
 
-	
+
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view){
 		Selectors.wireComponents(view, this, false);
@@ -413,196 +413,201 @@ public class Relatorio {
 		//this.verificaSituacao();
 		//this.getModeloCat();
 		//this.model=this.getModeloCat();
-		 
+
 	}
-	
+
 	@Init
 	public void init() {
-		 
-		 this.selectedSupervisao=null;
-		 this.selectedSupervisao =new Supervisao();
-		 
-		 this.selectedFrota=null;
-		 this.selectedFrota=new Frota();
-		
-		 this.selectedAtivo=null;
-		 this.selectedAtivo =new Ativo();
-		 
-		 this.selectedCompartimento=null;
-		 this.selectedCompartimento=new Compartimento();
-		 
-		 this.selectedAmostra = null;
-		 this.selectedAmostra =new Amostra();
-		 
-		 this.selectedAnalise=null;
-		 this.selectedAnalise =new Analise();
-		 		 
-		 this.selectedElementos=null;
-		 this.selectedElementos =new Elementos();
-		 
-		 //this.model=this.getModel();
-		 this.modelcat=this.getModeloCat();
-		 this.atualizaSupervisao(); 
+
+		this.selectedSupervisao=null;
+		this.selectedSupervisao =new Supervisao();
+
+		this.selectedFrota=null;
+		this.selectedFrota=new Frota();
+
+		this.selectedAtivo=null;
+		this.selectedAtivo =new Ativo();
+
+		this.selectedCompartimento=null;
+		this.selectedCompartimento=new Compartimento();
+
+		this.selectedAmostra = null;
+		this.selectedAmostra =new Amostra();
+
+		this.selectedAnalise=null;
+		this.selectedAnalise =new Analise();
+
+		this.selectedElementos=null;
+		this.selectedElementos =new Elementos();
+
+		//this.model=this.getModel();
+		this.modelcat=this.getModeloCat();
+		this.atualizaSupervisao(); 
 		// this.atualizaFrota();
 		// this.atualizaAtivo();
 		// this.atualizaAmostra();
 		// this.atualizaElementos();
 		//this.verificaSituacao();
-	 }
-	
+	}
+
 	@Command
 	@NotifyChange("allPessoa")	
 	public void atualizaPessoa(){
 		this.allPessoa = null;
 		this.allPessoa = new ArrayList<Pessoa>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-		
+
 		this.allPessoa=daof.getPessoaDao().listaTudo();
-		
+
 		Collections.sort(this.allPessoa, new Ordenar());
 		daof = null;
 	}
-	
+
 	@Command
 	@NotifyChange("allSupervisao")	
 	public void atualizaSupervisao(){
-		
+
 		this.allSupervisao=null;
 		this.allSupervisao=new ArrayList<Supervisao>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 		this.allSupervisao.clear();
 		this.allSupervisao = daof.getSupervisaoDAO().listaTudo();
-		
+
 		this.totalSupervisao=this.allSupervisao.size();
 		System.out.println("TOTAL DE SUPERVISAO : " + this.getTotalSupervisao());
-		
+
 		Collections.sort(this.allSupervisao, new Ordenar());
 		daof = null;
+		this.modelcat.clear();
 	}
-	
+
 	@Command
 	@NotifyChange({"allFrota","selectedSupervisao","totaldeFrotas"})
 	public void atualizaFrota(){
-	
+
 		this.allFrota=null;
 		this.allFrota=new ArrayList<Frota>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-			
+
 		int idsupervisao=this.selectedSupervisao.getId();
-				
+
 		this.selectedSupervisao=daof.getSupervisaoDAO().procura(idsupervisao);
 		this.allSupervisao.clear();
 		this.allFrota.addAll(this.selectedSupervisao.getFrota());
-		
+
 		//this.setTotaldeFrotas(this.allFrota.size());
 		this.totaldeFrotas=this.allFrota.size();
-		
+
 		System.out.println("TOTAL DE FROTAS : " + this.getTotaldeFrotas());
-		
+
 		Collections.sort(this.allFrota, new Ordenar());
 		//this.modelcat=this.getModeloCat();
 		daof = null;
+		this.modelcat.clear();
 	}
-	
+
 	@Command
 	@NotifyChange({"allAtivo","selectedFrota","totalAtivos"})
 	public void atualizaAtivo(){
-		
+
 		this.allAtivo= null;
 		this.allAtivo = new ArrayList<Ativo>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-			
+
 		this.selectedFrota=daof.getFrotaDAO().procura(this.selectedFrota.getId());
 		this.allAtivo.clear();
 		this.allAtivo.addAll(this.selectedFrota.getAtivo());
-		
+
 		totalAtivos=this.allAtivo.size();
 		System.out.println("TOTAL DE ATIVOS : " + this.getTotalAtivos());
-		
+
 		Collections.sort(this.allAtivo, new Ordenar());
 		daof = null;
-		
+		this.modelcat.clear();
+
+
 	}
-	
+
 	@Command
 	@NotifyChange({"allCompartimento","selectedAtivo","totalCompartimento"})
 	public void atualizaCompartimento(){
-		
+
 		this.allCompartimento = null;
 		this.allCompartimento = new ArrayList<Compartimento>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-		
+
 		this.selectedAtivo = daof.getAtivoDAO().procura(this.selectedAmostra.getAtivoAmostra().getId()); 
 		this.allCompartimento.clear();
 		this.allCompartimento.addAll(this.selectedAtivo.getCompartimento());
-		
+
 		this.totalCompartimento=this.allCompartimento.size();
 		System.out.println("TOTAL DE Compartimentos: " + this.getTotalCompartimento());
-		
+
 		Collections.sort(this.allCompartimento, new Ordenar());	
 		daof=null;
-		
+		this.modelcat.clear();
+
 	}
-	
+
 	@Command
 	@NotifyChange({"allAmostra","selectedCompartimento","nAnormal","nNormal","nCriticos","totalAmostras"})
 	public void atualizaAmostra(){
-		
+
 		this.allAmostra=null;
 		this.allAmostra = new ArrayList<Amostra>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-		
+
 		this.selectedCompartimento= daof.getCompartimentoDAO().procura(this.selectedAmostra.getCompartimentoAmostra().getId());
 		this.allAmostra.clear();
 		this.allAmostra.addAll(this.selectedCompartimento.getAmostra());
-		
+
 		totalAmostras=this.allAmostra.size();
-		
+
 		System.out.println("TOTAL DE AMOSTAS : " + this.getTotalAmostras());
 		verificaSituacao();
-		
+
 		//modelcat=this.getModeloCat();
-		
+
 		Collections.sort(this.allAmostra, new Ordenar());
-		
+
 		daof = null;
 		//BindUtils.postNotifyChange(null, null, this, "allAmostra");
-		
-	
+		//this.modelcat.clear();
+
 	}
-	
+
 	@Command
 	@NotifyChange({"allAnalise","selectedAmostra"})
 	public void atualizaAnalise(){
 		this.allAnalise = null;
 		this.allAnalise = new ArrayList<Analise>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
 
 		this.allAnalise = daof.getAnaliseDAO().listaTudo();
-		
+
 		//this.selectedAmostra=daof.getAmostraDAO().procura(7);
 		//this.allAnalise.addAll(this.selectedElementos.getAnalise());
 		totalAnalise=this.allAnalise.size();
 		System.out.println("TOTAL DE ANALISE: " + this.getTotalAnalise());
 		Collections.sort(this.allAnalise, new Ordenar());
-	
+
 		daof = null;
 	}
-	
+
 	@Command
 	@NotifyChange({"allAmostra","selectedAmostra"})
 	public void atualizaElementos(){
@@ -610,168 +615,164 @@ public class Relatorio {
 		daof.beginTransaction();
 		this.selectedAmostra = new Amostra();
 		this.selectedElementos = new Elementos();
-		
+
 		//this.allAmostra = daof.getAmostraDAO().listaTudo();
 		this.allElementos = daof.getElementosDAO().listaTudo();
-		
+
 		Collections.sort(this.allElementos, new Ordenar());
 		daof = null;
-		
+
 	}
-	
+
 	@Command
 	@NotifyChange({"allLaudos","selectedCompartimento","allAmostra","selectedAmostra"})
 	public void atualizaLaudos(){
 		this.allLaudos=null;
 		this.allLaudos=new ArrayList<Laudos>();
-		
+
 		DaoFactory daof = new DaoFactory();
 		daof.beginTransaction();
-				
+
 		//this.allLaudos = daof.getLaudosDAO().listaTudo();
-		
+
 		this.selectedCompartimento=daof.getCompartimentoDAO().procura(this.selectedAmostra.getCompartimentoAmostra().getId());
 		this.allLaudos.addAll(this.selectedCompartimento.getLaudos());
-		
+
 		Collections.sort(this.allLaudos, new Ordenar());
 		daof = null;
 	}
-			
+
 	@Command
 	@NotifyChange({"nAnormal","nNormal","nCriticos","totalAmostras"})
 	public void verificaSituacao(){
-						
+
+		nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;		
+		this.totaldeFrotas=this.allFrota.size();
+		
 		for(int f=0;f<this.totaldeFrotas;f++){
-						
-			if(this.allAmostra.size()>0){
-				nAnormal=0;nNormal=0;nCriticos=0;
-				
-				System.out.println("ID Frotas : " +this.allFrota.get(f).getId()+" - " +this.allFrota.get(f).getDescricao());
-					
-				for (int i=0;i<this.totalAmostras; i++) {
-					 
-					int idfrota=this.allFrota.get(f).getId();
-					int idativofrota=this.allAmostra.get(i).getAtivoAmostra().getFrota().getId();
-					if(idfrota==idativofrota){
-						
-					
-					System.out.println("ID Amostras : " + this.allAmostra.get(i).getId() +" - "+this.allAmostra.get(i).getSituacao());
-					
+
+			System.out.println("* Frotas : " +this.allFrota.get(f).getId()+" - " +this.allFrota.get(f).getDescricao());
+			String frota=this.allFrota.get(f).getDescricao();
+
+			nAnormal=0;nNormal=0;nCriticos=0;
+			this.totalAmostras=this.allAmostra.size();
+
+			for (int i=0;i<this.totalAmostras; i++) {
+
+				int idfrota=this.selectedFrota.getId();
+				int idativofrota=this.selectedCompartimento.getAtivo().getFrota().getId();
+
+				if(idfrota==idativofrota){
+
+					System.out.println(">> Amostras : " + this.allAmostra.get(i).getId() +" - "+this.allAmostra.get(i).getSituacao());
+
 					String situacao=this.allAmostra.get(i).getSituacao().toString();
-					String frota=this.allFrota.get(f).getDescricao();
-	
+
 					if(situacao.equals("anormal")){
 						nAnormal++;
 						System.out.println("TotalAnormal: " + nAnormal);
 						this.modelcat.setValue(situacao, frota, new Integer(nAnormal));
-					
 					}
-				
+
 					if(situacao.equals("critico")){
 						nCriticos++;
 						System.out.println("Total Critico: " + nCriticos);
 						this.modelcat.setValue(situacao, frota, new Integer(nCriticos));
-						
+
 					}
 					if(situacao.equals("normal")){
 						nNormal++;
 						System.out.println("Total Normal: " + nNormal);
-						this.modelcat.setValue(situacao, frota, new Integer(nNormal));
-						
+						this.modelcat.setValue(situacao, frota, new Integer(this.getnNormal()));
+
 					}	
-				
-					modelcat.setValue("Total", "Amostras", new Integer(this.getTotalAmostras()));
-					//Color.blue.equals(modelcat);
+					
 				}
-				setTotalAmostras(this.totalAmostras);
-				}
-	    	}else{
-	    		System.out.println("** NAO EXISTEM NAS FROTAS AMOSTRAS PARA ESTE COMPARTIMENTO **");
-	    		nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;
-	    		/*this.modelcat.setValue(null,null, new Integer(nAnormal));
-	    		this.modelcat.setValue(null,null, new Integer(nCriticos));
-	    		this.modelcat.setValue(null,null, new Integer(nNormal));*/
-	    		//this.modelcat.setValue("","", new Integer(totalAmostras));
-	    	}
-	        // BindUtils.postNotifyChange(null, null, this, "nNormal");
 			}
-			this.modelcat=this.getModelcat();
-	
-     }
-	
+			
+			this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
+			//System.out.println("** NAO EXISTEM NAS FROTAS AMOSTRAS PARA ESTE COMPARTIMENTO **");
+			//nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;
+			// BindUtils.postNotifyChange(null, null, this, "nNormal");
+		}
+		
+		//this.modelcat=this.getModelcat();
+
+	}
+
 	@Command
 	@NotifyChange({"totalAmostras","totalFrotas"})
 	public  CategoryModel getModeloCat(){
-		
+		//this.modelcat.clear();
 		CategoryModel modelcat = new SimpleCategoryModel();
-	
-		System.out.println("Amostras Verificadas : " + this.getTotalAmostras());
+
+		/*System.out.println("Amostras Verificadas : " + this.getTotalAmostras());
 		System.out.println("Frotas Verificadas :" + this.getTotaldeFrotas());
 
 		this.totalAmostras=this.getTotalAmostras();	
-		this.totaldeFrotas=this.getTotaldeFrotas();
+		this.totaldeFrotas=this.getTotaldeFrotas();*/
 
-        return modelcat;   
-        }
-	
+		return modelcat;   
+	}
+
 	//main colors
-    public static Color COLOR_1 = new Color(0x3E454C);
-    public static Color COLOR_2 = new Color(0x2185C5);
-    public static Color COLOR_3 = new Color(0x7ECEFD);
-    public static Color COLOR_4 = new Color(0xFFF6E5);
-    public static Color COLOR_5 = new Color(0xFF7F66);
-    
-    //additional colors
-    public static Color COLOR_6 = new Color(0x98D9FF);
-    public static Color COLOR_7 = new Color(0x4689B1);
-    public static Color COLOR_8 = new Color(0xB17C35);
-    public static Color COLOR_9 = new Color(0xFDC77E);
-     
-    public static String toHtmlColor(Color color) {
-        return "#" + toHexColor(color);
-    }
- 
-    public static String toHexColor(Color color) {
-        return StringUtils.leftPad(Integer.toHexString(color.getRGB() & 0xFFFFFF), 6, '0');
-    }
-	
+	public static Color COLOR_1 = new Color(0x3E454C);
+	public static Color COLOR_2 = new Color(0x2185C5);
+	public static Color COLOR_3 = new Color(0x7ECEFD);
+	public static Color COLOR_4 = new Color(0xFFF6E5);
+	public static Color COLOR_5 = new Color(0xFF7F66);
+
+	//additional colors
+	public static Color COLOR_6 = new Color(0x98D9FF);
+	public static Color COLOR_7 = new Color(0x4689B1);
+	public static Color COLOR_8 = new Color(0xB17C35);
+	public static Color COLOR_9 = new Color(0xFDC77E);
+
+	public static String toHtmlColor(Color color) {
+		return "#" + toHexColor(color);
+	}
+
+	public static String toHexColor(Color color) {
+		return StringUtils.leftPad(Integer.toHexString(color.getRGB() & 0xFFFFFF), 6, '0');
+	}
+
 	@Command("showMessage") 
 	@NotifyChange("message")
 	public void onShowMessage(@BindingParam("msg") String message){
-	    this.message = message;
-	    //Clients.showNotification(message);
+		this.message = message;
+		//Clients.showNotification(message);
 	}
-	
+
 	@GlobalCommand("dataChanged") 
 	@NotifyChange("model")
 	public void onDataChanged(@BindingParam("category")String category , @BindingParam("num") Number num){
-	   modelcat.setValue(category, category, num);
-	 }
-	 
+		modelcat.setValue(category, category, num);
+	}
+
 	@GlobalCommand("configChanged") 
 	@NotifyChange({"threeD","engine"})
 	public void onConfigChanged(@BindingParam("threeD") boolean threeD,@BindingParam("exploded") boolean exploded){
-	    this.threeD = threeD;
-	    setExplode(exploded);
-	    
+		this.threeD = threeD;
+		setExplode(exploded);
+
 	}
-	
+
 	public void setExplode(boolean explode) {
-	        this.explode = explode;
-	    }
-	
+		this.explode = explode;
+	}
+
 	public void ShowNotifica(){
 		Clients.showNotification(message);
 	}
-	
+
 	public  PieModel getModel(){
-    PieModel model = new SimplePieModel();
-    
-    verificaSituacao();
-    model.setValue("Critico", new Double(this.getnCriticos()));
-    model.setValue("Anormal", new Double(this.getnAnormal()));
-    model.setValue("Normal", new Double(this.getnNormal()));
-    model.setValue("Total", new Double(this.getTotalAmostras()));
-    return model;
-}
+		PieModel model = new SimplePieModel();
+
+		verificaSituacao();
+		model.setValue("Critico", new Double(this.getnCriticos()));
+		model.setValue("Anormal", new Double(this.getnAnormal()));
+		model.setValue("Normal", new Double(this.getnNormal()));
+		model.setValue("Total", new Double(this.getTotalAmostras()));
+		return model;
+	}
 }

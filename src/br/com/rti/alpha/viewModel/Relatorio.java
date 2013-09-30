@@ -1,27 +1,19 @@
 package br.com.rti.alpha.viewModel;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.font.LineMetrics;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import jxl.biff.drawing.Chart;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.zkoss.zkex.zul.impl.JFreeChartEngine;
+import org.zkoss.zul.Chart;
 
-import net.sf.ehcache.hibernate.HibernateUtil;
-
-import org.apache.commons.collections.functors.ForClosure;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Restrictions;
-import org.jfree.chart.demo.BarChartDemo1;
-import org.zkoss.bind.BindUtils;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -34,18 +26,15 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zkex.zul.impl.JFreeChartEngine;
 import org.zkoss.zul.CategoryModel;
-import org.zkoss.zul.ChartModel;
-import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Chart;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.SimpleCategoryModel;
 import org.zkoss.zul.SimplePieModel;
 import org.zkoss.zul.event.ChartDataListener;
 
-import com.mchange.v1.util.ClosableResource;
-
 import br.com.rti.alpha.controle.Ordenar;
-import br.com.rti.alpha.dao.Dao;
 import br.com.rti.alpha.dao.DaoFactory;
 import br.com.rti.alpha.modelo.amostra.Amostra;
 import br.com.rti.alpha.modelo.amostra.Analise;
@@ -55,10 +44,10 @@ import br.com.rti.alpha.modelo.ativo.Ativo;
 import br.com.rti.alpha.modelo.ativo.Compartimento;
 import br.com.rti.alpha.modelo.pessoa.Pessoa;
 import br.com.rti.alpha.modelo.supervisao.Frota;
-//import org.zkoss.poi.hssf.record.chart.PieRecord;
 import br.com.rti.alpha.modelo.supervisao.Supervisao;
+//import org.zkoss.poi.hssf.record.chart.PieRecord;
 
-public class Relatorio {
+public class Relatorio extends JFreeChartEngine {
 
 	@Wire
 	private int totalAmostras,totaldeFrotas,totalAtivos,totalSupervisao,totalCompartimento,totalAnalise;
@@ -70,10 +59,12 @@ public class Relatorio {
 
 	private boolean explode = false;
 	private boolean threeD=false;
-
-	private PieModel model;
+	private boolean desativado = true;
+	
+	//private PieModel model;
 	private CategoryModel modelcat;
-
+	private CategoryModel modelLine;
+	
 	private String message;
 
 	private Ativo selectedAtivo;
@@ -404,10 +395,28 @@ public class Relatorio {
 	}
 
 
+	public boolean isDesativado() {
+		return desativado;
+	}
+
+	public CategoryModel getModelLine() {
+		return modelLine;
+	}
+
+	public void setModelLine(CategoryModel modelLine) {
+		this.modelLine = modelLine;
+	}
+
+	public void setDesativado(boolean desativado) {
+		this.desativado = desativado;
+	}
+
+	
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view){
 		Selectors.wireComponents(view, this, false);
 		Selectors.wireEventListeners(view, this);	
+		this.desativado=false;	
 		//Clients.showNotification("Clique aqui para adicionar um novo Laudo", "info",view, "end_center", 3000);
 		//init();
 		//this.verificaSituacao();
@@ -418,7 +427,7 @@ public class Relatorio {
 
 	@Init
 	public void init() {
-
+			
 		this.selectedSupervisao=null;
 		this.selectedSupervisao =new Supervisao();
 
@@ -440,7 +449,7 @@ public class Relatorio {
 		this.selectedElementos=null;
 		this.selectedElementos =new Elementos();
 
-		//this.model=this.getModel();
+		this.modelLine=this.getModelCatLine();
 		this.modelcat=this.getModeloCat();
 		this.atualizaSupervisao(); 
 		// this.atualizaFrota();
@@ -468,7 +477,8 @@ public class Relatorio {
 	@Command
 	@NotifyChange("allSupervisao")	
 	public void atualizaSupervisao(){
-
+		
+		this.desativado=false;	
 		this.allSupervisao=null;
 		this.allSupervisao=new ArrayList<Supervisao>();
 
@@ -486,9 +496,10 @@ public class Relatorio {
 	}
 
 	@Command
-	@NotifyChange({"allFrota","selectedSupervisao","totaldeFrotas"})
+	@NotifyChange({"allFrota","selectedSupervisao","totaldeFrotas","desativado"})
 	public void atualizaFrota(){
-
+		
+		this.desativado=false;	
 		this.allFrota=null;
 		this.allFrota=new ArrayList<Frota>();
 
@@ -503,7 +514,7 @@ public class Relatorio {
 
 		//this.setTotaldeFrotas(this.allFrota.size());
 		this.totaldeFrotas=this.allFrota.size();
-
+		
 		System.out.println("TOTAL DE FROTAS : " + this.getTotaldeFrotas());
 
 		Collections.sort(this.allFrota, new Ordenar());
@@ -513,9 +524,9 @@ public class Relatorio {
 	}
 
 	@Command
-	@NotifyChange({"allAtivo","selectedFrota","totalAtivos"})
+	@NotifyChange({"allAtivo","selectedFrota","totalAtivos","desativado"})
 	public void atualizaAtivo(){
-
+		this.desativado=false;	
 		this.allAtivo= null;
 		this.allAtivo = new ArrayList<Ativo>();
 
@@ -537,9 +548,9 @@ public class Relatorio {
 	}
 
 	@Command
-	@NotifyChange({"allCompartimento","selectedAtivo","totalCompartimento"})
+	@NotifyChange({"allCompartimento","selectedAtivo","totalCompartimento","desativado"})
 	public void atualizaCompartimento(){
-
+		this.desativado=false;	
 		this.allCompartimento = null;
 		this.allCompartimento = new ArrayList<Compartimento>();
 
@@ -560,9 +571,9 @@ public class Relatorio {
 	}
 
 	@Command
-	@NotifyChange({"allAmostra","selectedCompartimento","nAnormal","nNormal","nCriticos","totalAmostras"})
+	@NotifyChange({"allAmostra","selectedCompartimento","nAnormal","nNormal","nCriticos","totalAmostras","desativado"})
 	public void atualizaAmostra(){
-
+		this.desativado=false;	
 		this.allAmostra=null;
 		this.allAmostra = new ArrayList<Amostra>();
 
@@ -574,18 +585,16 @@ public class Relatorio {
 		this.allAmostra.addAll(this.selectedCompartimento.getAmostra());
 
 		totalAmostras=this.allAmostra.size();
-
+		
 		System.out.println("TOTAL DE AMOSTAS : " + this.getTotalAmostras());
 		verificaSituacao();
-
-		//modelcat=this.getModeloCat();
-
+		
+		this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
 		Collections.sort(this.allAmostra, new Ordenar());
-
+		
 		daof = null;
-		//BindUtils.postNotifyChange(null, null, this, "allAmostra");
-		//this.modelcat.clear();
 
+		this.desativado=true;	
 	}
 
 	@Command
@@ -602,9 +611,11 @@ public class Relatorio {
 		//this.selectedAmostra=daof.getAmostraDAO().procura(7);
 		//this.allAnalise.addAll(this.selectedElementos.getAnalise());
 		totalAnalise=this.allAnalise.size();
+		
+		
 		System.out.println("TOTAL DE ANALISE: " + this.getTotalAnalise());
 		Collections.sort(this.allAnalise, new Ordenar());
-
+	
 		daof = null;
 	}
 
@@ -621,7 +632,7 @@ public class Relatorio {
 
 		Collections.sort(this.allElementos, new Ordenar());
 		daof = null;
-
+		
 	}
 
 	@Command
@@ -646,66 +657,65 @@ public class Relatorio {
 	@NotifyChange({"nAnormal","nNormal","nCriticos","totalAmostras"})
 	public void verificaSituacao(){
 
-		nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;		
+		nAnormal=0;nNormal=0;nCriticos=0;totaldeFrotas=0;totalAmostras=0;	
 		this.totaldeFrotas=this.allFrota.size();
-		
+	
 		for(int f=0;f<this.totaldeFrotas;f++){
+		
 
 			System.out.println("* Frotas : " +this.allFrota.get(f).getId()+" - " +this.allFrota.get(f).getDescricao());
-			String frota=this.allFrota.get(f).getDescricao();
+			String frota=this.allFrota.get(f).getDescricao();//this.selectedFrota.getDescricao();//this.allFrota.get(f).getDescricao();
 
-			nAnormal=0;nNormal=0;nCriticos=0;
+			nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;
 			this.totalAmostras=this.allAmostra.size();
-
+			
 			for (int i=0;i<this.totalAmostras; i++) {
-
-				int idfrota=this.selectedFrota.getId();
-				int idativofrota=this.selectedCompartimento.getAtivo().getFrota().getId();
-
-				if(idfrota==idativofrota){
-
-					System.out.println(">> Amostras : " + this.allAmostra.get(i).getId() +" - "+this.allAmostra.get(i).getSituacao());
-
-					String situacao=this.allAmostra.get(i).getSituacao().toString();
+					
+				String situacao=this.allAmostra.get(i).getSituacao().toString();
+				
+							
+				this.modelcat.setValue(situacao, frota, new Integer(nAnormal));
+				this.modelcat.setValue(situacao, frota, new Integer(nCriticos));
+				this.modelcat.setValue(situacao, frota, new Integer(nNormal));
 
 					if(situacao.equals("anormal")){
 						nAnormal++;
-						System.out.println("TotalAnormal: " + nAnormal);
-						this.modelcat.setValue(situacao, frota, new Integer(nAnormal));
+						//System.out.println("TotalAnormal: " + nAnormal); 
+						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nAnormal));
+						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nAnormal);
 					}
-
+					
 					if(situacao.equals("critico")){
 						nCriticos++;
-						System.out.println("Total Critico: " + nCriticos);
-						this.modelcat.setValue(situacao, frota, new Integer(nCriticos));
-
+						//System.out.println("Total Critico: " + nCriticos);
+						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nCriticos));
+						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total"+ situacao+" : " + nCriticos);
 					}
+					
 					if(situacao.equals("normal")){
 						nNormal++;
-						System.out.println("Total Normal: " + nNormal);
-						this.modelcat.setValue(situacao, frota, new Integer(this.getnNormal()));
-
-					}	
-					
-				}
-			}
+						//System.out.println("Total Normal: " + nNormal);
+						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nNormal));	
+						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nNormal);
+					}							
 			
-			this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
-			//System.out.println("** NAO EXISTEM NAS FROTAS AMOSTRAS PARA ESTE COMPARTIMENTO **");
-			//nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;
-			// BindUtils.postNotifyChange(null, null, this, "nNormal");
-		}
+			//this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
+			}
+			}
+	}
+	
 		
-		//this.modelcat=this.getModelcat();
-
+	public CategoryModel getModelCatLine(){
+		
+		CategoryModel modelLine = new SimpleCategoryModel();
+		return modelLine;
 	}
 
-	@Command
-	@NotifyChange({"totalAmostras","totalFrotas"})
 	public  CategoryModel getModeloCat(){
 		//this.modelcat.clear();
+		
 		CategoryModel modelcat = new SimpleCategoryModel();
-
+		
 		/*System.out.println("Amostras Verificadas : " + this.getTotalAmostras());
 		System.out.println("Frotas Verificadas :" + this.getTotaldeFrotas());
 
@@ -715,32 +725,13 @@ public class Relatorio {
 		return modelcat;   
 	}
 
-	//main colors
-	public static Color COLOR_1 = new Color(0x3E454C);
-	public static Color COLOR_2 = new Color(0x2185C5);
-	public static Color COLOR_3 = new Color(0x7ECEFD);
-	public static Color COLOR_4 = new Color(0xFFF6E5);
-	public static Color COLOR_5 = new Color(0xFF7F66);
-
-	//additional colors
-	public static Color COLOR_6 = new Color(0x98D9FF);
-	public static Color COLOR_7 = new Color(0x4689B1);
-	public static Color COLOR_8 = new Color(0xB17C35);
-	public static Color COLOR_9 = new Color(0xFDC77E);
-
-	public static String toHtmlColor(Color color) {
-		return "#" + toHexColor(color);
-	}
-
-	public static String toHexColor(Color color) {
-		return StringUtils.leftPad(Integer.toHexString(color.getRGB() & 0xFFFFFF), 6, '0');
-	}
-
+	
 	@Command("showMessage") 
 	@NotifyChange("message")
 	public void onShowMessage(@BindingParam("msg") String message){
-		this.message = message;
-		//Clients.showNotification(message);
+		this.message = message.toUpperCase();
+		//Clients.showNotification(message,"info",null,"center",3000);
+		
 	}
 
 	@GlobalCommand("dataChanged") 

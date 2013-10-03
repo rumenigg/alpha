@@ -1,19 +1,10 @@
 package br.com.rti.alpha.viewModel;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.zkoss.zkex.zul.impl.JFreeChartEngine;
-import org.zkoss.zul.Chart;
-
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.zkoss.bind.annotation.AfterCompose;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -26,13 +17,14 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.Selectors;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zkex.zul.impl.JFreeChartEngine;
+import org.zkoss.zkmax.zul.Fusionchart;
+import org.zkoss.zkmax.zul.fusionchart.config.CategoryChartConfig;
+import org.zkoss.zkmax.zul.fusionchart.config.SeriesPropertiesMap;
 import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Chart;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.SimpleCategoryModel;
 import org.zkoss.zul.SimplePieModel;
-import org.zkoss.zul.event.ChartDataListener;
 
 import br.com.rti.alpha.controle.Ordenar;
 import br.com.rti.alpha.dao.DaoFactory;
@@ -47,7 +39,7 @@ import br.com.rti.alpha.modelo.supervisao.Frota;
 import br.com.rti.alpha.modelo.supervisao.Supervisao;
 //import org.zkoss.poi.hssf.record.chart.PieRecord;
 
-public class Relatorio extends JFreeChartEngine {
+public class Relatorio{
 
 	@Wire
 	private int totalAmostras,totaldeFrotas,totalAtivos,totalSupervisao,totalCompartimento,totalAnalise;
@@ -61,9 +53,12 @@ public class Relatorio extends JFreeChartEngine {
 	private boolean threeD=false;
 	private boolean desativado = true;
 	
-	//private PieModel model;
+	private PieModel model;
 	private CategoryModel modelcat;
 	private CategoryModel modelLine;
+	
+	@Wire
+	private Fusionchart mychart;
 	
 	private String message;
 
@@ -417,12 +412,7 @@ public class Relatorio extends JFreeChartEngine {
 		Selectors.wireComponents(view, this, false);
 		Selectors.wireEventListeners(view, this);	
 		this.desativado=false;	
-		//Clients.showNotification("Clique aqui para adicionar um novo Laudo", "info",view, "end_center", 3000);
-		//init();
-		//this.verificaSituacao();
-		//this.getModeloCat();
-		//this.model=this.getModeloCat();
-
+		
 	}
 
 	@Init
@@ -449,14 +439,10 @@ public class Relatorio extends JFreeChartEngine {
 		this.selectedElementos=null;
 		this.selectedElementos =new Elementos();
 
-		this.modelLine=this.getModelCatLine();
+		this.model=this.getModel();
 		this.modelcat=this.getModeloCat();
 		this.atualizaSupervisao(); 
-		// this.atualizaFrota();
-		// this.atualizaAtivo();
-		// this.atualizaAmostra();
-		// this.atualizaElementos();
-		//this.verificaSituacao();
+		
 	}
 
 	@Command
@@ -512,13 +498,13 @@ public class Relatorio extends JFreeChartEngine {
 		this.allSupervisao.clear();
 		this.allFrota.addAll(this.selectedSupervisao.getFrota());
 
-		//this.setTotaldeFrotas(this.allFrota.size());
+		
 		this.totaldeFrotas=this.allFrota.size();
 		
 		System.out.println("TOTAL DE FROTAS : " + this.getTotaldeFrotas());
 
 		Collections.sort(this.allFrota, new Ordenar());
-		//this.modelcat=this.getModeloCat();
+		
 		daof = null;
 		this.modelcat.clear();
 	}
@@ -563,7 +549,7 @@ public class Relatorio extends JFreeChartEngine {
 
 		this.totalCompartimento=this.allCompartimento.size();
 		System.out.println("TOTAL DE Compartimentos: " + this.getTotalCompartimento());
-
+		
 		Collections.sort(this.allCompartimento, new Ordenar());	
 		daof=null;
 		this.modelcat.clear();
@@ -573,7 +559,9 @@ public class Relatorio extends JFreeChartEngine {
 	@Command
 	@NotifyChange({"allAmostra","selectedCompartimento","nAnormal","nNormal","nCriticos","totalAmostras","desativado"})
 	public void atualizaAmostra(){
+		this.modelcat.clear();
 		this.desativado=false;	
+		
 		this.allAmostra=null;
 		this.allAmostra = new ArrayList<Amostra>();
 
@@ -586,10 +574,8 @@ public class Relatorio extends JFreeChartEngine {
 
 		totalAmostras=this.allAmostra.size();
 		
-		System.out.println("TOTAL DE AMOSTAS : " + this.getTotalAmostras());
 		verificaSituacao();
-		
-		this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
+
 		Collections.sort(this.allAmostra, new Ordenar());
 		
 		daof = null;
@@ -608,12 +594,8 @@ public class Relatorio extends JFreeChartEngine {
 
 		this.allAnalise = daof.getAnaliseDAO().listaTudo();
 
-		//this.selectedAmostra=daof.getAmostraDAO().procura(7);
-		//this.allAnalise.addAll(this.selectedElementos.getAnalise());
 		totalAnalise=this.allAnalise.size();
 		
-		
-		System.out.println("TOTAL DE ANALISE: " + this.getTotalAnalise());
 		Collections.sort(this.allAnalise, new Ordenar());
 	
 		daof = null;
@@ -654,84 +636,67 @@ public class Relatorio extends JFreeChartEngine {
 	}
 
 	@Command
-	@NotifyChange({"nAnormal","nNormal","nCriticos","totalAmostras"})
+	@NotifyChange({"nAnormal","nNormal","nCriticos","totalAmostras","totaldeFrotas"})
 	public void verificaSituacao(){
 
 		nAnormal=0;nNormal=0;nCriticos=0;totaldeFrotas=0;totalAmostras=0;	
 		this.totaldeFrotas=this.allFrota.size();
-	
-		for(int f=0;f<this.totaldeFrotas;f++){
-		
 
-			System.out.println("* Frotas : " +this.allFrota.get(f).getId()+" - " +this.allFrota.get(f).getDescricao());
-			String frota=this.allFrota.get(f).getDescricao();//this.selectedFrota.getDescricao();//this.allFrota.get(f).getDescricao();
+		for(int f=0;f<this.totaldeFrotas;f++){
+
+			//System.out.println("* Frotas : " +this.allFrota.get(f).getId()+" - " +this.allFrota.get(f).getDescricao());
+			String frota=this.selectedFrota.getDescricao();//this.allFrota.get(f).getDescricao();
 
 			nAnormal=0;nNormal=0;nCriticos=0;totalAmostras=0;
 			this.totalAmostras=this.allAmostra.size();
-			
-			for (int i=0;i<this.totalAmostras; i++) {
-					
-				String situacao=this.allAmostra.get(i).getSituacao().toString();
-				
-							
-				this.modelcat.setValue(situacao, frota, new Integer(nAnormal));
-				this.modelcat.setValue(situacao, frota, new Integer(nCriticos));
-				this.modelcat.setValue(situacao, frota, new Integer(nNormal));
 
-					if(situacao.equals("anormal")){
-						nAnormal++;
-						//System.out.println("TotalAnormal: " + nAnormal); 
-						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nAnormal));
-						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nAnormal);
-					}
-					
-					if(situacao.equals("critico")){
-						nCriticos++;
-						//System.out.println("Total Critico: " + nCriticos);
-						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nCriticos));
-						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total"+ situacao+" : " + nCriticos);
-					}
-					
-					if(situacao.equals("normal")){
-						nNormal++;
-						//System.out.println("Total Normal: " + nNormal);
-						this.modelcat.setValue(this.allAmostra.get(i).getSituacao().toString(), this.allFrota.get(f).getDescricao(), new Integer(nNormal));	
-						System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nNormal);
-					}							
-			
-			//this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
+			for (int i=0;i<this.totalAmostras; i++) {
+
+				String situacao=this.allAmostra.get(i).getSituacao().toString();
+
+				if(situacao.equals("anormal")){
+					nAnormal++;
+					this.modelcat.setValue(situacao,frota, new Integer(nAnormal));
+					//System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nAnormal);
+				}
+
+				if(situacao.equals("critico")){
+					nCriticos++;
+					this.modelcat.setValue(situacao,frota, new Integer(nCriticos));
+					//System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total"+ situacao+" : " + nCriticos);
+				}
+
+				if(situacao.equals("normal")){
+					nNormal++;
+					this.modelcat.setValue(situacao,frota, new Integer(nNormal));	
+					//System.out.println("FROTA : "+ f + " AMOSTRA : "+ i +" Total "+ situacao+" : " + nNormal);
+				}							
 			}
-			}
+			this.modelcat.setValue("Total","Total de Amostras", new Integer(this.getTotalAmostras()));
+		}
 	}
-	
-		
+
+	//grafico linear	
 	public CategoryModel getModelCatLine(){
 		
 		CategoryModel modelLine = new SimpleCategoryModel();
 		return modelLine;
 	}
-
+	
+	//grafico categoria padrao
 	public  CategoryModel getModeloCat(){
-		//this.modelcat.clear();
 		
 		CategoryModel modelcat = new SimpleCategoryModel();
-		
-		/*System.out.println("Amostras Verificadas : " + this.getTotalAmostras());
-		System.out.println("Frotas Verificadas :" + this.getTotaldeFrotas());
-
-		this.totalAmostras=this.getTotalAmostras();	
-		this.totaldeFrotas=this.getTotaldeFrotas();*/
-
 		return modelcat;   
+		
 	}
-
 	
 	@Command("showMessage") 
 	@NotifyChange("message")
 	public void onShowMessage(@BindingParam("msg") String message){
-		this.message = message.toUpperCase();
+		this.message = message;
 		//Clients.showNotification(message,"info",null,"center",3000);
-		
+		//Clients.showNotification(message);
 	}
 
 	@GlobalCommand("dataChanged") 

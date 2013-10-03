@@ -1,4 +1,4 @@
-<?page title="Planilha" contentType="text/html;charset=UTF-8"?>
+<?page title="Relatorio" contentType="text/html;charset=UTF-8"?>
 <zk>
 
 	<window title="Relatório" border="normal" apply="org.zkoss.bind.BindComposer" viewModel="@id('rvm') @init('br.com.rti.alpha.viewModel.Relatorio')" 
@@ -253,23 +253,14 @@
 			<groupbox mold="3d" closable="true" 
 				open="@bind(rvm.desativado)" hflex="5">
 				<caption label="Gráfico de Resultados" />
-				<vlayout width="750px" hflex="max" vflex="max">
-					<chart paneColor="#E6E6FA" vflex="100%" hflex="max"
-						 type="bar" threeD="true" xAxis="Frota"
-						yAxis="Nº de Amostras" model="@bind(rvm.modelcat)"
+				<hlayout width="100%">
+					<chart paneColor="#E6E6FA" width="680px" height="340px" paneAlpha="255"
+						 type="bar" threeD="true" xAxis="Frota" yAxis="Nº de Amostras" model="@bind(rvm.modelcat)"
 						onClick="@command('showMessage',msg=event.areaComponent.tooltiptext)"/>
-
-					<hbox hflex="2"
-						visible="@bind(not empty rvm.message)">
-						<label value="Selecionado : " />
-						<label value="@bind(rvm.message)" />
-					</hbox>
-				</vlayout>
+				</hlayout>
 				</groupbox>
 				
 				<vlayout vflex="1" hflex="2" visible="@bind(rvm.desativado)" >
-					
-				
 					<grid visible="true" hflex="min" >
 						<columns>
 							<column label="Situação" align="center" />
@@ -303,11 +294,7 @@
 				</vlayout>
 			
 
-			<groupbox  mold="3d" open="@bind(rvm.desativado)" hflex="1" visible="false">
-			<caption label="Gráfico de Tendência"/>
-		    	  <chart paneColor="#E6E6FA" fgAlpha="250" width="600px" type="line" threeD="true"  yAxis="PPM" xAxis="Horas do Óleo"
-		    	  	model="@bind(rvm.modelLine)"  onClick="@command('showMessage',msg=event.areaComponent.tooltiptext)"/>
-			</groupbox>
+			
 			
 			
 			</hlayout>

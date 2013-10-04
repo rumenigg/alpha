@@ -53,12 +53,9 @@ public class Relatorio{
 	private boolean threeD=false;
 	private boolean desativado = true;
 	
-	private PieModel model;
+	//private PieModel model;
 	private CategoryModel modelcat;
 	private CategoryModel modelLine;
-	
-	@Wire
-	private Fusionchart mychart;
 	
 	private String message;
 
@@ -439,7 +436,7 @@ public class Relatorio{
 		this.selectedElementos=null;
 		this.selectedElementos =new Elementos();
 
-		this.model=this.getModel();
+		//this.model=this.getModel();
 		this.modelcat=this.getModeloCat();
 		this.atualizaSupervisao(); 
 		

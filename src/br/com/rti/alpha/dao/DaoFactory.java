@@ -125,6 +125,7 @@ public class DaoFactory
 	{
 		return new ElementosDAO(this.session);
 	}
+	
 	public LaudosDAO getLaudosDAO()
 	{
 		return new LaudosDAO(this.session);

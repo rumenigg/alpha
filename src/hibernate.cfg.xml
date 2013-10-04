@@ -13,9 +13,9 @@
   <!-- <property name="hibernate.connection.url">jdbc:mysql://127.2.114.1/hydro_alpha</property>
   <property name="hibernate.connection.username">rtiadmin</property>
   <property name="hibernate.connection.password">ru3951323</property> -->
-  <property name="hibernate.connection.url">jdbc:mysql://localhost/hydro_alpha</property>
+  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hydro_alpha</property>
   <property name="hibernate.connection.username">root</property>
-  <property name="hibernate.connection.password"></property>
+  <property name="hibernate.connection.password">123</property>
   <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
   <property name="hibernate.show_sql">false</property>
   <property name="hibernate.format_sql">true</property>
@@ -54,7 +54,5 @@
   <mapping class="br.com.rti.alpha.modelo.amostra.Analise"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Elementos"/>
   <mapping class="br.com.rti.alpha.modelo.amostra.Laudos"/>
-  <mapping class="br.com.rti.alpha.modelo.supervisao.Frota"/>
-  <mapping class="br.com.rti.alpha.modelo.supervisao.Supervisao"/>
  </session-factory>
 </hibernate-configuration>

@@ -7,12 +7,11 @@
 <?component name="login" macroURI="/zk/login.zul" ?>
 
 <zk>
-	<div width="100%" height="90%">
-		<image style="margin: 0px 0px 0px 0px;" src="/img/hydro_64.png" visible="true">
+<div width="100%" height="90%">
+	<image style="margin: 0px 0px 0px 0px;" src="/img/hydro_64.png" visible="true">
 			<custom-attributes org.zkoss.zul.image.preload="true"/>
 		</image>
-		<hbox width="100%" align="center" pack="center">
-			
+		<hbox width="100%" align="center" pack="center">	
 			<div align="center" width="100%">
 				<label style="font-size:24px; color:#008BB6;font-weight:bold;">
 					Análise Proativa - Monitoramento de Resultados

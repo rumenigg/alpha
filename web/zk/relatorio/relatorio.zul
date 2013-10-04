@@ -1,6 +1,6 @@
 <?page title="Relatorio" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window title="Relatório" border="normal" apply="org.zkoss.bind.BindComposer" 
+	<window title="Relatório" border="normal" apply="org.zkoss.bind.BindComposer" closable="true" 
 			viewModel="@id('rvm') @init('br.com.rti.alpha.viewModel.Relatorio')" 
 			form="@id('fx') @load(rvm.selectedAmostra) @bind(rvm.selectedAmostra)">
 		<vlayout>
@@ -30,7 +30,7 @@
 
 		        			<row>
 		        				<label value="Supervisão :" style="font-weight:bold" />
-					   			<combobox  model="@bind(rvm.allSupervisao)" selectedItem="@bind(rvm.selectedSupervisao)" onSelect="@command('atualizaFrota')">
+					   			<combobox id="cbxsupervisao" model="@bind(rvm.allSupervisao)" selectedItem="@bind(rvm.selectedSupervisao)" onSelect="@command('atualizaFrota')">
 					   				<template name="model" var="s1">
 										<comboitem label="@load(s1.descricao)" value="s1.id"/>
 									</template>	
@@ -64,7 +64,7 @@
 		        				<label value="@bind(rvm.selectedAmostra.dataColeta) @converter('formatedDate', format='dd/MM/yyyy')" />
 		        				
 		        				<label value="Nº do Laudo :" style="font-weight:bold"/>
-		          				<label  value="@bind(rvm.selectedLaudos)"/>
+		          				<label value="@bind(rvm.selectedLaudos.id)"/>
 		  
 		        				<label value="Análise de Filtro :" style="font-weight:bold"/>
 		          				<label value="@bind(rvm.selectedAmostra.filtroTrocado)"/>
@@ -76,16 +76,18 @@
 											<comboitem  label="@bind(a1.id)" value="a1.id"/>
 										</template>	
 		   							</combobox> -->
+		   							
 		        			</row>	
 		        		</rows>
 		        	</grid>
+		        	
 		</vlayout>
 		    
 		<div style="margin-top:20px"> 
 		<groupbox width="100%" mold="3d" closable="true" open="false">
 			<caption label="Análise 1" >Total de Amostras <label value="@bind(rvm.totalAmostras)"/></caption>
 				<div viewModel="@id('lvm') @init('br.com.rti.alpha.viewModel.LaudosVM')">
-				   <listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados" selectedItem="@bind(rvm.selectedAmostra)" 
+				   <listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados para esta seleção" selectedItem="@bind(rvm.selectedAmostra)" 
 				   			mold="paging" pageSize="4" pagingPosition="top">
 					<listhead>
 						<listheader label="Data da Preventiva" align="center"/>
@@ -119,7 +121,7 @@
 			<caption label="Análise 2">Total de Amostras <label value="@bind(rvm.totalAmostras)"/></caption>
 				<div>
 				
-					<listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados" selectedItem="@bind(rvm.selectedAmostra)" mold="paging" pageSize="4" pagingPosition="top"> 
+					<listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados para esta seleção" selectedItem="@bind(rvm.selectedAmostra)" mold="paging" pageSize="4" pagingPosition="top"> 
 						
 						<auxhead>
 				            <auxheader label="Desgastes" colspan="8" align="center"/>
@@ -189,7 +191,7 @@
 			<caption label="Análise 3">Total de Amostras <label id="totalAmostras" value="@bind(rvm.totalAmostras)" /></caption>
 					<div>
 					
-					<listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados" selectedItem="@bind(rvm.selectedAmostra)" mold="paging" pageSize="4" pagingPosition="top"> 
+					<listbox model="@bind(rvm.allAmostra)" emptyMessage="Não existem resultados para esta seleção" selectedItem="@bind(rvm.selectedAmostra)" mold="paging" pageSize="4" pagingPosition="top"> 
 							<auxhead>
 					            <auxheader label="Análise por Infra-Vermelho" colspan="4" align="center"/>
 								<auxheader label="Creptação" colspan="1" align="center"/>
@@ -258,40 +260,39 @@
 						onClick="@command('showMessage',msg=event.areaComponent.tooltiptext)"/>
 				</hlayout>
 				</groupbox>
-				
-				<vlayout vflex="1" hflex="2" visible="@bind(rvm.desativado)" >
-					<grid visible="true" hflex="min">
-						<columns>
-							<column label="Situação" align="center" />
-							<column label="Valor" width="90px"
-								align="center" />
-						</columns>
-						<rows style="font-weight:bold;">
-							<row>
-								<label value="Normal" />
-								<label value="@bind(rvm.nNormal)"
-									width="70px" />
-							</row>
-							<row>
-								<label value="Anormal" />
-								<label value="@bind(rvm.nAnormal)"
-									width="70px" />
-							</row>
-							<row>
-								<label value="Critico" />
-								<label value="@bind(rvm.nCriticos)"
-									width="70px" />
-							</row>
-							<row>
-								<label value="Total de Amostras" />
-								<label value="@bind(rvm.totalAmostras)"
-									style="font-weight:bold" />
-							</row>
-						</rows>
-					</grid>
 
-				</vlayout>
-			
+			<vlayout vflex="1" hflex="2"
+				visible="@bind(rvm.desativado)">
+				<grid visible="true" hflex="min">
+					<columns>
+						<column label="Situação" align="center" />
+						<column label="Valor" width="90px"
+							align="center" />
+					</columns>
+					<rows style="font-weight:bold;">
+						<row>
+							<label value="Normal" />
+							<label value="@bind(rvm.nNormal)"
+								width="70px" />
+						</row>
+						<row>
+							<label value="Anormal" />
+							<label value="@bind(rvm.nAnormal)"
+								width="70px" />
+						</row>
+						<row>
+							<label value="Critico" />
+							<label value="@bind(rvm.nCriticos)"
+								width="70px" />
+						</row>
+						<row>
+							<label value="Total de Amostras" />
+							<label value="@bind(rvm.totalAmostras)"
+								style="font-weight:bold" />
+						</row>
+					</rows>
+				</grid>
+			</vlayout>
 			</hlayout>
 		</div>
 	

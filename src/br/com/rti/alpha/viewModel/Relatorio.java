@@ -22,6 +22,7 @@ import org.zkoss.zkmax.zul.fusionchart.config.CategoryChartConfig;
 import org.zkoss.zkmax.zul.fusionchart.config.SeriesPropertiesMap;
 import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Chart;
+import org.zkoss.zul.Combobox;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.SimpleCategoryModel;
 import org.zkoss.zul.SimplePieModel;
@@ -46,7 +47,9 @@ public class Relatorio{
 
 	@Wire
 	private int nNormal, nCriticos, nAnormal;
-
+	
+	@Wire
+	private Combobox cbxsupervisao;
 	private Analise amostra_id;
 
 	private boolean explode = false;
@@ -404,10 +407,19 @@ public class Relatorio{
 	}
 
 	
+	public Combobox getCbxsupervisao() {
+		return cbxsupervisao;
+	}
+
+	public void setCbxsupervisao(Combobox cbxsupervisao) {
+		this.cbxsupervisao = cbxsupervisao;
+	}
+
 	@AfterCompose
 	public void afterCompose(@ContextParam(ContextType.VIEW) Component view){
 		Selectors.wireComponents(view, this, false);
-		Selectors.wireEventListeners(view, this);	
+		Selectors.wireEventListeners(view, this);
+		Clients.showNotification("Selecione os campos do filtro", "info",this.cbxsupervisao, "before_start", 3500,false);
 		this.desativado=false;	
 		
 	}
@@ -436,6 +448,9 @@ public class Relatorio{
 		this.selectedElementos=null;
 		this.selectedElementos =new Elementos();
 
+		this.selectedLaudos=null;
+		this.selectedLaudos=new Laudos();
+		
 		//this.model=this.getModel();
 		this.modelcat=this.getModeloCat();
 		this.atualizaSupervisao(); 
@@ -445,6 +460,7 @@ public class Relatorio{
 	@Command
 	@NotifyChange("allPessoa")	
 	public void atualizaPessoa(){
+	
 		this.allPessoa = null;
 		this.allPessoa = new ArrayList<Pessoa>();
 
@@ -543,7 +559,7 @@ public class Relatorio{
 		this.selectedAtivo = daof.getAtivoDAO().procura(this.selectedAmostra.getAtivoAmostra().getId()); 
 		this.allCompartimento.clear();
 		this.allCompartimento.addAll(this.selectedAtivo.getCompartimento());
-
+		
 		this.totalCompartimento=this.allCompartimento.size();
 		System.out.println("TOTAL DE Compartimentos: " + this.getTotalCompartimento());
 		
